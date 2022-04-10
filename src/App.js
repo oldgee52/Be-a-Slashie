@@ -1,7 +1,7 @@
 import { LandingPage } from "./Component/LandingPage";
 import { Search } from "./Component/Search";
 import GlobalStyle from "./globalStyles";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 function App() {
     return (
