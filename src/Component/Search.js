@@ -65,13 +65,17 @@ export const Search = () => {
     const [searchField, setSearchField] = useState("");
     const [courses, setCourses] = useState();
 
-    const handleChange = (e) => {
+    const handleChange = e => {
         e.preventDefault();
         if (!searchField.trim()) return;
-        const filteredPersons = mockData.filter((data) => {
+        const filteredPersons = mockData.filter(data => {
             return (
-                data.title.toLowerCase().includes(searchField.toLowerCase().trim()) ||
-                data.courseIntroduction.toLowerCase().includes(searchField.toLowerCase().trim())
+                data.title
+                    .toLowerCase()
+                    .includes(searchField.toLowerCase().trim()) ||
+                data.courseIntroduction
+                    .toLowerCase()
+                    .includes(searchField.toLowerCase().trim())
             );
         });
         if (filteredPersons.length === 0) return window.alert("查無資料");
@@ -85,13 +89,13 @@ export const Search = () => {
                     type="search"
                     placeholder="Search"
                     value={searchField}
-                    onChange={(e) => {
+                    onChange={e => {
                         setSearchField(e.target.value);
                     }}
                 />
                 <Button onClick={handleChange}>送出</Button>
                 {courses &&
-                    courses.map((course) => (
+                    courses.map(course => (
                         <div key={course.courseID}>
                             <h2>{course.title}</h2>
                             <div>{course.courseIntroduction}</div>
