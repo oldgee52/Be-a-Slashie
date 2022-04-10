@@ -23,10 +23,6 @@ const Button = styled.button`
     width: 100%;
 `;
 
-const Button2 = styled.button`
-    width: 100%;
-`;
-
 const mockData = [
     {
         title: "課程1",
