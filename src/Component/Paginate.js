@@ -49,6 +49,7 @@ function Items({ currentItems }) {
                     <div key={item.courseID}>
                         <h3>{item.title}</h3>
                         <p>{item.courseIntroduction}</p>
+                        <p>{item.view}</p>
                     </div>
                 ))}
         </div>

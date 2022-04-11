@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PaginatedItems from "./Paginate";
 import styled from "styled-components";
+import db from "../utils/firebase";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 const Container = styled.div`
     margin: auto;
@@ -24,52 +26,31 @@ const Button = styled.button`
     width: 100%;
 `;
 
-const mockData = [
-    {
-        title: "課程1",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "1",
-        courseIntroduction: "這是一堂有趣的課",
-        teacherUserID: "55",
-    },
-    {
-        title: "韓語課程",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "2",
-        courseIntroduction: "這是一堂快速學習韓語的課",
-        teacherUserID: "66",
-    },
-    {
-        title: "JavaScript 入門課程",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "3",
-        courseIntroduction: "這是一堂給踏入前端開發人員的第一步",
-        teacherUserID: "77",
-    },
-    {
-        title: "HTML CSS 進階",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "4",
-        courseIntroduction: "這是一堂給有基礎的人",
-        teacherUserID: "88",
-    },
-    {
-        title: "課程5",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "5",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-];
-
 export const Search = () => {
     const [searchField, setSearchField] = useState("");
-    const [courses, setCourses] = useState();
+    const [allCourses, setAllCourses] = useState();
+    const [searchCourses, setSearchCourses] = useState();
+
+    useEffect(() => {
+        (async function (db) {
+            const coursesCol = collection(db, "courses");
+            const isRegistrationCourse = query(
+                coursesCol,
+                where("registrationDeadline", ">=", new Date()),
+                orderBy("registrationDeadline", "asc"),
+            );
+            const coursesSnapshot = await getDocs(isRegistrationCourse);
+            const courseList = coursesSnapshot.docs.map(doc => doc.data());
+            setAllCourses(courseList);
+            console.log(courseList);
+        })(db);
+    }, []);
 
     const handleChange = e => {
         e.preventDefault();
         if (!searchField.trim()) return;
-        const filteredCourses = mockData.filter(data => {
+
+        const filteredCourses = allCourses.filter(data => {
             return (
                 data.title
                     .toLowerCase()
@@ -79,8 +60,22 @@ export const Search = () => {
                     .includes(searchField.toLowerCase().trim())
             );
         });
+        console.log(filteredCourses);
         if (filteredCourses.length === 0) return window.alert("查無資料");
-        setCourses(filteredCourses);
+        setSearchCourses(filteredCourses);
+    };
+
+    const orderByCreatDate = e => {
+        e.preventDefault();
+        setSearchCourses(allCourses);
+    };
+
+    const orderByView = e => {
+        e.preventDefault();
+        const reOrderByViewAllCourses = allCourses.sort(function (a, b) {
+            return b.view - a.view;
+        });
+        setSearchCourses(reOrderByViewAllCourses);
     };
 
     return (
@@ -95,8 +90,10 @@ export const Search = () => {
                     }}
                 />
                 <Button onClick={handleChange}>送出</Button>
-                {courses && (
-                    <PaginatedItems itemsPerPage={1} courses={courses} />
+                <Button onClick={orderByCreatDate}>依上架日期</Button>
+                <Button onClick={orderByView}>依熱門程度</Button>
+                {searchCourses && (
+                    <PaginatedItems itemsPerPage={1} courses={searchCourses} />
                 )}
             </SearchArea>
         </Container>
