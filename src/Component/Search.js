@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PaginatedItems from "./Paginate";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -68,7 +69,7 @@ export const Search = () => {
     const handleChange = e => {
         e.preventDefault();
         if (!searchField.trim()) return;
-        const filteredPersons = mockData.filter(data => {
+        const filteredCourses = mockData.filter(data => {
             return (
                 data.title
                     .toLowerCase()
@@ -78,8 +79,8 @@ export const Search = () => {
                     .includes(searchField.toLowerCase().trim())
             );
         });
-        if (filteredPersons.length === 0) return window.alert("查無資料");
-        setCourses(filteredPersons);
+        if (filteredCourses.length === 0) return window.alert("查無資料");
+        setCourses(filteredCourses);
     };
 
     return (
@@ -94,13 +95,9 @@ export const Search = () => {
                     }}
                 />
                 <Button onClick={handleChange}>送出</Button>
-                {courses &&
-                    courses.map(course => (
-                        <div key={course.courseID}>
-                            <h2>{course.title}</h2>
-                            <div>{course.courseIntroduction}</div>
-                        </div>
-                    ))}
+                {courses && (
+                    <PaginatedItems itemsPerPage={1} courses={courses} />
+                )}
             </SearchArea>
         </Container>
     );

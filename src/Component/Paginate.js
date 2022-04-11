@@ -2,196 +2,6 @@ import ReactPaginate from "react-paginate";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const items = [
-    {
-        title: "課程1",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "1",
-        courseIntroduction: "這是一堂有趣的課",
-        teacherUserID: "55",
-    },
-    {
-        title: "韓語課程",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "2",
-        courseIntroduction: "這是一堂快速學習韓語的課",
-        teacherUserID: "66",
-    },
-    {
-        title: "JavaScript 入門課程",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "3",
-        courseIntroduction: "這是一堂給踏入前端開發人員的第一步",
-        teacherUserID: "77",
-    },
-    {
-        title: "HTML CSS 進階",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "4",
-        courseIntroduction: "這是一堂給有基礎的人",
-        teacherUserID: "88",
-    },
-    {
-        title: "課程5",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "5",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程6",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "6",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程7",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "7",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "8",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "9",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "10",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "11",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "12",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "13",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "14",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "15",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "16",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "17",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "18",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "19",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "20",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "21",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "22",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "23",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "24",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "25",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-    {
-        title: "課程8",
-        image: "https://upload.cc/i1/2022/04/02/Ow1X0s.png",
-        courseID: "26",
-        courseIntroduction: "這是一堂無聊的課",
-        teacherUserID: "99",
-    },
-];
-
 // You can style your pagination component
 // thanks to styled-components.
 // Use inner class names to style the controls.
@@ -245,7 +55,7 @@ function Items({ currentItems }) {
     );
 }
 
-function PaginatedItems({ itemsPerPage }) {
+function PaginatedItems({ itemsPerPage, courses }) {
     // We start with an empty list of items.
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
@@ -257,13 +67,13 @@ function PaginatedItems({ itemsPerPage }) {
         // Fetch items from another resources.
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        setCurrentItems(items.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(items.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage]);
+        setCurrentItems(courses.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(courses?.length / itemsPerPage));
+    }, [itemOffset, itemsPerPage, courses]);
 
     // Invoke when user click to request another page.
     const handlePageClick = event => {
-        const newOffset = (event.selected * itemsPerPage) % items.length;
+        const newOffset = (event.selected * itemsPerPage) % courses.length;
         console.log(
             `User requested page number ${event.selected}, which is offset ${newOffset}`,
         );
@@ -277,6 +87,7 @@ function PaginatedItems({ itemsPerPage }) {
                 pageCount={pageCount}
                 onPageChange={handlePageClick}
                 nextLabel="next"
+                renderOnZeroPageCount={null}
             />
             {/* <ReactPaginate
                 nextLabel="next"
