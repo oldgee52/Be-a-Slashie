@@ -67,7 +67,10 @@ export const Search = () => {
 
     const orderByCreatDate = e => {
         e.preventDefault();
-        setSearchCourses(allCourses);
+        const reOrderByCreatDateAllCourses = allCourses.sort(function (a, b) {
+            return b.creatTime - a.creatTime;
+        });
+        setSearchCourses(reOrderByCreatDateAllCourses);
     };
 
     const orderByView = e => {

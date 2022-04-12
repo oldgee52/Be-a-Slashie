@@ -120,9 +120,6 @@ function reducer(state, action) {
                 ...state,
                 image: action.payload.image,
             };
-        case "clear":
-            return initState;
-
         default:
             return state;
     }
@@ -132,6 +129,16 @@ export const TeacherUpload = () => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
+
+    useEffect(() => {
+        (async function (db) {
+            const skillsCol = collection(db, "skills");
+            const skillsSnapshot = await getDocs(skillsCol);
+            const skillList = skillsSnapshot.docs.map(doc => doc.data());
+            console.log(skillList);
+            setAllSkills(skillList);
+        })(firebaseInit.db);
+    }, []);
 
     const handleSkillChange = e => {
         const { value, checked } = e.target;
@@ -151,16 +158,6 @@ export const TeacherUpload = () => {
             });
         }
     };
-
-    useEffect(() => {
-        (async function (db) {
-            const skillsCol = collection(db, "skills");
-            const skillsSnapshot = await getDocs(skillsCol);
-            const skillList = skillsSnapshot.docs.map(doc => doc.data());
-            console.log(skillList);
-            setAllSkills(skillList);
-        })(firebaseInit.db);
-    }, []);
 
     const uploadImage = e => {
         e.preventDefault();
@@ -212,8 +209,10 @@ export const TeacherUpload = () => {
         const docRef = doc(coursesRef);
         const coursesInfo = {
             ...state,
-            openingDate: new Date(state.openingDate),
-            registrationDeadline: new Date(state.registrationDeadline),
+            openingDate: new Date(`${state.openingDate} 23:59:59`),
+            registrationDeadline: new Date(
+                `${state.registrationDeadline} 23:59:59`,
+            ),
             creatTime: new Date(),
             courseID: docRef.id,
             view: 0,
