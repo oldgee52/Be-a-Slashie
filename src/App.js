@@ -2,6 +2,7 @@ import { LandingPage } from "./Component/LandingPage";
 import { Search } from "./Component/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
 import PaginatedItems from "./Component/Paginate";
+import { Course } from "./pages/Course";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -11,6 +12,7 @@ function App() {
             <GlobalStyle />
             <BrowserRouter>
                 <Routes>
+                    <Route path="course" element={<Course />} />
                     <Route path="teacherUpload" element={<TeacherUpload />} />
                     <Route path="search" element={<Search />} />
                     <Route
