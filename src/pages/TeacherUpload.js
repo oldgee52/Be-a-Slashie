@@ -1,7 +1,16 @@
 import React, { useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
-import db from "../utils/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import firebaseInit from "../utils/firebase";
+import {
+    collection,
+    getDocs,
+    doc,
+    addDoc,
+    setDoc,
+    updateDoc,
+    arrayUnion,
+} from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
 const Container = styled.div`
     margin: auto;
@@ -106,6 +115,13 @@ function reducer(state, action) {
                 ...state,
                 getSkills: action.payload.getSkills,
             };
+        case "setImageURL":
+            return {
+                ...state,
+                image: action.payload.image,
+            };
+        case "clear":
+            return initState;
 
         default:
             return state;
@@ -115,6 +131,7 @@ function reducer(state, action) {
 export const TeacherUpload = () => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
+    const [image, setImage] = useState();
 
     const handleSkillChange = e => {
         const { value, checked } = e.target;
@@ -142,12 +159,98 @@ export const TeacherUpload = () => {
             const skillList = skillsSnapshot.docs.map(doc => doc.data());
             console.log(skillList);
             setAllSkills(skillList);
-        })(db);
+        })(firebaseInit.db);
     }, []);
 
-    const sendMessage = e => {
+    const uploadImage = e => {
         e.preventDefault();
-        console.log(state);
+        console.log(e.target.value);
+        const mountainImagesRef = ref(
+            firebaseInit.storage,
+            `image-${image.value}`,
+        );
+        const uploadTask = uploadBytesResumable(
+            mountainImagesRef,
+            image.files[0],
+        );
+        uploadTask.on(
+            "state_changed",
+            snapshot => {
+                const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
+                switch (snapshot.state) {
+                    case "paused":
+                        console.log("Upload is paused");
+                        break;
+                    case "running":
+                        console.log("Upload is running");
+                        break;
+                    default:
+                        console.log("default");
+                }
+            },
+            error => {
+                console.log(error);
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+                    dispatch({
+                        type: "setImageURL",
+                        payload: { image: downloadURL },
+                    });
+                });
+            },
+        );
+    };
+
+    const sendMessage = async e => {
+        e.preventDefault();
+        if (Object.values(state).some(value => !value))
+            return window.alert("請輸入完整資料");
+        const coursesRef = collection(firebaseInit.db, "courses");
+        const docRef = doc(coursesRef);
+        const coursesInfo = {
+            ...state,
+            openingDate: new Date(state.openingDate),
+            registrationDeadline: new Date(state.registrationDeadline),
+            creatTime: new Date(),
+            courseID: docRef.id,
+            view: 0,
+            teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
+            status: "registration",
+        };
+        try {
+            await Promise.all([
+                setDoc(docRef, coursesInfo),
+                addDoc(
+                    collection(
+                        firebaseInit.db,
+                        "courses",
+                        docRef.id,
+                        "teacher",
+                    ),
+                    {
+                        teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
+                        courseID: docRef.id,
+                    },
+                ),
+                updateDoc(
+                    doc(
+                        firebaseInit.db,
+                        "users",
+                        "QptFGccbXGVyiTwmvxFG07JNbjp1",
+                    ),
+                    {
+                        teachersCourses: arrayUnion(docRef.id),
+                    },
+                ),
+            ]);
+            return window.alert("上架成功");
+        } catch (error) {
+            console.log(error);
+            window.alert("發生錯誤，請重新試一次");
+        }
     };
 
     return (
@@ -221,6 +324,7 @@ export const TeacherUpload = () => {
                         }
                     />
                 </Label>
+
                 <Label>
                     <FormDiv>報名截止日</FormDiv>
                     <Input
@@ -235,6 +339,16 @@ export const TeacherUpload = () => {
                             })
                         }
                     />
+                </Label>
+                <Label>
+                    <FormDiv>上傳封面照</FormDiv>
+
+                    <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={e => setImage(e.target)}
+                    />
+                    <button onClick={uploadImage}>上傳</button>
                 </Label>
                 <FormDiv>可得技能</FormDiv>
                 <>
