@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PaginatedItems from "./Paginate";
 import styled from "styled-components";
-import db from "../utils/firebase";
+import firebaseInit from "../utils/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 const Container = styled.div`
@@ -43,7 +43,7 @@ export const Search = () => {
             const courseList = coursesSnapshot.docs.map(doc => doc.data());
             setAllCourses(courseList);
             console.log(courseList);
-        })(db);
+        })(firebaseInit.db);
     }, []);
 
     const handleChange = e => {
@@ -67,7 +67,10 @@ export const Search = () => {
 
     const orderByCreatDate = e => {
         e.preventDefault();
-        setSearchCourses(allCourses);
+        const reOrderByCreatDateAllCourses = allCourses.sort(function (a, b) {
+            return b.creatTime - a.creatTime;
+        });
+        setSearchCourses(reOrderByCreatDateAllCourses);
     };
 
     const orderByView = e => {
