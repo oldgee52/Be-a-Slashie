@@ -49,8 +49,11 @@ export const Course = () => {
     const [courseData, setCourseData] = useState();
     useEffect(() => {
         let isMounted = true;
+        const courseID = new URLSearchParams(window.location.search).get(
+            "courseID",
+        );
         (async function (db) {
-            const courseDocRef = doc(db, "courses", "9jGrfPVw6FhT5WSLWZVw");
+            const courseDocRef = doc(db, "courses", courseID);
             const coursesSnapshot = await getDoc(courseDocRef);
 
             if (coursesSnapshot.exists()) {
