@@ -47,9 +47,11 @@ function Items({ currentItems }) {
             {currentItems &&
                 currentItems.map(item => (
                     <div key={item.courseID}>
-                        <h3>{item.title}</h3>
-                        <p>{item.courseIntroduction}</p>
-                        <p>{item.view}</p>
+                        <a href={`/course?courseID=${item.courseID}`}>
+                            <h3>{item.title}</h3>
+                            <p>{item.courseIntroduction}</p>
+                            <p>{item.view}</p>
+                        </a>
                     </div>
                 ))}
         </div>
