@@ -217,7 +217,7 @@ export const TeacherUpload = () => {
             courseID: docRef.id,
             view: 0,
             teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
-            status: "registration",
+            status: 0,
         };
         try {
             await Promise.all([

@@ -1,5 +1,15 @@
+import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+    doc,
+    getDoc,
+    getFirestore,
+    query,
+    where,
+    collection,
+    getDocs,
+    collectionGroup,
+} from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -18,6 +28,33 @@ const app = initializeApp(firebaseConfig);
 const firebaseInit = {
     db: getFirestore(app),
     storage: getStorage(app),
+    async getRegistrationStudent(userCol, teacherID, courseCol) {
+        const teachersCourse = query(
+            collection(this.db, "courses"),
+            where("teacherUserID", "==", teacherID),
+            where("status", "==", 0),
+        );
+        const querySnapshot = await getDocs(teachersCourse);
+        const courseList = querySnapshot.docs.map(async doc => {
+            const studentsCol = collection(
+                this.db,
+                "courses",
+                doc.data().courseID,
+                "students",
+            );
+            const query2Snapshot = await getDocs(studentsCol);
+
+            return {
+                title: doc.data().title,
+                courseID: doc.data().courseID,
+                studentsID: query2Snapshot.docs.map(
+                    doc => doc.data().studentUserID,
+                ),
+            };
+        });
+
+        return courseList;
+    },
 };
 
 export default firebaseInit;

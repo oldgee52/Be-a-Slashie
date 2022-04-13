@@ -3,6 +3,7 @@ import { Search } from "./Component/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
 import PaginatedItems from "./Component/Paginate";
 import { Course } from "./pages/Course";
+import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -12,6 +13,10 @@ function App() {
             <GlobalStyle />
             <BrowserRouter>
                 <Routes>
+                    <Route
+                        path="teacherConfirmRegistration"
+                        element={<TeacherConfirmRegistration />}
+                    />
                     <Route path="course" element={<Course />} />
                     <Route path="teacherUpload" element={<TeacherUpload />} />
                     <Route path="search" element={<Search />} />

@@ -86,14 +86,15 @@ export const Course = () => {
                     {
                         teacherUserID: courseData.teacherUserID,
                         courseID: courseData.courseID,
-                        registrationStatus: "pending",
+                        studentUserID: "n46EqkuBwjT2oIhJ1JX7kh8VJaC2",
+                        registrationStatus: 0,
                     },
                 ),
                 updateDoc(
                     doc(
                         firebaseInit.db,
                         "users",
-                        "QptFGccbXGVyiTwmvxFG07JNbjp1",
+                        "n46EqkuBwjT2oIhJ1JX7kh8VJaC2",
                     ),
                     {
                         studentsCourses: arrayUnion(courseData.courseID),
