@@ -23,9 +23,6 @@ const DivCourse = styled.div`
     width: 100%;
 `;
 
-const DivTitle = styled.div`
-    width: 20%;
-`;
 const DivContent = styled.div`
     width: 80%;
 `;
@@ -48,14 +45,17 @@ export const TeacherConfirmRegistration = () => {
     const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
 
     useEffect(() => {
-        firebaseInit
-            .getRegistrationStudent("users", teacherID, "courses")
-            .then(promise => Promise.all(promise))
-            .then(data => setCourses(data));
+        firebaseInit.getRegistrationStudent(teacherID).then(data => {
+            console.log(data);
+            setCourses(data);
+        });
     }, []);
     return (
         <Container>
-            {courses &&
+            {courses?.map(course => (
+                <div>{course.title}</div>
+            ))}
+            {/* {courses &&
                 courses.map(course => (
                     <Div1 key={course.courseID}>
                         <DivCourse>{course.title}</DivCourse>
@@ -92,7 +92,7 @@ export const TeacherConfirmRegistration = () => {
                         ))}
                         <Button>準備來開課</Button>
                     </Div1>
-                ))}
+                ))} */}
         </Container>
     );
 };

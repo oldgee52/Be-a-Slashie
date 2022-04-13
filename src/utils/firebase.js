@@ -28,32 +28,53 @@ const app = initializeApp(firebaseConfig);
 const firebaseInit = {
     db: getFirestore(app),
     storage: getStorage(app),
-    async getRegistrationStudent(userCol, teacherID, courseCol) {
+    async getRegistrationStudent(teacherID) {
         const teachersCourse = query(
             collection(this.db, "courses"),
             where("teacherUserID", "==", teacherID),
             where("status", "==", 0),
         );
-        const querySnapshot = await getDocs(teachersCourse);
-        const courseList = querySnapshot.docs.map(async doc => {
+        const teachersCourseSnapshot = await getDocs(teachersCourse);
+        const courseList = teachersCourseSnapshot.docs.map(async course => {
             const studentsCol = collection(
                 this.db,
                 "courses",
-                doc.data().courseID,
+                course.data().courseID,
                 "students",
             );
-            const query2Snapshot = await getDocs(studentsCol);
+            const studentsSnapshot = await getDocs(studentsCol);
+
+            const studentsID = studentsSnapshot.docs.map(
+                student => student.data().studentUserID,
+            );
+
+            const studentID = studentsID.map(async id => {
+                const studentsNameSnap = await getDoc(
+                    doc(this.db, "users", id),
+                );
+                const studentData = studentsNameSnap.data();
+
+                return {
+                    name: studentData.name,
+                    studentID: studentData.uid,
+                };
+            });
+
+            let students;
+            await Promise.all(studentID).then(value => {
+                students = value;
+            });
 
             return {
-                title: doc.data().title,
-                courseID: doc.data().courseID,
-                studentsID: query2Snapshot.docs.map(
-                    doc => doc.data().studentUserID,
-                ),
+                title: course.data().title,
+                courseID: course.data().courseID,
+                students,
             };
         });
 
-        return courseList;
+        let p = Promise.all(courseList);
+
+        return p;
     },
 };
 
