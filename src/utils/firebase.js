@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
     doc,
@@ -8,7 +7,6 @@ import {
     where,
     collection,
     getDocs,
-    collectionGroup,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -48,7 +46,7 @@ const firebaseInit = {
                 student => student.data().studentUserID,
             );
 
-            const studentID = studentsID.map(async id => {
+            const studentsData = studentsID.map(async id => {
                 const studentsNameSnap = await getDoc(
                     doc(this.db, "users", id),
                 );
@@ -57,11 +55,13 @@ const firebaseInit = {
                 return {
                     name: studentData.name,
                     studentID: studentData.uid,
+                    email: studentData.email,
+                    registrationStatus: 1,
                 };
             });
 
             let students;
-            await Promise.all(studentID).then(value => {
+            await Promise.all(studentsData).then(value => {
                 students = value;
             });
 
@@ -72,9 +72,9 @@ const firebaseInit = {
             };
         });
 
-        let p = Promise.all(courseList);
+        const courseListData = await Promise.all(courseList);
 
-        return p;
+        return courseListData;
     },
 };
 

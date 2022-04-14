@@ -3,10 +3,10 @@ import firebaseInit from "../utils/firebase";
 import {
     getDoc,
     doc,
-    addDoc,
-    collection,
+    setDoc,
     updateDoc,
     arrayUnion,
+    increment,
 } from "firebase/firestore";
 import styled from "styled-components";
 
@@ -61,7 +61,7 @@ export const Course = () => {
                     console.log(coursesSnapshot.data());
                     setCourseData(coursesSnapshot.data());
                     await updateDoc(courseDocRef, {
-                        view: coursesSnapshot.data().view + 1,
+                        view: increment(1),
                     });
                 }
             }
@@ -76,17 +76,18 @@ export const Course = () => {
 
         try {
             await Promise.all([
-                addDoc(
-                    collection(
+                setDoc(
+                    doc(
                         firebaseInit.db,
                         "courses",
                         courseData.courseID,
                         "students",
+                        "WBKPGMSAejc9AHYGqROpDZWWTz23",
                     ),
                     {
                         teacherUserID: courseData.teacherUserID,
                         courseID: courseData.courseID,
-                        studentUserID: "n46EqkuBwjT2oIhJ1JX7kh8VJaC2",
+                        studentUserID: "WBKPGMSAejc9AHYGqROpDZWWTz23",
                         registrationStatus: 0,
                     },
                 ),
@@ -94,7 +95,7 @@ export const Course = () => {
                     doc(
                         firebaseInit.db,
                         "users",
-                        "n46EqkuBwjT2oIhJ1JX7kh8VJaC2",
+                        "WBKPGMSAejc9AHYGqROpDZWWTz23",
                     ),
                     {
                         studentsCourses: arrayUnion(courseData.courseID),

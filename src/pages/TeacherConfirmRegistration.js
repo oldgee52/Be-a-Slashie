@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { map } from "@firebase/util";
+import { doc, updateDoc } from "firebase/firestore";
 
 const Container = styled.div`
     margin: auto;
@@ -19,7 +19,7 @@ const Div1 = styled.div`
     flex-wrap: wrap;
 `;
 
-const DivCourse = styled.div`
+const DivCourse = styled.h3`
     width: 100%;
 `;
 
@@ -42,35 +42,88 @@ const Button = styled.button`
 
 export const TeacherConfirmRegistration = () => {
     const [courses, setCourses] = useState();
-    const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
+    const [registrationStatus, setRegistrationStatus] = useState();
 
     useEffect(() => {
+        const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
         firebaseInit.getRegistrationStudent(teacherID).then(data => {
-            console.log(data);
             setCourses(data);
+            setRegistrationStatus(data);
         });
     }, []);
+
+    const handleChange = e => {
+        const stateCopy = JSON.parse(JSON.stringify(registrationStatus));
+        stateCopy.forEach(card => {
+            card.students.forEach(student => {
+                if (e.target.name === `${card.courseID}_${student.studentID}`)
+                    student.registrationStatus = +e.target.value;
+            });
+        });
+        console.log(stateCopy);
+
+        setRegistrationStatus(stateCopy);
+    };
+
+    const confirmRegistration = async e => {
+        const courseID = e.target.id;
+        const courseArray = registrationStatus.filter(
+            item => item.courseID === courseID,
+        );
+        console.log(courseArray);
+        try {
+            await Promise.all([
+                updateDoc(doc(firebaseInit.db, "courses", courseID), {
+                    status: 1,
+                }),
+                courseArray.forEach(element => {
+                    element.students.forEach(student => {
+                        const studentID = student.studentID;
+                        const registrationStatus = student.registrationStatus;
+                        updateDoc(
+                            doc(
+                                firebaseInit.db,
+                                "courses",
+                                courseID,
+                                "students",
+                                studentID,
+                            ),
+                            {
+                                registrationStatus,
+                            },
+                        );
+                    });
+                }),
+            ]);
+            window.alert("開始上課囉!!!");
+            return window.location.reload();
+        } catch (error) {
+            window.alert("開課失敗");
+            console.log(error);
+        }
+    };
     return (
         <Container>
-            {courses?.map(course => (
-                <div>{course.title}</div>
-            ))}
-            {/* {courses &&
-                courses.map(course => (
+            {courses?.length === 0 ? (
+                <div>目前沒有課程喔</div>
+            ) : (
+                courses?.map(course => (
                     <Div1 key={course.courseID}>
                         <DivCourse>{course.title}</DivCourse>
-                        {course.studentsID.map(student => (
-                            <DivContent key={student}>
-                                <div>{student}</div>
+                        {course.students.map((student, index) => (
+                            <DivContent key={index}>
+                                <div>{student.name}</div>
+                                <div>{student.email}</div>
                                 <Div1>
                                     <input
                                         type="radio"
-                                        id={`${course.courseID}_${student}_agree`}
-                                        name={`${course.courseID}_${student}`}
+                                        id={`${course.courseID}_${student.studentID}_agree`}
+                                        name={`${course.courseID}_${student.studentID}`}
                                         value={1}
+                                        onChange={handleChange}
                                     />
                                     <label
-                                        htmlFor={`${course.courseID}_${student}_agree`}
+                                        htmlFor={`${course.courseID}_${student.studentID}_agree`}
                                     >
                                         同意
                                     </label>
@@ -78,21 +131,28 @@ export const TeacherConfirmRegistration = () => {
                                 <Div1>
                                     <input
                                         type="radio"
-                                        id={`${course.courseID}_${student}_disagree`}
-                                        name={`${course.courseID}_${student}`}
+                                        id={`${course.courseID}_${student.studentID}_disagree`}
+                                        name={`${course.courseID}_${student.studentID}`}
                                         value={2}
+                                        onChange={handleChange}
                                     />
                                     <label
-                                        htmlFor={`${course.courseID}_${student}_disagree`}
+                                        htmlFor={`${course.courseID}_${student.studentID}_disagree`}
                                     >
                                         不同意
                                     </label>
                                 </Div1>
                             </DivContent>
                         ))}
-                        <Button>準備來開課</Button>
+                        <Button
+                            id={course.courseID}
+                            onClick={confirmRegistration}
+                        >
+                            準備來開課
+                        </Button>
                     </Div1>
-                ))} */}
+                ))
+            )}
         </Container>
     );
 };
