@@ -217,7 +217,7 @@ export const TeacherUpload = () => {
             courseID: docRef.id,
             view: 0,
             teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
-            status: "registration",
+            status: 0,
         };
         try {
             await Promise.all([
@@ -245,7 +245,8 @@ export const TeacherUpload = () => {
                     },
                 ),
             ]);
-            return window.alert("上架成功");
+            window.alert("上架成功");
+            return window.location.reload();
         } catch (error) {
             console.log(error);
             window.alert("發生錯誤，請重新試一次");

@@ -1,5 +1,13 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+    doc,
+    getDoc,
+    getFirestore,
+    query,
+    where,
+    collection,
+    getDocs,
+} from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -18,6 +26,56 @@ const app = initializeApp(firebaseConfig);
 const firebaseInit = {
     db: getFirestore(app),
     storage: getStorage(app),
+    async getRegistrationStudent(teacherID) {
+        const teachersCourse = query(
+            collection(this.db, "courses"),
+            where("teacherUserID", "==", teacherID),
+            where("status", "==", 0),
+        );
+        const teachersCourseSnapshot = await getDocs(teachersCourse);
+        const courseList = teachersCourseSnapshot.docs.map(async course => {
+            const studentsCol = collection(
+                this.db,
+                "courses",
+                course.data().courseID,
+                "students",
+            );
+            const studentsSnapshot = await getDocs(studentsCol);
+
+            const studentsID = studentsSnapshot.docs.map(
+                student => student.data().studentUserID,
+            );
+
+            const studentsData = studentsID.map(async id => {
+                const studentsNameSnap = await getDoc(
+                    doc(this.db, "users", id),
+                );
+                const studentData = studentsNameSnap.data();
+
+                return {
+                    name: studentData.name,
+                    studentID: studentData.uid,
+                    email: studentData.email,
+                    registrationStatus: 1,
+                };
+            });
+
+            let students;
+            await Promise.all(studentsData).then(value => {
+                students = value;
+            });
+
+            return {
+                title: course.data().title,
+                courseID: course.data().courseID,
+                students,
+            };
+        });
+
+        const courseListData = await Promise.all(courseList);
+
+        return courseListData;
+    },
 };
 
 export default firebaseInit;
