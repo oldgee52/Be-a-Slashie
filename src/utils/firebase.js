@@ -26,13 +26,20 @@ const app = initializeApp(firebaseConfig);
 const firebaseInit = {
     db: getFirestore(app),
     storage: getStorage(app),
-    async getRegistrationStudent(teacherID) {
+    async getTeachersCourses(teacherID, state) {
         const teachersCourse = query(
             collection(this.db, "courses"),
             where("teacherUserID", "==", teacherID),
-            where("status", "==", 0),
+            where("status", "==", state),
         );
         const teachersCourseSnapshot = await getDocs(teachersCourse);
+        return teachersCourseSnapshot;
+    },
+    async getRegistrationStudent(teacherID) {
+        const teachersCourseSnapshot = await this.getTeachersCourses(
+            teacherID,
+            0,
+        );
         const courseList = teachersCourseSnapshot.docs.map(async course => {
             const studentsCol = collection(
                 this.db,
@@ -56,7 +63,7 @@ const firebaseInit = {
                     name: studentData.name,
                     studentID: studentData.uid,
                     email: studentData.email,
-                    registrationStatus: 1,
+                    registrationStatus: 0,
                 };
             });
 
@@ -69,6 +76,80 @@ const firebaseInit = {
                 title: course.data().title,
                 courseID: course.data().courseID,
                 students,
+            };
+        });
+
+        const courseListData = await Promise.all(courseList);
+
+        return courseListData;
+    },
+    async getOpeningCorses(teacherID) {
+        const teachersCourseSnapshot = await this.getTeachersCourses(
+            teacherID,
+            1,
+        );
+        const courseList = teachersCourseSnapshot.docs.map(async course => {
+            const studentsCol = query(
+                collection(
+                    this.db,
+                    "courses",
+                    course.data().courseID,
+                    "students",
+                ),
+                where("registrationStatus", "==", 1),
+            );
+            const studentsSnapshot = await getDocs(studentsCol);
+
+            const studentsID = studentsSnapshot.docs.map(
+                student => student.data().studentUserID,
+            );
+
+            const studentsData = studentsID.map(async id => {
+                const studentsSnap = await getDoc(doc(this.db, "users", id));
+                const studentData = studentsSnap.data();
+
+                const studentsHomeworkSnap = await getDoc(
+                    doc(
+                        this.db,
+                        "courses",
+                        course.data().courseID,
+                        "students",
+                        id,
+                    ),
+                );
+                const studentsHomework = studentsHomeworkSnap.data();
+
+                return {
+                    name: studentData.name,
+                    studentID: studentData.uid,
+                    email: studentData.email,
+                    studentsHomework: studentsHomework.homework || [],
+                };
+            });
+
+            let students;
+            await Promise.all(studentsData).then(value => {
+                students = value;
+            });
+
+            const teacherCol = doc(
+                firebaseInit.db,
+                "courses",
+                course.data().courseID,
+                "teacher",
+                "info",
+            );
+
+            const teacherSnapshot = await getDoc(teacherCol);
+            console.log(teacherSnapshot.data());
+
+            return {
+                title: course.data().title,
+                courseID: course.data().courseID,
+                getSkills: course.data().getSkills,
+                students,
+                homework: teacherSnapshot.data()?.homework || [],
+                materials: teacherSnapshot.data()?.materials || [],
             };
         });
 

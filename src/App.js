@@ -4,6 +4,7 @@ import { TeacherUpload } from "./pages/TeacherUpload";
 import PaginatedItems from "./Component/Paginate";
 import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
+import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -13,6 +14,10 @@ function App() {
             <GlobalStyle />
             <BrowserRouter>
                 <Routes>
+                    <Route
+                        path="teacherOpeningCourse"
+                        element={<TeacherOpeningCourse />}
+                    />
                     <Route
                         path="teacherConfirmRegistration"
                         element={<TeacherConfirmRegistration />}

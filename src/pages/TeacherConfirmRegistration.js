@@ -46,7 +46,7 @@ export const TeacherConfirmRegistration = () => {
 
     useEffect(() => {
         const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
-        firebaseInit.getRegistrationStudent(teacherID).then(data => {
+        firebaseInit.getRegistrationStudent(teacherID, 0).then(data => {
             setCourses(data);
             setRegistrationStatus(data);
         });
