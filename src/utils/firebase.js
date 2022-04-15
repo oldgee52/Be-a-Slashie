@@ -141,12 +141,12 @@ const firebaseInit = {
             );
 
             const teacherSnapshot = await getDoc(teacherCol);
-            // const courseData = teacherSnapshot.docs.map(doc => doc.data());
             console.log(teacherSnapshot.data());
 
             return {
                 title: course.data().title,
                 courseID: course.data().courseID,
+                getSkills: course.data().getSkills,
                 students,
                 homework: teacherSnapshot.data()?.homework || [],
                 materials: teacherSnapshot.data()?.materials || [],

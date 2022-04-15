@@ -4,8 +4,8 @@ import styled from "styled-components";
 import {
     updateDoc,
     doc,
+    addDoc,
     collection,
-    getDocs,
     arrayUnion,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -174,6 +174,48 @@ export const TeacherOpeningCourse = () => {
         );
     };
 
+    const handleFinishCourse = async e => {
+        const courseID = e.target.id;
+        console.log(courseID);
+
+        const courseArray = courses.filter(item => item.courseID === courseID);
+        console.log(courseArray[0]);
+
+        try {
+            await Promise.all([
+                updateDoc(doc(firebaseInit.db, "courses", courseID), {
+                    status: 2,
+                }),
+
+                courseArray[0].getSkills.forEach(skill => {
+                    courseArray[0].students.forEach(student => {
+                        const studentID = student.studentID;
+                        const getSkillsStatus = student.getSkillsStatus;
+                        if (getSkillsStatus === 1)
+                            addDoc(
+                                collection(
+                                    firebaseInit.db,
+                                    "users",
+                                    studentID,
+                                    "getSkills",
+                                ),
+                                {
+                                    getDate: new Date(),
+                                    skillID: skill,
+                                    userID: student.studentID,
+                                },
+                            );
+                    });
+                }),
+            ]);
+            window.alert("結束上課囉!!!");
+            return window.location.reload();
+        } catch (error) {
+            window.alert("結束上課失敗");
+            console.log(error);
+        }
+    };
+
     const handleTitleChange = (index, event) => {
         let data = [...courses];
         data[index][event.target.name] = event.target.value;
@@ -186,6 +228,21 @@ export const TeacherOpeningCourse = () => {
         data[index][event.target.name] = event.target.files[0];
 
         setCourses(data);
+    };
+
+    const handleSkillChange = e => {
+        const stateCopy = JSON.parse(JSON.stringify(courses));
+        stateCopy.forEach(courses => {
+            courses.students.forEach(student => {
+                if (
+                    e.target.name === `${courses.courseID}_${student.studentID}`
+                ) {
+                    student.getSkillsStatus = +e.target.value;
+                }
+            });
+        });
+
+        setCourses(stateCopy);
     };
 
     return (
@@ -215,25 +272,30 @@ export const TeacherOpeningCourse = () => {
                                                     >
                                                         點我下載
                                                     </a>
-                                                    {/* <div>
-                                                設定日期: { homework.creatDate.seconds}
-                                               
-                                            </div>  */}
+                                                    <div>
+                                                        設定日期:{" "}
+                                                        {
+                                                            homework.creatDate
+                                                                .seconds
+                                                        }
+                                                    </div>
                                                 </div>
                                             ),
                                         )
                                     )}
+                                    <br></br>
                                     <Div1>
                                         <input
                                             type="radio"
                                             id={`${course.courseID}_${student.studentID}_agree`}
                                             name={`${course.courseID}_${student.studentID}`}
                                             value={1}
+                                            onChange={e => handleSkillChange(e)}
                                         />
                                         <label
                                             htmlFor={`${course.courseID}_${student.studentID}_agree`}
                                         >
-                                            同意
+                                            同意給徽章
                                         </label>
                                     </Div1>
                                     <Div1>
@@ -242,11 +304,12 @@ export const TeacherOpeningCourse = () => {
                                             id={`${course.courseID}_${student.studentID}_disagree`}
                                             name={`${course.courseID}_${student.studentID}`}
                                             value={2}
+                                            onChange={e => handleSkillChange(e)}
                                         />
                                         <label
                                             htmlFor={`${course.courseID}_${student.studentID}_disagree`}
                                         >
-                                            不同意
+                                            不同意給徽章
                                         </label>
                                     </Div1>
                                 </DivContent>
@@ -254,24 +317,32 @@ export const TeacherOpeningCourse = () => {
                         ))}
                         <DivContent>
                             <DivCourse>課程資料</DivCourse>
+                            <DivCourse>已上傳資料</DivCourse>
                             <Div1>
-                                {course.materials?.map(material => (
-                                    <Div1 key={material.fileURL}>
-                                        <DivA href={material.fileURL} download>
-                                            {material.title}
-                                        </DivA>
+                                {course.materials.length === 0 ? (
+                                    <div>無資料</div>
+                                ) : (
+                                    course.materials?.map(material => (
+                                        <Div1 key={material.fileURL}>
+                                            <DivA
+                                                href={material.fileURL}
+                                                download
+                                            >
+                                                {material.title}
+                                            </DivA>
 
-                                        {/* <Div1>
-                                            上傳日期:
-                                            {new Date(
-                                                Math.floor(
-                                                    material.creatDate.seconds *
-                                                        1000,
-                                                ),
-                                            ).toLocaleDateString()}
-                                        </Div1> */}
-                                    </Div1>
-                                ))}
+                                            <Div1>
+                                                上傳日期:
+                                                {new Date(
+                                                    Math.floor(
+                                                        material.creatDate
+                                                            .seconds * 1000,
+                                                    ),
+                                                ).toLocaleDateString()}
+                                            </Div1>
+                                        </Div1>
+                                    ))
+                                )}
                             </Div1>
                             <Input
                                 type="file"
@@ -294,26 +365,32 @@ export const TeacherOpeningCourse = () => {
                             </Button>
                         </DivContent>
                         <DivContent>
-                            <DivCourse>設定作業</DivCourse>
+                            <DivCourse>已設定作業</DivCourse>
                             <Div1>
-                                {course.homework?.map(homework => (
-                                    <Div1 key={homework.title}>
-                                        {homework.title} 設定日期:
-                                        {/* {new Date(
-                                            Math.floor(
-                                                homework.creatDate.seconds *
-                                                    1000,
-                                            ),
-                                        ).toLocaleDateString()}
-                                        {new Date(
-                                            Math.floor(
-                                                homework.creatDate.seconds *
-                                                    1000,
-                                            ),
-                                        ).toLocaleTimeString()} */}
-                                    </Div1>
-                                ))}
+                                {course.homework.length === 0 ? (
+                                    <div>無資料</div>
+                                ) : (
+                                    course.homework.map(homework => (
+                                        <Div1 key={homework.title}>
+                                            名稱: {homework.title} <br></br>
+                                            設定日期:
+                                            {new Date(
+                                                Math.floor(
+                                                    homework.creatDate.seconds *
+                                                        1000,
+                                                ),
+                                            ).toLocaleDateString()}
+                                            {new Date(
+                                                Math.floor(
+                                                    homework.creatDate.seconds *
+                                                        1000,
+                                                ),
+                                            ).toLocaleTimeString()}
+                                        </Div1>
+                                    ))
+                                )}
                             </Div1>
+                            <DivCourse>設定作業</DivCourse>
                             <Input
                                 value={course.homeworkTitle}
                                 name="homeworkTitle"
@@ -326,6 +403,13 @@ export const TeacherOpeningCourse = () => {
                                 onClick={handleAddHomework}
                             >
                                 設定作業
+                            </Button>
+                            <hr />
+                            <Button
+                                id={course.courseID}
+                                onClick={handleFinishCourse}
+                            >
+                                結束課程
                             </Button>
                         </DivContent>
                     </Div1>
