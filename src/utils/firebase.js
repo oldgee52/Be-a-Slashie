@@ -123,7 +123,7 @@ const firebaseInit = {
                     name: studentData.name,
                     studentID: studentData.uid,
                     email: studentData.email,
-                    studentsHomework: studentsHomework.homework,
+                    studentsHomework: studentsHomework.homework || [],
                 };
             });
 
@@ -132,22 +132,24 @@ const firebaseInit = {
                 students = value;
             });
 
-            const teacherCol = collection(
+            const teacherCol = doc(
                 firebaseInit.db,
                 "courses",
                 course.data().courseID,
                 "teacher",
+                "info",
             );
 
-            const teacherSnapshot = await getDocs(teacherCol);
-            const courseData = teacherSnapshot.docs.map(doc => doc.data());
+            const teacherSnapshot = await getDoc(teacherCol);
+            // const courseData = teacherSnapshot.docs.map(doc => doc.data());
+            console.log(teacherSnapshot.data());
 
             return {
                 title: course.data().title,
                 courseID: course.data().courseID,
                 students,
-                homework: courseData[0].homework,
-                materials: courseData[0].materials,
+                homework: teacherSnapshot.data()?.homework || [],
+                materials: teacherSnapshot.data()?.materials || [],
             };
         });
 

@@ -13,6 +13,7 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 const Container = styled.div`
     margin: auto;
     margin-top: 100px;
+    margin-bottom: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -81,23 +82,23 @@ export const TeacherOpeningCourse = () => {
 
         if (!homeworkTitle.trim()) return window.alert("請輸入作業名稱");
 
-        const teacherCol = collection(
-            firebaseInit.db,
-            "courses",
-            courseID,
-            "teacher",
-        );
+        // const teacherCol = collection(
+        //     firebaseInit.db,
+        //     "courses",
+        //     courseID,
+        //     "teacher",
+        // );
         try {
-            const teacherSnapshot = await getDocs(teacherCol);
-            const docID = teacherSnapshot.docs.map(doc => doc.id);
-            console.log(docID);
+            // const teacherSnapshot = await getDocs(teacherCol);
+            // const docID = teacherSnapshot.docs.map(doc => doc.id);
+            // console.log(docID);
 
             await updateDoc(
-                doc(firebaseInit.db, "courses", courseID, "teacher", docID[0]),
+                doc(firebaseInit.db, "courses", courseID, "teacher", "info"),
                 {
                     homework: arrayUnion({
                         title: homeworkTitle,
-                        creatData: new Date(),
+                        creatDate: new Date(),
                     }),
                 },
             );
@@ -139,17 +140,17 @@ export const TeacherOpeningCourse = () => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
                     async downloadURL => {
-                        const teacherCol = collection(
-                            firebaseInit.db,
-                            "courses",
-                            courseID,
-                            "teacher",
-                        );
+                        // const teacherCol = collection(
+                        //     firebaseInit.db,
+                        //     "courses",
+                        //     courseID,
+                        //     "teacher",
+                        // );
                         try {
-                            const teacherSnapshot = await getDocs(teacherCol);
-                            const docID = teacherSnapshot.docs.map(
-                                doc => doc.id,
-                            );
+                            // const teacherSnapshot = await getDocs(teacherCol);
+                            // const docID = teacherSnapshot.docs.map(
+                            //     doc => doc.id,
+                            // );
 
                             await updateDoc(
                                 doc(
@@ -157,12 +158,12 @@ export const TeacherOpeningCourse = () => {
                                     "courses",
                                     courseID,
                                     "teacher",
-                                    docID[0],
+                                    "info",
                                 ),
                                 {
                                     materials: arrayUnion({
                                         title: materialsTitle,
-                                        creatData: new Date(),
+                                        creatDate: new Date(),
                                         fileURL: downloadURL,
                                     }),
                                 },
@@ -193,6 +194,27 @@ export const TeacherOpeningCourse = () => {
                                 <DivContent>
                                     <div>{student.name}</div>
                                     <div>{student.email}</div>
+                                    {student.studentsHomework.length === 0 ? (
+                                        <div>無資料</div>
+                                    ) : (
+                                        student.studentsHomework.map(
+                                            homework => (
+                                                <div key={homework.fileURL}>
+                                                    <div>{homework.title}</div>
+                                                    <a
+                                                        href={homework.fileURL}
+                                                        download
+                                                    >
+                                                        點我下載
+                                                    </a>
+                                                    {/* <div>
+                                                設定日期: { homework.creatDate.seconds}
+                                               
+                                            </div>  */}
+                                                </div>
+                                            ),
+                                        )
+                                    )}
                                     <Div1>
                                         <input
                                             type="radio"
@@ -226,20 +248,20 @@ export const TeacherOpeningCourse = () => {
                             <DivCourse>課程資料</DivCourse>
                             <Div1>
                                 {course.materials?.map(material => (
-                                    <Div1 key={material.creatData.seconds}>
+                                    <Div1 key={material.fileURL}>
                                         <DivA href={material.fileURL} download>
                                             {material.title}
                                         </DivA>
 
-                                        <Div1>
+                                        {/* <Div1>
                                             上傳日期:
                                             {new Date(
                                                 Math.floor(
-                                                    material.creatData.seconds *
+                                                    material.creatDate.seconds *
                                                         1000,
                                                 ),
                                             ).toLocaleDateString()}
-                                        </Div1>
+                                        </Div1> */}
                                     </Div1>
                                 ))}
                             </Div1>
@@ -265,20 +287,20 @@ export const TeacherOpeningCourse = () => {
                             <DivCourse>設定作業</DivCourse>
                             <Div1>
                                 {course.homework?.map(homework => (
-                                    <Div1 key={homework.creatData.seconds}>
+                                    <Div1 key={homework.title}>
                                         {homework.title} 設定日期:
-                                        {new Date(
+                                        {/* {new Date(
                                             Math.floor(
-                                                homework.creatData.seconds *
+                                                homework.creatDate.seconds *
                                                     1000,
                                             ),
                                         ).toLocaleDateString()}
                                         {new Date(
                                             Math.floor(
-                                                homework.creatData.seconds *
+                                                homework.creatDate.seconds *
                                                     1000,
                                             ),
-                                        ).toLocaleTimeString()}
+                                        ).toLocaleTimeString()} */}
                                     </Div1>
                                 ))}
                             </Div1>

@@ -222,12 +222,13 @@ export const TeacherUpload = () => {
         try {
             await Promise.all([
                 setDoc(docRef, coursesInfo),
-                addDoc(
-                    collection(
+                setDoc(
+                    doc(
                         firebaseInit.db,
                         "courses",
                         docRef.id,
                         "teacher",
+                        "info",
                     ),
                     {
                         teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
