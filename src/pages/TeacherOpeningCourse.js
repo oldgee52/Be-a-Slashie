@@ -63,36 +63,32 @@ const Input = styled.input`
 
 export const TeacherOpeningCourse = () => {
     const [courses, setCourses] = useState();
-    const [homeworkTitle, setHomeworkTitle] = useState("");
-    const [materialsTitle, setMaterialsTitle] = useState("");
-    const [file, setFile] = useState();
     const imageInputRef = useRef();
 
     useEffect(() => {
         const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
         firebaseInit.getOpeningCorses(teacherID).then(data => {
-            setCourses(data);
-            console.log(data);
+            const newCoursesArray = data.map(newCourses => ({
+                ...newCourses,
+                homeworkTitle: "",
+                materialsTitle: "",
+                materialsFile: "",
+            }));
+
+            setCourses(newCoursesArray);
+            console.log(newCoursesArray);
         });
     }, []);
 
     const handleAddHomework = async e => {
         const courseID = e.target.id;
-        console.log(courseID);
+        const thisCourse = courses.filter(
+            course => courseID === course.courseID,
+        );
+        const homeworkTitle = thisCourse[0].homeworkTitle.trim();
 
-        if (!homeworkTitle.trim()) return window.alert("請輸入作業名稱");
-
-        // const teacherCol = collection(
-        //     firebaseInit.db,
-        //     "courses",
-        //     courseID,
-        //     "teacher",
-        // );
+        if (!homeworkTitle) return window.alert("請輸入作業名稱");
         try {
-            // const teacherSnapshot = await getDocs(teacherCol);
-            // const docID = teacherSnapshot.docs.map(doc => doc.id);
-            // console.log(docID);
-
             await updateDoc(
                 doc(firebaseInit.db, "courses", courseID, "teacher", "info"),
                 {
@@ -102,21 +98,29 @@ export const TeacherOpeningCourse = () => {
                     }),
                 },
             );
-            setHomeworkTitle("");
-            return window.alert("設定作業成功囉!!!");
+            window.alert("設定作業成功囉!!!");
+            return window.location.reload();
         } catch (error) {
             window.alert("設定作業失敗");
             console.log(error);
         }
     };
     const handleAddMaterials = async e => {
-        if (!materialsTitle.trim() || !file)
+        const courseID = e.target.id;
+        const thisCourse = courses.filter(
+            course => courseID === course.courseID,
+        );
+        const materialsTitle = thisCourse[0].materialsTitle.trim();
+        const materialsFile = thisCourse[0].materialsFile;
+        if (!materialsTitle || !materialsFile)
             return window.alert("請上傳檔案並輸入教材名稱");
 
-        const courseID = e.target.id;
         console.log(courseID);
         const mountainImagesRef = ref(firebaseInit.storage, materialsTitle);
-        const uploadTask = uploadBytesResumable(mountainImagesRef, file);
+        const uploadTask = uploadBytesResumable(
+            mountainImagesRef,
+            materialsFile,
+        );
         uploadTask.on(
             "state_changed",
             snapshot => {
@@ -140,18 +144,7 @@ export const TeacherOpeningCourse = () => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
                     async downloadURL => {
-                        // const teacherCol = collection(
-                        //     firebaseInit.db,
-                        //     "courses",
-                        //     courseID,
-                        //     "teacher",
-                        // );
                         try {
-                            // const teacherSnapshot = await getDocs(teacherCol);
-                            // const docID = teacherSnapshot.docs.map(
-                            //     doc => doc.id,
-                            // );
-
                             await updateDoc(
                                 doc(
                                     firebaseInit.db,
@@ -168,7 +161,7 @@ export const TeacherOpeningCourse = () => {
                                     }),
                                 },
                             );
-                            setMaterialsTitle("");
+
                             imageInputRef.current.value = "";
                             return window.alert("上傳教材成功囉!!!");
                         } catch (error) {
@@ -181,12 +174,26 @@ export const TeacherOpeningCourse = () => {
         );
     };
 
+    const handleTitleChange = (index, event) => {
+        let data = [...courses];
+        data[index][event.target.name] = event.target.value;
+
+        setCourses(data);
+    };
+
+    const handleFileChange = (index, event) => {
+        let data = [...courses];
+        data[index][event.target.name] = event.target.files[0];
+
+        setCourses(data);
+    };
+
     return (
         <Container>
             {courses?.length === 0 ? (
                 <div>目前沒有課程喔</div>
             ) : (
-                courses?.map(course => (
+                courses?.map((course, index) => (
                     <Div1 key={course.courseID}>
                         <DivCourse>{course.title}</DivCourse>
                         {course.students.map((student, index) => (
@@ -194,6 +201,7 @@ export const TeacherOpeningCourse = () => {
                                 <DivContent>
                                     <div>{student.name}</div>
                                     <div>{student.email}</div>
+                                    <DivCourse>上傳作業</DivCourse>
                                     {student.studentsHomework.length === 0 ? (
                                         <div>無資料</div>
                                     ) : (
@@ -268,13 +276,15 @@ export const TeacherOpeningCourse = () => {
                             <Input
                                 type="file"
                                 ref={imageInputRef}
-                                onChange={e => setFile(e.target.files[0])}
+                                name="materialsFile"
+                                onChange={e => handleFileChange(index, e)}
                             />
                             <Input
-                                value={materialsTitle}
-                                onChange={e =>
-                                    setMaterialsTitle(e.target.value)
-                                }
+                                value={course.materialsTitle}
+                                name="materialsTitle"
+                                onChange={e => {
+                                    handleTitleChange(index, e);
+                                }}
                             />
                             <Button
                                 id={course.courseID}
@@ -305,9 +315,11 @@ export const TeacherOpeningCourse = () => {
                                 ))}
                             </Div1>
                             <Input
-                                value={homeworkTitle}
-                                onChange={e => setHomeworkTitle(e.target.value)}
-                                key={course.courseID}
+                                value={course.homeworkTitle}
+                                name="homeworkTitle"
+                                onChange={e => {
+                                    handleTitleChange(index, e);
+                                }}
                             />
                             <Button
                                 id={course.courseID}
