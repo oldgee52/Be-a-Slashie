@@ -67,7 +67,7 @@ export const TeacherOpeningCourse = () => {
 
     useEffect(() => {
         const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
-        firebaseInit.getOpeningCorses(teacherID).then(data => {
+        firebaseInit.getTeacherOpeningCorses(teacherID).then(data => {
             const newCoursesArray = data.map(newCourses => ({
                 ...newCourses,
                 homeworkTitle: "",

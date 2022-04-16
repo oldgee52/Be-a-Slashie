@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import {
-    getDoc,
     doc,
     setDoc,
     updateDoc,
@@ -23,6 +22,7 @@ const Container = styled.div`
 const Div1 = styled.div`
     width: 100%;
     display: flex;
+    margin-top: 20px;
 `;
 
 const DivTitle = styled.div`
@@ -30,6 +30,7 @@ const DivTitle = styled.div`
 `;
 const DivContent = styled.div`
     width: 80%;
+    display: flex;
 `;
 
 const Button = styled.button`
@@ -47,25 +48,41 @@ const Button = styled.button`
 
 export const Course = () => {
     const [courseData, setCourseData] = useState();
+    const [collection, setCollection] = useState(false);
+    const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+
     useEffect(() => {
-        let isMounted = true;
         const courseID = new URLSearchParams(window.location.search).get(
             "courseID",
         );
-        (async function (db) {
-            const courseDocRef = doc(db, "courses", courseID);
-            const coursesSnapshot = await getDoc(courseDocRef);
+        let isMounted = true;
 
-            if (coursesSnapshot.exists()) {
-                if (isMounted) {
-                    console.log(coursesSnapshot.data());
-                    setCourseData(coursesSnapshot.data());
-                    await updateDoc(courseDocRef, {
-                        view: increment(1),
-                    });
-                }
-            }
-        })(firebaseInit.db);
+        if (isMounted) {
+            firebaseInit.getCourseDetail(courseID).then(data => {
+                setCourseData(data);
+                console.log(data);
+            });
+        }
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        const courseID = new URLSearchParams(window.location.search).get(
+            "courseID",
+        );
+
+        let isMounted = true;
+        if (isMounted) {
+            firebaseInit.getCollectionData("users", userID).then(data => {
+                const isCollect = data.collectCourses.some(
+                    collectCourse => collectCourse === courseID,
+                );
+                setCollection(isCollect);
+            });
+        }
         return () => {
             isMounted = false;
         };
@@ -82,23 +99,22 @@ export const Course = () => {
                         "courses",
                         courseData.courseID,
                         "students",
-                        "WBKPGMSAejc9AHYGqROpDZWWTz23",
+                        userID,
                     ),
                     {
                         teacherUserID: courseData.teacherUserID,
                         courseID: courseData.courseID,
-                        studentUserID: "WBKPGMSAejc9AHYGqROpDZWWTz23",
+                        studentUserID: userID,
                         registrationStatus: 0,
                     },
                 ),
+                updateDoc(doc(firebaseInit.db, "users", userID), {
+                    studentsCourses: arrayUnion(courseData.courseID),
+                }),
                 updateDoc(
-                    doc(
-                        firebaseInit.db,
-                        "users",
-                        "WBKPGMSAejc9AHYGqROpDZWWTz23",
-                    ),
+                    doc(firebaseInit.db, "courses", courseData.courseID),
                     {
-                        studentsCourses: arrayUnion(courseData.courseID),
+                        registrationNumber: increment(1),
                     },
                 ),
             ]);
@@ -107,6 +123,20 @@ export const Course = () => {
             console.log(error);
             window.alert("發生錯誤，請重新試一次");
         }
+    }
+
+    function renderSkills() {
+        return courseData.skillsData.map(skill => (
+            <div key={skill.skillID} style={{ paddingRight: 20 }}>
+                <img
+                    src={skill.image}
+                    alt={skill.title}
+                    width="20"
+                    heigh="20"
+                />
+                <div>{skill.title}</div>
+            </div>
+        ));
     }
 
     return (
@@ -125,16 +155,37 @@ export const Course = () => {
                         <DivTitle>報名截止日</DivTitle>
                         <DivContent>
                             {new Date(
-                                courseData.registrationDeadline,
-                            ).toDateString()}
+                                courseData.registrationDeadline.seconds * 1000,
+                            ).toLocaleDateString()}
                         </DivContent>
                     </Div1>
                     <Div1>
                         <DivTitle>可獲技能</DivTitle>
+                        <DivContent>{renderSkills()}</DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>老師簡介</DivTitle>
                         <DivContent>
-                            {courseData.getSkills.map(skill => (
-                                <div key={skill}>{skill}</div>
-                            ))}
+                            {courseData.teacherIntroduction}
+                        </DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>老師姓名</DivTitle>
+                        <DivContent>{courseData.teacherData.name}</DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>目前報名人數</DivTitle>
+                        <DivContent>{courseData.registrationNumber}</DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>目前瀏覽人數</DivTitle>
+                        <DivContent>{courseData.view}</DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>收藏</DivTitle>
+                        <DivContent>
+                            {" "}
+                            {!collection ? "點我蒐藏" : "已蒐藏點我取消"}
                         </DivContent>
                     </Div1>
                     <Button onClick={handleRegistration}>我要報名</Button>
