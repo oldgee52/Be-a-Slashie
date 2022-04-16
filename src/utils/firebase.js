@@ -7,6 +7,8 @@ import {
     where,
     collection,
     getDocs,
+    updateDoc,
+    increment,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -83,7 +85,7 @@ const firebaseInit = {
 
         return courseListData;
     },
-    async getOpeningCorses(teacherID) {
+    async getTeacherOpeningCorses(teacherID) {
         const teachersCourseSnapshot = await this.getTeachersCourses(
             teacherID,
             1,
@@ -214,6 +216,35 @@ const firebaseInit = {
         );
 
         return userOpeningCourseDetails;
+    },
+    async getCourseDetail(courseID) {
+        const courseData = await this.getCollectionData("courses", courseID);
+        const teacherData = await this.getCollectionData(
+            "users",
+            courseData.teacherUserID,
+        );
+        const skillsDataPromise = courseData.getSkills.map(async skill => {
+            console.log(skill);
+
+            const skills = await this.getCollectionData("skills", skill);
+            return skills;
+        });
+
+        const skillsData = await Promise.all(skillsDataPromise);
+
+        await updateDoc(doc(this.db, "courses", courseID), {
+            view: increment(1),
+        });
+
+        return {
+            ...courseData,
+            skillsData,
+            teacherData,
+        };
+    },
+    async getCollectionData(col, id) {
+        const userDataSnapShop = await getDoc(doc(this.db, col, id));
+        return userDataSnapShop.data();
     },
 };
 
