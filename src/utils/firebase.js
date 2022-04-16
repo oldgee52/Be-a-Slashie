@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { initializeApp } from "firebase/app";
 import {
     doc,
@@ -188,17 +187,24 @@ const firebaseInit = {
             const courseTeacherDetail = await getDoc(
                 doc(this.db, "courses", detail.courseID, "teacher", "info"),
             );
+            const teacherInfo = await getDoc(
+                doc(this.db, "users", detail.teacherUserID),
+            );
 
             const courseTeacherDetailData = courseTeacherDetail.data();
             const courseStudentsDetailData = courseStudentsDetail.data();
+            const teacherInfoData = teacherInfo.data();
 
             return {
-                teacherUserID: courseTeacherDetailData.teacherUserID,
+                title: detail.title,
+                teacherUserID: detail.teacherUserID,
+                teacherName: teacherInfoData.name,
                 allHomework: courseTeacherDetailData?.homework || [],
                 materials: courseTeacherDetailData?.materials || [],
-                courseID: courseTeacherDetailData.courseID,
+                courseID: detail.courseID,
                 myHomework: courseStudentsDetailData?.homework || [],
                 registrationStatus: courseStudentsDetailData.registrationStatus,
+                getSkills: detail.getSkills,
             };
         });
 
