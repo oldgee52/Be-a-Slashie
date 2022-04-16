@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import {
     doc,
@@ -57,6 +57,7 @@ export const Course = () => {
     const [courseData, setCourseData] = useState();
     const [collection, setCollection] = useState(false);
     const [message, setMessage] = useState("");
+    const [inputFields, SetInputFields] = useState([]);
     const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
@@ -69,6 +70,19 @@ export const Course = () => {
             firebaseInit.getCourseDetail(courseID).then(data => {
                 setCourseData(data);
                 console.log(data);
+
+                SetInputFields(
+                    Array(data.askedQuestions?.length || 0)
+                        .fill()
+                        .map(() => ({ reply: "" })),
+                );
+
+                //         .fill())
+                // SetInputFields(
+                //     Array(data.askedQuestions.length)
+                //         .fill()
+                //         .map(() => ({ input: "" })),
+                // );
             });
         }
 
@@ -172,6 +186,34 @@ export const Course = () => {
         return window.alert("留言已送出");
     }
 
+    const handleReplyMessage = (e, index) => {
+        let data = [...inputFields];
+        data[index][e.target.name] = e.target.value;
+        SetInputFields(data);
+    };
+
+    const handleSendReplyMessage = async index => {
+        if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
+        const dataaa = courseData.askedQuestions[0].replies || [];
+        dataaa.push({
+            repliedContent: inputFields[0].reply,
+            repliedDate: new Date(),
+            repliedUserID: userID,
+        });
+
+        const stateCopy = JSON.parse(JSON.stringify(courseData));
+
+        console.log(stateCopy.askedQuestions[0]);
+        console.log(courseData);
+        console.log(dataaa);
+        // await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
+        //     askedQuestions: stateCopy.askedQuestions[0]
+        // });
+
+        // setMessage("");
+        // return window.alert("留言已送出");
+    };
+
     return (
         <>
             {courseData && (
@@ -236,23 +278,89 @@ export const Course = () => {
                                 paddingBottom: 20,
                             }}
                         >
-                            {courseData.askedQuestions?.map(question => (
-                                <div
-                                    key={question.askedDate?.seconds}
-                                    style={{ paddingBottom: 20 }}
-                                >
-                                    <div> 姓名: {question.askedUserID}</div>
-                                    <div>內容:{question.askedContent}</div>
-                                    <div>
-                                        留言日期:
-                                        {new Date(
-                                            question.askedDate.seconds * 1000,
-                                        ).toLocaleDateString()}
+                            {courseData.askedQuestions?.map(
+                                (question, index) => (
+                                    <div
+                                        key={question.askedDate?.seconds}
+                                        style={{ paddingBottom: 20 }}
+                                    >
+                                        <div> 姓名: {question.askedUserID}</div>
+                                        <div>內容:{question.askedContent}</div>
+                                        <div>
+                                            留言日期:
+                                            {new Date(
+                                                question.askedDate?.seconds *
+                                                    1000,
+                                            ).toLocaleDateString()}
+                                        </div>
+                                        {question.replies &&
+                                            question.replies?.map(reply => (
+                                                <div
+                                                    key={
+                                                        reply.repliedDate
+                                                            ?.seconds
+                                                    }
+                                                    style={{
+                                                        paddingLeft: 50,
+                                                        marginTop: 10,
+                                                    }}
+                                                >
+                                                    <div>
+                                                        姓名:
+                                                        {reply.repliedUserID}
+                                                    </div>
+                                                    <div>
+                                                        回覆內容:
+                                                        {reply.repliedContent}
+                                                    </div>
+                                                    <div>
+                                                        回覆日期:
+                                                        {new Date(
+                                                            reply.repliedDate
+                                                                .seconds * 1000,
+                                                        ).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        <div>
+                                            <div
+                                                key={index}
+                                                style={{
+                                                    paddingLeft: 50,
+                                                    marginTop: 10,
+                                                }}
+                                            >
+                                                <Input
+                                                    value={
+                                                        inputFields[index]
+                                                            ?.reply || ""
+                                                    }
+                                                    name="reply"
+                                                    onChange={e =>
+                                                        handleReplyMessage(
+                                                            e,
+                                                            index,
+                                                        )
+                                                    }
+                                                />
+                                                <button
+                                                    onClick={() =>
+                                                        handleSendReplyMessage(
+                                                            index,
+                                                        )
+                                                    }
+                                                >
+                                                    送出
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ),
+                            )}
+                            <></>
                         </DivContent>
                     </Div1>
+
                     <Button onClick={handleRegistration}>我要報名</Button>
                 </Container>
             )}
