@@ -9,11 +9,10 @@ import {
     arrayRemove,
 } from "firebase/firestore";
 import styled from "styled-components";
-import { async } from "@firebase/util";
 
 const Container = styled.div`
     margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,10 +34,16 @@ const DivContent = styled.div`
     display: flex;
 `;
 
+const Input = styled.input`
+    width: 50%;
+    height: 20px;
+`;
+
 const Button = styled.button`
     width: 100%;
     height: 48px;
     text-align: center;
+    margin-top: 20px;
 
     color: #ffffff;
     font-size: 16px;
@@ -51,6 +56,7 @@ const Button = styled.button`
 export const Course = () => {
     const [courseData, setCourseData] = useState();
     const [collection, setCollection] = useState(false);
+    const [message, setMessage] = useState("");
     const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
@@ -153,6 +159,18 @@ export const Course = () => {
             window.alert("發生錯誤，請重新試一次");
         }
     }
+    async function handSendMessage() {
+        if (!message.trim()) return window.alert("請輸入訊息");
+        await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
+            askedQuestions: arrayUnion({
+                askedContent: message,
+                askedDate: new Date(),
+                askedUserID: userID,
+            }),
+        });
+        setMessage("");
+        return window.alert("留言已送出");
+    }
 
     return (
         <>
@@ -200,6 +218,39 @@ export const Course = () => {
                         <DivTitle>收藏</DivTitle>
                         <DivContent onClick={handleCollection}>
                             {collection ? "已蒐藏點我取消" : "點我蒐藏"}
+                        </DivContent>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>留言</DivTitle>
+                        <Input
+                            value={message}
+                            onChange={e => setMessage(e.target.value)}
+                        />
+                        <button onClick={handSendMessage}>送出</button>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>留言區</DivTitle>
+                        <DivContent
+                            style={{
+                                flexDirection: "column",
+                                paddingBottom: 20,
+                            }}
+                        >
+                            {courseData.askedQuestions?.map(question => (
+                                <div
+                                    key={question.askedDate?.seconds}
+                                    style={{ paddingBottom: 20 }}
+                                >
+                                    <div> 姓名: {question.askedUserID}</div>
+                                    <div>內容:{question.askedContent}</div>
+                                    <div>
+                                        留言日期:
+                                        {new Date(
+                                            question.askedDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    </div>
+                                </div>
+                            ))}
                         </DivContent>
                     </Div1>
                     <Button onClick={handleRegistration}>我要報名</Button>
