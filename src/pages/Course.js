@@ -6,8 +6,10 @@ import {
     updateDoc,
     arrayUnion,
     increment,
+    arrayRemove,
 } from "firebase/firestore";
 import styled from "styled-components";
+import { async } from "@firebase/util";
 
 const Container = styled.div`
     margin: auto;
@@ -87,7 +89,34 @@ export const Course = () => {
             isMounted = false;
         };
     }, []);
+    function renderSkills() {
+        return courseData.skillsData.map(skill => (
+            <div key={skill.skillID} style={{ paddingRight: 20 }}>
+                <img
+                    src={skill.image}
+                    alt={skill.title}
+                    width="20"
+                    heigh="20"
+                />
+                <div>{skill.title}</div>
+            </div>
+        ));
+    }
 
+    async function handleCollection() {
+        if (collection) {
+            await updateDoc(doc(firebaseInit.db, "users", userID), {
+                collectCourses: arrayRemove(courseData.courseID),
+            });
+            setCollection(false);
+        }
+        if (!collection) {
+            await updateDoc(doc(firebaseInit.db, "users", userID), {
+                collectCourses: arrayUnion(courseData.courseID),
+            });
+            setCollection(true);
+        }
+    }
     async function handleRegistration(e) {
         e.preventDefault();
 
@@ -123,20 +152,6 @@ export const Course = () => {
             console.log(error);
             window.alert("發生錯誤，請重新試一次");
         }
-    }
-
-    function renderSkills() {
-        return courseData.skillsData.map(skill => (
-            <div key={skill.skillID} style={{ paddingRight: 20 }}>
-                <img
-                    src={skill.image}
-                    alt={skill.title}
-                    width="20"
-                    heigh="20"
-                />
-                <div>{skill.title}</div>
-            </div>
-        ));
     }
 
     return (
@@ -183,9 +198,8 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>收藏</DivTitle>
-                        <DivContent>
-                            {" "}
-                            {!collection ? "點我蒐藏" : "已蒐藏點我取消"}
+                        <DivContent onClick={handleCollection}>
+                            {collection ? "已蒐藏點我取消" : "點我蒐藏"}
                         </DivContent>
                     </Div1>
                     <Button onClick={handleRegistration}>我要報名</Button>
