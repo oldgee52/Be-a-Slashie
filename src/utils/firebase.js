@@ -157,6 +157,64 @@ const firebaseInit = {
 
         return courseListData;
     },
+    async getStudentCourse(studentID, status) {
+        const studentDoc = doc(this.db, "users", studentID);
+        const studentSnapShot = await getDoc(studentDoc);
+
+        const studentCourse = studentSnapShot.data().studentsCourses;
+
+        const courseDataPromise = studentCourse.map(async course => {
+            const courseDoc = await getDoc(doc(this.db, "courses", course));
+            return courseDoc.data();
+        });
+
+        const courseData = await Promise.all(courseDataPromise);
+
+        const userStatusCourse = courseData.filter(
+            course => course.status === status,
+        );
+
+        return userStatusCourse;
+    },
+
+    async getStudentOpeningCourseDetails(studentID, status) {
+        const courseData = await this.getStudentCourse(studentID, status);
+        const courseDetailsPromise = courseData.map(async detail => {
+            const courseStudentsDetail = await getDoc(
+                doc(this.db, "courses", detail.courseID, "students", studentID),
+            );
+
+            const courseTeacherDetail = await getDoc(
+                doc(this.db, "courses", detail.courseID, "teacher", "info"),
+            );
+            const teacherInfo = await getDoc(
+                doc(this.db, "users", detail.teacherUserID),
+            );
+
+            const courseTeacherDetailData = courseTeacherDetail.data();
+            const courseStudentsDetailData = courseStudentsDetail.data();
+            const teacherInfoData = teacherInfo.data();
+
+            return {
+                title: detail.title,
+                teacherUserID: detail.teacherUserID,
+                teacherName: teacherInfoData.name,
+                allHomework: courseTeacherDetailData?.homework || [],
+                materials: courseTeacherDetailData?.materials || [],
+                courseID: detail.courseID,
+                myHomework: courseStudentsDetailData?.homework || [],
+                registrationStatus: courseStudentsDetailData.registrationStatus,
+                getSkills: detail.getSkills,
+            };
+        });
+
+        const courseDetails = await Promise.all(courseDetailsPromise);
+        const userOpeningCourseDetails = courseDetails.filter(
+            detail => detail.registrationStatus === 1,
+        );
+
+        return userOpeningCourseDetails;
+    },
 };
 
 export default firebaseInit;

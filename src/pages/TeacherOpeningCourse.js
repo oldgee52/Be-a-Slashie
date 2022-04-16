@@ -259,26 +259,32 @@ export const TeacherOpeningCourse = () => {
                                     <div>{student.name}</div>
                                     <div>{student.email}</div>
                                     <DivCourse>上傳作業</DivCourse>
+
                                     {student.studentsHomework.length === 0 ? (
-                                        <div>無資料</div>
+                                        <div>尚未有作業</div>
                                     ) : (
                                         student.studentsHomework.map(
                                             homework => (
-                                                <div key={homework.fileURL}>
+                                                <div key={homework.title}>
                                                     <div>{homework.title}</div>
-                                                    <a
-                                                        href={homework.fileURL}
-                                                        download
-                                                    >
-                                                        點我下載
-                                                    </a>
-                                                    <div>
-                                                        設定日期:{" "}
-                                                        {
-                                                            homework.creatDate
-                                                                .seconds
-                                                        }
-                                                    </div>
+                                                    <>
+                                                        <a
+                                                            href={
+                                                                homework.fileURL
+                                                            }
+                                                            download
+                                                        >
+                                                            點我下載
+                                                        </a>
+                                                        <div>
+                                                            上傳日期:
+                                                            {
+                                                                homework
+                                                                    .creatDate
+                                                                    ?.seconds
+                                                            }
+                                                        </div>
+                                                    </>
                                                 </div>
                                             ),
                                         )
