@@ -8,9 +8,6 @@ import {
     increment,
     arrayRemove,
     onSnapshot,
-    collection,
-    query,
-    where,
 } from "firebase/firestore";
 import styled from "styled-components";
 
@@ -63,7 +60,8 @@ export const Course = () => {
     const [message, setMessage] = useState("");
     const [messagesOnSnapShot, setMessagesOnSnapShot] = useState();
     const [inputFields, SetInputFields] = useState([]);
-    const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const [usersInfo, setUsersInfo] = useState();
+    const userID = "n46EqkuBwjT2oIhJ1JX7kh8VJaC2";
 
     useEffect(() => {
         const courseID = new URLSearchParams(window.location.search).get(
@@ -75,12 +73,6 @@ export const Course = () => {
             firebaseInit.getCourseDetail(courseID).then(data => {
                 setCourseData(data);
                 console.log(data);
-
-                SetInputFields(
-                    Array(data.askedQuestions?.length || 0)
-                        .fill()
-                        .map(() => ({ reply: "" })),
-                );
             });
         }
 
@@ -117,12 +109,24 @@ export const Course = () => {
             doc(firebaseInit.db, "courses", courseID),
             snapshot => {
                 setMessagesOnSnapShot(snapshot.data().askedQuestions);
+
+                SetInputFields(
+                    Array(snapshot.data().askedQuestions?.length || 0)
+                        .fill()
+                        .map(() => ({ reply: "" })),
+                );
             },
         );
 
         return () => {
             unsubscribe();
         };
+    }, []);
+    useEffect(() => {
+        firebaseInit.getCollection("users").then(data => {
+            console.log(data);
+            setUsersInfo(data);
+        });
     }, []);
 
     function renderSkills() {
@@ -137,6 +141,12 @@ export const Course = () => {
                 <div>{skill.title}</div>
             </div>
         ));
+    }
+
+    function findUserInfo(userID, info) {
+        const result = usersInfo.filter(array => array.uid === userID);
+
+        return result[0][info];
     }
 
     async function handleCollection() {
@@ -211,7 +221,10 @@ export const Course = () => {
                     key={question.askedDate.seconds}
                     style={{ paddingBottom: 20 }}
                 >
-                    <div> 姓名: {question.askedUserID}</div>
+                    <div>
+                        {" "}
+                        姓名: {findUserInfo(question.askedUserID, "name")}
+                    </div>
                     <div>內容:{question.askedContent}</div>
                     <div>
                         留言日期:
