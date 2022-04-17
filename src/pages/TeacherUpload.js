@@ -217,6 +217,8 @@ export const TeacherUpload = () => {
             view: 0,
             teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
             status: 0,
+            askedQuestions: [],
+            registrationNumber: 0,
         };
         try {
             await Promise.all([

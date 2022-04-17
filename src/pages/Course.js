@@ -7,6 +7,10 @@ import {
     arrayUnion,
     increment,
     arrayRemove,
+    onSnapshot,
+    collection,
+    query,
+    where,
 } from "firebase/firestore";
 import styled from "styled-components";
 
@@ -55,8 +59,9 @@ const Button = styled.button`
 
 export const Course = () => {
     const [courseData, setCourseData] = useState();
-    const [collection, setCollection] = useState(false);
+    const [userCollection, setUserCollection] = useState(false);
     const [message, setMessage] = useState("");
+    const [messagesOnSnapShot, setMessagesOnSnapShot] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
@@ -76,13 +81,6 @@ export const Course = () => {
                         .fill()
                         .map(() => ({ reply: "" })),
                 );
-
-                //         .fill())
-                // SetInputFields(
-                //     Array(data.askedQuestions.length)
-                //         .fill()
-                //         .map(() => ({ input: "" })),
-                // );
             });
         }
 
@@ -102,13 +100,31 @@ export const Course = () => {
                 const isCollect = data.collectCourses.some(
                     collectCourse => collectCourse === courseID,
                 );
-                setCollection(isCollect);
+                setUserCollection(isCollect);
             });
         }
         return () => {
             isMounted = false;
         };
     }, []);
+
+    useEffect(() => {
+        const courseID = new URLSearchParams(window.location.search).get(
+            "courseID",
+        );
+
+        const unsubscribe = onSnapshot(
+            doc(firebaseInit.db, "courses", courseID),
+            snapshot => {
+                setMessagesOnSnapShot(snapshot.data().askedQuestions);
+            },
+        );
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+
     function renderSkills() {
         return courseData.skillsData.map(skill => (
             <div key={skill.skillID} style={{ paddingRight: 20 }}>
@@ -124,17 +140,17 @@ export const Course = () => {
     }
 
     async function handleCollection() {
-        if (collection) {
+        if (userCollection) {
             await updateDoc(doc(firebaseInit.db, "users", userID), {
                 collectCourses: arrayRemove(courseData.courseID),
             });
-            setCollection(false);
+            setUserCollection(false);
         }
-        if (!collection) {
+        if (!userCollection) {
             await updateDoc(doc(firebaseInit.db, "users", userID), {
                 collectCourses: arrayUnion(courseData.courseID),
             });
-            setCollection(true);
+            setUserCollection(true);
         }
     }
     async function handleRegistration(e) {
@@ -175,6 +191,7 @@ export const Course = () => {
     }
     async function handSendMessage() {
         if (!message.trim()) return window.alert("請輸入訊息");
+
         await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
             askedQuestions: arrayUnion({
                 askedContent: message,
@@ -183,7 +200,73 @@ export const Course = () => {
             }),
         });
         setMessage("");
+
         return window.alert("留言已送出");
+    }
+
+    function renderMessages() {
+        return messagesOnSnapShot
+            ?.map((question, index) => (
+                <div
+                    key={question.askedDate.seconds}
+                    style={{ paddingBottom: 20 }}
+                >
+                    <div> 姓名: {question.askedUserID}</div>
+                    <div>內容:{question.askedContent}</div>
+                    <div>
+                        留言日期:
+                        {new Date(
+                            question.askedDate.seconds * 1000,
+                        ).toLocaleDateString()}
+                    </div>
+                    {question.replies &&
+                        question.replies?.map(reply => (
+                            <div
+                                key={reply.repliedDate?.seconds}
+                                style={{
+                                    paddingLeft: 50,
+                                    marginTop: 10,
+                                }}
+                            >
+                                <div>
+                                    姓名:
+                                    {reply.repliedUserID}
+                                </div>
+                                <div>
+                                    回覆內容:
+                                    {reply.repliedContent}
+                                </div>
+                                <div>
+                                    回覆日期:
+                                    {new Date(
+                                        reply.repliedDate.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                </div>
+                            </div>
+                        ))}
+                    <div>
+                        <div
+                            key={index}
+                            style={{
+                                paddingLeft: 50,
+                                marginTop: 10,
+                            }}
+                        >
+                            <Input
+                                value={inputFields[index]?.reply || ""}
+                                name="reply"
+                                onChange={e => handleReplyMessage(e, index)}
+                            />
+                            <button
+                                onClick={() => handleSendReplyMessage(index)}
+                            >
+                                送出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))
+            .reverse();
     }
 
     const handleReplyMessage = (e, index) => {
@@ -254,12 +337,12 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>目前瀏覽人數</DivTitle>
-                        <DivContent>{courseData.view}</DivContent>
+                        <DivContent>{courseData.view + 1}</DivContent>
                     </Div1>
                     <Div1>
                         <DivTitle>收藏</DivTitle>
                         <DivContent onClick={handleCollection}>
-                            {collection ? "已蒐藏點我取消" : "點我蒐藏"}
+                            {userCollection ? "已蒐藏點我取消" : "點我蒐藏"}
                         </DivContent>
                     </Div1>
                     <Div1>
@@ -278,86 +361,7 @@ export const Course = () => {
                                 paddingBottom: 20,
                             }}
                         >
-                            {courseData.askedQuestions?.map(
-                                (question, index) => (
-                                    <div
-                                        key={question.askedDate?.seconds}
-                                        style={{ paddingBottom: 20 }}
-                                    >
-                                        <div> 姓名: {question.askedUserID}</div>
-                                        <div>內容:{question.askedContent}</div>
-                                        <div>
-                                            留言日期:
-                                            {new Date(
-                                                question.askedDate?.seconds *
-                                                    1000,
-                                            ).toLocaleDateString()}
-                                        </div>
-                                        {question.replies &&
-                                            question.replies?.map(reply => (
-                                                <div
-                                                    key={
-                                                        reply.repliedDate
-                                                            ?.seconds
-                                                    }
-                                                    style={{
-                                                        paddingLeft: 50,
-                                                        marginTop: 10,
-                                                    }}
-                                                >
-                                                    <div>
-                                                        姓名:
-                                                        {reply.repliedUserID}
-                                                    </div>
-                                                    <div>
-                                                        回覆內容:
-                                                        {reply.repliedContent}
-                                                    </div>
-                                                    <div>
-                                                        回覆日期:
-                                                        {new Date(
-                                                            reply.repliedDate
-                                                                .seconds * 1000,
-                                                        ).toLocaleDateString()}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        <div>
-                                            <div
-                                                key={index}
-                                                style={{
-                                                    paddingLeft: 50,
-                                                    marginTop: 10,
-                                                }}
-                                            >
-                                                <Input
-                                                    value={
-                                                        inputFields[index]
-                                                            ?.reply || ""
-                                                    }
-                                                    name="reply"
-                                                    onChange={e =>
-                                                        handleReplyMessage(
-                                                            e,
-                                                            index,
-                                                        )
-                                                    }
-                                                />
-                                                <button
-                                                    onClick={() =>
-                                                        handleSendReplyMessage(
-                                                            index,
-                                                        )
-                                                    }
-                                                >
-                                                    送出
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ),
-                            )}
-                            <></>
+                            {renderMessages()}
                         </DivContent>
                     </Div1>
 
