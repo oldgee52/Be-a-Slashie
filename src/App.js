@@ -6,6 +6,7 @@ import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
+import { Profile } from "./pages/Profile";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -15,6 +16,7 @@ function App() {
             <GlobalStyle />
             <BrowserRouter>
                 <Routes>
+                    <Route path="profile" element={<Profile />} />
                     <Route
                         path="studentOpeningCourse"
                         element={<StudentOpeningCourse />}
