@@ -246,6 +246,12 @@ const firebaseInit = {
         const userDataSnapShop = await getDoc(doc(this.db, col, id));
         return userDataSnapShop.data();
     },
+    async getCollection(col) {
+        const collectionSnapshot = await getDocs(collection(this.db, col));
+        const data = collectionSnapshot.docs.map(doc => doc.data());
+
+        return data;
+    },
 };
 
 export default firebaseInit;

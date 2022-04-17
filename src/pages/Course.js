@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import {
     doc,
@@ -7,13 +7,13 @@ import {
     arrayUnion,
     increment,
     arrayRemove,
+    onSnapshot,
 } from "firebase/firestore";
 import styled from "styled-components";
-import { async } from "@firebase/util";
 
 const Container = styled.div`
     margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,10 +35,16 @@ const DivContent = styled.div`
     display: flex;
 `;
 
+const Input = styled.input`
+    width: 50%;
+    height: 20px;
+`;
+
 const Button = styled.button`
     width: 100%;
     height: 48px;
     text-align: center;
+    margin-top: 20px;
 
     color: #ffffff;
     font-size: 16px;
@@ -50,8 +56,12 @@ const Button = styled.button`
 
 export const Course = () => {
     const [courseData, setCourseData] = useState();
-    const [collection, setCollection] = useState(false);
-    const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const [userCollection, setUserCollection] = useState(false);
+    const [message, setMessage] = useState("");
+    const [messagesOnSnapShot, setMessagesOnSnapShot] = useState();
+    const [inputFields, SetInputFields] = useState([]);
+    const [usersInfo, setUsersInfo] = useState();
+    const userID = "n46EqkuBwjT2oIhJ1JX7kh8VJaC2";
 
     useEffect(() => {
         const courseID = new URLSearchParams(window.location.search).get(
@@ -82,13 +92,43 @@ export const Course = () => {
                 const isCollect = data.collectCourses.some(
                     collectCourse => collectCourse === courseID,
                 );
-                setCollection(isCollect);
+                setUserCollection(isCollect);
             });
         }
         return () => {
             isMounted = false;
         };
     }, []);
+
+    useEffect(() => {
+        const courseID = new URLSearchParams(window.location.search).get(
+            "courseID",
+        );
+
+        const unsubscribe = onSnapshot(
+            doc(firebaseInit.db, "courses", courseID),
+            snapshot => {
+                setMessagesOnSnapShot(snapshot.data().askedQuestions);
+
+                SetInputFields(
+                    Array(snapshot.data().askedQuestions?.length || 0)
+                        .fill()
+                        .map(() => ({ reply: "" })),
+                );
+            },
+        );
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+    useEffect(() => {
+        firebaseInit.getCollection("users").then(data => {
+            console.log(data);
+            setUsersInfo(data);
+        });
+    }, []);
+
     function renderSkills() {
         return courseData.skillsData.map(skill => (
             <div key={skill.skillID} style={{ paddingRight: 20 }}>
@@ -103,18 +143,24 @@ export const Course = () => {
         ));
     }
 
+    function findUserInfo(userID, info) {
+        const result = usersInfo.filter(array => array.uid === userID);
+
+        return result[0][info];
+    }
+
     async function handleCollection() {
-        if (collection) {
+        if (userCollection) {
             await updateDoc(doc(firebaseInit.db, "users", userID), {
                 collectCourses: arrayRemove(courseData.courseID),
             });
-            setCollection(false);
+            setUserCollection(false);
         }
-        if (!collection) {
+        if (!userCollection) {
             await updateDoc(doc(firebaseInit.db, "users", userID), {
                 collectCourses: arrayUnion(courseData.courseID),
             });
-            setCollection(true);
+            setUserCollection(true);
         }
     }
     async function handleRegistration(e) {
@@ -153,6 +199,116 @@ export const Course = () => {
             window.alert("發生錯誤，請重新試一次");
         }
     }
+    async function handSendMessage() {
+        if (!message.trim()) return window.alert("請輸入訊息");
+
+        await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
+            askedQuestions: arrayUnion({
+                askedContent: message,
+                askedDate: new Date(),
+                askedUserID: userID,
+            }),
+        });
+        setMessage("");
+
+        return window.alert("留言已送出");
+    }
+
+    function renderMessages() {
+        return messagesOnSnapShot
+            ?.map((question, index) => (
+                <div
+                    key={question.askedDate.seconds}
+                    style={{ paddingBottom: 20 }}
+                >
+                    <div>
+                        {" "}
+                        姓名: {findUserInfo(question.askedUserID, "name")}
+                    </div>
+                    <div>內容:{question.askedContent}</div>
+                    <div>
+                        留言日期:
+                        {new Date(
+                            question.askedDate.seconds * 1000,
+                        ).toLocaleDateString()}
+                    </div>
+                    {question.replies &&
+                        question.replies?.map(reply => (
+                            <div
+                                key={reply.repliedDate?.seconds}
+                                style={{
+                                    paddingLeft: 50,
+                                    marginTop: 10,
+                                }}
+                            >
+                                <div>
+                                    姓名:
+                                    {reply.repliedUserID}
+                                </div>
+                                <div>
+                                    回覆內容:
+                                    {reply.repliedContent}
+                                </div>
+                                <div>
+                                    回覆日期:
+                                    {new Date(
+                                        reply.repliedDate.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                </div>
+                            </div>
+                        ))}
+                    <div>
+                        <div
+                            key={index}
+                            style={{
+                                paddingLeft: 50,
+                                marginTop: 10,
+                            }}
+                        >
+                            <Input
+                                value={inputFields[index]?.reply || ""}
+                                name="reply"
+                                onChange={e => handleReplyMessage(e, index)}
+                            />
+                            <button
+                                onClick={() => handleSendReplyMessage(index)}
+                            >
+                                送出
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))
+            .reverse();
+    }
+
+    const handleReplyMessage = (e, index) => {
+        let data = [...inputFields];
+        data[index][e.target.name] = e.target.value;
+        SetInputFields(data);
+    };
+
+    const handleSendReplyMessage = async index => {
+        if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
+        const dataaa = courseData.askedQuestions[0].replies || [];
+        dataaa.push({
+            repliedContent: inputFields[0].reply,
+            repliedDate: new Date(),
+            repliedUserID: userID,
+        });
+
+        const stateCopy = JSON.parse(JSON.stringify(courseData));
+
+        console.log(stateCopy.askedQuestions[0]);
+        console.log(courseData);
+        console.log(dataaa);
+        // await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
+        //     askedQuestions: stateCopy.askedQuestions[0]
+        // });
+
+        // setMessage("");
+        // return window.alert("留言已送出");
+    };
 
     return (
         <>
@@ -194,14 +350,34 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>目前瀏覽人數</DivTitle>
-                        <DivContent>{courseData.view}</DivContent>
+                        <DivContent>{courseData.view + 1}</DivContent>
                     </Div1>
                     <Div1>
                         <DivTitle>收藏</DivTitle>
                         <DivContent onClick={handleCollection}>
-                            {collection ? "已蒐藏點我取消" : "點我蒐藏"}
+                            {userCollection ? "已蒐藏點我取消" : "點我蒐藏"}
                         </DivContent>
                     </Div1>
+                    <Div1>
+                        <DivTitle>留言</DivTitle>
+                        <Input
+                            value={message}
+                            onChange={e => setMessage(e.target.value)}
+                        />
+                        <button onClick={handSendMessage}>送出</button>
+                    </Div1>
+                    <Div1>
+                        <DivTitle>留言區</DivTitle>
+                        <DivContent
+                            style={{
+                                flexDirection: "column",
+                                paddingBottom: 20,
+                            }}
+                        >
+                            {renderMessages()}
+                        </DivContent>
+                    </Div1>
+
                     <Button onClick={handleRegistration}>我要報名</Button>
                 </Container>
             )}
