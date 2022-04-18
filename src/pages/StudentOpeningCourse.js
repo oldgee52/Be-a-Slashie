@@ -79,15 +79,37 @@ export const StudentOpeningCourse = () => {
         console.log(myHomework[index]);
         console.log(allHomework[index]);
 
+        function getSame(array1, array2) {
+            return array1.filter(object1 => {
+                return array2.some(object2 => {
+                    return object1.title === object2.title;
+                });
+            });
+        }
+
+        function getDifference(array1, array2) {
+            return array1.filter(object1 => {
+                return !array2.some(object2 => {
+                    return object1.title === object2.title;
+                });
+            });
+        }
+
+        console.log(getSame(allHomework[index], myHomework[index]));
+
         const res2 = myHomework[index].filter(page1 =>
             allHomework[index].some(page2 => page1.title === page2.title),
         );
+        const res3 = myHomework[index].filter(page1 =>
+            allHomework[index].find(page2 => page1.title !== page2.title),
+        );
         console.log(res2);
+        console.log(res3);
 
-        return allHomework[index].map(allHomework => (
-            <Div1 key={allHomework.title}>
-                {allHomework.title}
-                {myHomework[index].map(myHomework => {
+        return myHomework[index].map(myHomework => (
+            <Div1>
+                {/* {allHomework.title} */}
+                {allHomework[index].map(allHomework => {
                     if (myHomework.title === allHomework.title) {
                         return (
                             <div>
@@ -97,23 +119,25 @@ export const StudentOpeningCourse = () => {
                                 ).toLocaleDateString()}
                             </div>
                         );
-                    }
-                    return (
-                        <>
-                            <Input
-                                type="file"
-                                name={`${allHomework.title}_${index}`}
-                                onChange={e => handleFileChange(e)}
-                            />
+                    } else {
+                        return (
+                            <>
+                                <div>{allHomework.title}</div>
+                                <Input
+                                    type="file"
+                                    name={`${allHomework.title}_${index}`}
+                                    onChange={e => handleFileChange(e)}
+                                />
 
-                            <button
-                                id={`${allHomework.title}`}
-                                onClick={e => handleUploadHomework(e)}
-                            >
-                                點我上傳
-                            </button>
-                        </>
-                    );
+                                <button
+                                    id={`${allHomework.title}`}
+                                    onClick={e => handleUploadHomework(e)}
+                                >
+                                    點我上傳
+                                </button>
+                            </>
+                        );
+                    }
                 })}
             </Div1>
         ));
@@ -189,79 +213,6 @@ export const StudentOpeningCourse = () => {
             },
         );
     };
-    // const stateCopy = JSON.parse(JSON.stringify(courseDetails));
-    // stateCopy.forEach(courses => {
-    //     courses.myHomework.forEach(homework => {
-    //         if (e.target.id === `${homework.title}_${courses.courseID}`) {
-    // const mountainImagesRef = ref(
-    //     firebaseInit.storage,
-    //     `${homework.title}_${courses.courseID}`,
-    // );
-    // const uploadTask = uploadBytesResumable(
-    //     mountainImagesRef,
-    //     homework.file,
-    // );
-
-    // uploadTask.on(
-    //     "state_changed",
-    //     snapshot => {
-    //         const progress =
-    //             (snapshot.bytesTransferred /
-    //                 snapshot.totalBytes) *
-    //             100;
-    //         console.log("Upload is " + progress + "% done");
-    //         switch (snapshot.state) {
-    //             case "paused":
-    //                 console.log("Upload is paused");
-    //                 break;
-    //             case "running":
-    //                 console.log("Upload is running");
-    //                 break;
-    //             default:
-    //                 console.log("default");
-    //         }
-    //     },
-    //     error => {
-    //         console.log(error);
-    //     },
-    //     () => {
-    //         getDownloadURL(uploadTask.snapshot.ref).then(
-    //             async downloadURL => {
-    //                 try {
-    //                     await updateDoc(
-    //                         doc(
-    //                             firebaseInit.db,
-    //                             "courses",
-    //                             courses.courseID,
-    //                             "students",
-    //                             studentID,
-    //                         ),
-    //                         {
-    //                             homework: {
-    //                                 ...homework,
-    //                                 fileURL: downloadURL,
-    //                             },
-    //                         },
-    //                     );
-
-    // homework.fileURL = downloadURL;
-    // return window.alert(
-    //     "上傳教材成功囉!!!",
-    // );
-    // } catch (error) {
-    //     window.alert("上傳教材失敗");
-    //     console.log(error);
-    // }
-    // },
-    // );
-    // },
-    // );
-
-    //     });
-    // });
-
-    //     setCourseDetails(stateCopy);
-    //     console.log(stateCopy);
 
     return (
         <Container>
@@ -271,8 +222,9 @@ export const StudentOpeningCourse = () => {
                         <DivCourse>{detail.title}</DivCourse>
                         <DivTeacher>{detail.teacherName}</DivTeacher>
                         <DivCourse>課程作業</DivCourse>
+                        {renderHomework(indexOfAllCourse)}
 
-                        {detail.allHomework.length === 0 ? (
+                        {/* {detail.allHomework.length === 0 ? (
                             <div>無資料</div>
                         ) : (
                             detail.allHomework.map(
@@ -293,6 +245,7 @@ export const StudentOpeningCourse = () => {
                                                 </div>
                                             );
                                         }
+
                                         return (
                                             <DivContent1>
                                                 <div>{allHomework.title}</div>
@@ -325,7 +278,7 @@ export const StudentOpeningCourse = () => {
                                     });
                                 },
                             )
-                        )}
+                        )} */}
 
                         {/* {detail.allHomework.length === 0 ? (
                             <div>無資料</div>
