@@ -278,11 +278,12 @@ export const TeacherOpeningCourse = () => {
                                                         </a>
                                                         <div>
                                                             上傳日期:
-                                                            {
+                                                            {new Date(
                                                                 homework
-                                                                    .creatDate
-                                                                    ?.seconds
-                                                            }
+                                                                    .uploadDate
+                                                                    .seconds *
+                                                                    1000,
+                                                            ).toLocaleDateString()}
                                                         </div>
                                                     </>
                                                 </div>
