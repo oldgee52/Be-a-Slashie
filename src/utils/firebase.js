@@ -269,7 +269,7 @@ const firebaseInit = {
         return courseData;
     },
 
-    async getStudentRegisteredCourseDetails(studentID, status) {
+    async getStudentRegisteredCourseDetails(studentID) {
         const courseData = await this.getStudentAllCourse(studentID);
         const courseDetailsPromise = courseData.map(async detail => {
             const courseStudentsDetail = await getDoc(
@@ -289,6 +289,7 @@ const firebaseInit = {
                 teacherName: teacherInfoData.name,
                 teacherEmail: teacherInfoData.email,
                 courseOpeningDate: detail.openingDate,
+                courseClosedDate: detail.closedDate || "",
                 courseRegistrationDeadline: detail.registrationDeadline,
                 courseID: detail.courseID,
                 courseStatus: detail.status,

@@ -185,6 +185,7 @@ export const TeacherOpeningCourse = () => {
             await Promise.all([
                 updateDoc(doc(firebaseInit.db, "courses", courseID), {
                     status: 2,
+                    closedDate: new Date(),
                 }),
 
                 courseArray[0].getSkills.forEach(skill => {

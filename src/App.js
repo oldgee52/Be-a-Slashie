@@ -8,8 +8,10 @@ import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
 import Sidebar from "./Component/Sidebar";
 import { Profile } from "./pages/Profile";
-import GlobalStyle from "./globalStyles";
 import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
+import { StudentClosedCourse } from "./pages/StudentClosedCourse";
+import GlobalStyle from "./globalStyles";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -19,6 +21,10 @@ function App() {
             <BrowserRouter>
                 <Sidebar />
                 <Routes>
+                    <Route
+                        path="Student-closed-course"
+                        element={<StudentClosedCourse />}
+                    />
                     <Route
                         path="student-registered-course"
                         element={<StudentRegisteredCourse />}
