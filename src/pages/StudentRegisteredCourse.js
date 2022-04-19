@@ -51,10 +51,6 @@ export const StudentRegisteredCourse = () => {
         });
     }, []);
 
-    function assignToCoursePage(status, courseID) {
-        if (status === 0) window.location.href = `/course?courseID=${courseID}`;
-    }
-
     function renderCourses(status) {
         const showCourses = registeredCourse
             ?.filter(item => item.registrationStatus === status)
