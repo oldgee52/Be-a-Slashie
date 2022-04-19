@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import styled from "styled-components";
+import { updateDoc, doc, arrayUnion } from "firebase/firestore";
 
 const Container = styled.div`
     margin: auto;
@@ -41,148 +43,186 @@ const Input = styled.input`
 
 export const StudentOpeningCourse = () => {
     const [courseDetails, setCourseDetails] = useState();
+    const [inputFields, SetInputFields] = useState([]);
     const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
     useEffect(() => {
-        firebaseInit.getStudentOpeningCourseDetails(studentID, 1).then(data => {
-            setCourseDetails(data);
-            console.log(data);
-        });
+        let isMounted = true;
+        if (isMounted) {
+            firebaseInit
+                .getStudentOpeningCourseDetails(studentID, 1)
+                .then(data => {
+                    setCourseDetails(data);
+                    console.log(data);
+
+                    SetInputFields(
+                        data.map(item =>
+                            Array(item.allHomework?.length || 0)
+                                .fill()
+                                .map(() => ({ file: "" })),
+                        ),
+                    );
+                });
+        }
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
-    // const handleUploadHomework = () => {};
-    // const handleFileChange = e => {};
-    // const renderHomework = () => {
-    //     const allHomework = courseDetails.map(detail => detail.allHomework);
-    //     const myHomework = courseDetails.map(detail => detail.myHomework);
-
-    //     console.log(myHomework[0]);
-    //     console.log(allHomework[0]);
-
-    //     const res2 = myHomework[0].filter(
-    //        page1 => allHomework[0].find(page2 => page1.title === page2.title),
-    //     );
-    //     console.log(res2);
-    // };
-
-    // const handleFileChange = e => {
-    //     const stateCopy = JSON.parse(JSON.stringify(courseDetails));
-    //     stateCopy.forEach(courses => {
-    //         courses.myHomework.forEach(homework => {
-    //             if (e.target.name === `${homework.title}_${courses.courseID}`) {
-    //                 homework.file = e.target.files[0];
-    //             }
-    //         });
-    //     });
-
-    //     setCourseDetails(stateCopy);
-    //     console.log(stateCopy);
-    // };
-    /*
-    const handleUploadHomework = e => {
-        const stateCopy = JSON.parse(JSON.stringify(courseDetails));
-        stateCopy.forEach(courses => {
-            courses.myHomework.forEach(homework => {
-                if (e.target.id === `${homework.title}_${courses.courseID}`) {
-                    // const mountainImagesRef = ref(
-                    //     firebaseInit.storage,
-                    //     `${homework.title}_${courses.courseID}`,
-                    // );
-                    // const uploadTask = uploadBytesResumable(
-                    //     mountainImagesRef,
-                    //     homework.file,
-                    // );
-
-                    // uploadTask.on(
-                    //     "state_changed",
-                    //     snapshot => {
-                    //         const progress =
-                    //             (snapshot.bytesTransferred /
-                    //                 snapshot.totalBytes) *
-                    //             100;
-                    //         console.log("Upload is " + progress + "% done");
-                    //         switch (snapshot.state) {
-                    //             case "paused":
-                    //                 console.log("Upload is paused");
-                    //                 break;
-                    //             case "running":
-                    //                 console.log("Upload is running");
-                    //                 break;
-                    //             default:
-                    //                 console.log("default");
-                    //         }
-                    //     },
-                    //     error => {
-                    //         console.log(error);
-                    //     },
-                    //     () => {
-                    //         getDownloadURL(uploadTask.snapshot.ref).then(
-                    //             async downloadURL => {
-                    //                 try {
-                    //                     await updateDoc(
-                    //                         doc(
-                    //                             firebaseInit.db,
-                    //                             "courses",
-                    //                             courses.courseID,
-                    //                             "students",
-                    //                             studentID,
-                    //                         ),
-                    //                         {
-                    //                             homework: {
-                    //                                 ...homework,
-                    //                                 fileURL: downloadURL,
-                    //                             },
-                    //                         },
-                    //                     );
-
-                                        homework.fileURL = downloadURL;
-                                        return window.alert(
-                                            "上傳教材成功囉!!!",
-                                        );
-                                    // } catch (error) {
-                                    //     window.alert("上傳教材失敗");
-                                    //     console.log(error);
-                                    // }
-                                // },
-                            // );
-                        // },
-                    // );
-                }
+    function getUploadedHomework(array1, array2) {
+        return array1?.filter(object1 => {
+            return array2.some(object2 => {
+                return object1.title === object2.title;
             });
         });
+    }
 
-        setCourseDetails(stateCopy);
-        console.log(stateCopy);
-    };*/
+    function getNotUploadedHomework(array1, array2) {
+        return array1.filter(object1 => {
+            return !array2.some(object2 => {
+                return object1.title === object2.title;
+            });
+        });
+    }
+
+    const renderUploadedHomework = index => {
+        const allHomework = courseDetails.map(detail => detail.allHomework);
+        const myHomework = courseDetails.map(detail => detail.myHomework);
+        const uploadedHomework = getUploadedHomework(
+            myHomework[index],
+            allHomework[index],
+        );
+
+        return uploadedHomework.map(homework => (
+            <Div1 key={homework.fileURL}>
+                <DivContent>{homework.title} </DivContent>
+                <DivContent>
+                    {new Date(
+                        homework.uploadDate.seconds * 1000,
+                    ).toLocaleDateString()}
+                </DivContent>
+                <a href={homework.fileURL} download>
+                    點我下載
+                </a>
+            </Div1>
+        ));
+    };
+
+    const renderNotUploadedHomework = index => {
+        const allHomework = courseDetails.map(detail => detail.allHomework);
+        const myHomework = courseDetails.map(detail => detail.myHomework);
+        const notUploadedHomework = getNotUploadedHomework(
+            allHomework[index],
+            myHomework[index],
+        );
+
+        return notUploadedHomework.map((homework, i) => (
+            <Div1 key={homework.creatDate.seconds}>
+                <DivContent>{homework.title}</DivContent>
+                <Input
+                    type="file"
+                    onChange={e => handleFileChange(e, index, i)}
+                />
+
+                <button
+                    id={`${homework.title}`}
+                    onClick={e => handleUploadHomework(e, index, i)}
+                >
+                    點我上傳
+                </button>
+            </Div1>
+        ));
+    };
+
+    const handleFileChange = (e, indexOfAllCourse, indexOfAllHomework) => {
+        let newInputFields = [...inputFields];
+        newInputFields[indexOfAllCourse][indexOfAllHomework]["file"] = e.target;
+        SetInputFields(newInputFields);
+    };
+
+    const handleUploadHomework = (e, indexOfAllCourse, indexOfAllHomework) => {
+        console.log(
+            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
+                .files[0],
+        );
+
+        const mountainImagesRef = ref(
+            firebaseInit.storage,
+            e.target.id +
+                inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`][
+                    "file"
+                ].value,
+        );
+        const uploadTask = uploadBytesResumable(
+            mountainImagesRef,
+            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
+                .files[0],
+        );
+
+        uploadTask.on(
+            "state_changed",
+            snapshot => {
+                const progress =
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
+                switch (snapshot.state) {
+                    case "paused":
+                        console.log("Upload is paused");
+                        break;
+                    case "running":
+                        console.log("Upload is running");
+                        break;
+                    default:
+                        console.log("default");
+                }
+            },
+            error => {
+                console.log(error);
+                window.alert("上傳失敗");
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then(
+                    async downloadURL => {
+                        await updateDoc(
+                            doc(
+                                firebaseInit.db,
+                                "courses",
+                                courseDetails[indexOfAllCourse].courseID,
+                                "students",
+                                studentID,
+                            ),
+                            {
+                                homework: arrayUnion({
+                                    title: e.target.id,
+                                    fileURL: downloadURL,
+                                    uploadDate: new Date(),
+                                }),
+                            },
+                        );
+                    },
+                );
+                window.alert("上傳成功");
+                return window.location.reload();
+            },
+        );
+    };
 
     return (
         <Container>
             {courseDetails &&
-                courseDetails.map(detail => (
+                courseDetails.map((detail, indexOfAllCourse) => (
                     <Div12 key={detail.courseID}>
                         <DivCourse>{detail.title}</DivCourse>
                         <DivTeacher>{detail.teacherName}</DivTeacher>
                         <DivCourse>課程作業</DivCourse>
-
                         {detail.allHomework.length === 0 ? (
                             <div>無資料</div>
                         ) : (
-                            detail.allHomework.map(homework => (
-                                <Div1 key={homework.title}>
-                                    {homework.title}
-                                    <Input
-                                        type="file"
-                                        name={`${homework.title}_${detail.courseID}`}
-                                        // onChange={e => handleFileChange(e)}
-                                    />
-
-                                    <button
-                                        id={`${homework.title}_${detail.courseID}`}
-                                        // onClick={e => handleUploadHomework(e)}
-                                    >
-                                        點我上傳
-                                    </button>
-                                </Div1>
-                            ))
+                            <>
+                                <DivCourse>已完成</DivCourse>
+                                {renderUploadedHomework(indexOfAllCourse)}
+                                <DivCourse>未完成</DivCourse>
+                                {renderNotUploadedHomework(indexOfAllCourse)}
+                            </>
                         )}
                         <DivCourse>課程資料</DivCourse>
                         {detail.materials.length === 0 ? (
