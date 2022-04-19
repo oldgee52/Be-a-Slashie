@@ -61,7 +61,7 @@ export const Course = () => {
     const [messagesOnSnapShot, setMessagesOnSnapShot] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
-    const userID = "n46EqkuBwjT2oIhJ1JX7kh8VJaC2";
+    const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
         const courseID = new URLSearchParams(window.location.search).get(

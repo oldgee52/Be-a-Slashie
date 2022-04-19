@@ -9,6 +9,7 @@ import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
 import Sidebar from "./Component/Sidebar";
 import { Profile } from "./pages/Profile";
 import GlobalStyle from "./globalStyles";
+import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -18,6 +19,10 @@ function App() {
             <BrowserRouter>
                 <Sidebar />
                 <Routes>
+                    <Route
+                        path="student-registered-course"
+                        element={<StudentRegisteredCourse />}
+                    />
                     <Route path="profile" element={<Profile />} />
                     <Route
                         path="student-opening-course"

@@ -252,6 +252,54 @@ const firebaseInit = {
 
         return data;
     },
+
+    async getStudentAllCourse(studentID) {
+        const studentDoc = doc(this.db, "users", studentID);
+        const studentSnapShot = await getDoc(studentDoc);
+
+        const studentCourse = studentSnapShot.data().studentsCourses;
+
+        const courseDataPromise = studentCourse.map(async course => {
+            const courseDoc = await getDoc(doc(this.db, "courses", course));
+            return courseDoc.data();
+        });
+
+        const courseData = await Promise.all(courseDataPromise);
+
+        return courseData;
+    },
+
+    async getStudentRegisteredCourseDetails(studentID, status) {
+        const courseData = await this.getStudentAllCourse(studentID);
+        const courseDetailsPromise = courseData.map(async detail => {
+            const courseStudentsDetail = await getDoc(
+                doc(this.db, "courses", detail.courseID, "students", studentID),
+            );
+
+            const teacherInfo = await getDoc(
+                doc(this.db, "users", detail.teacherUserID),
+            );
+
+            const courseStudentsDetailData = courseStudentsDetail.data();
+            const teacherInfoData = teacherInfo.data();
+
+            return {
+                title: detail.title,
+                teacherUserID: detail.teacherUserID,
+                teacherName: teacherInfoData.name,
+                teacherEmail: teacherInfoData.email,
+                courseOpeningDate: detail.openingDate,
+                courseRegistrationDeadline: detail.registrationDeadline,
+                courseID: detail.courseID,
+                courseStatus: detail.status,
+                registrationStatus: courseStudentsDetailData.registrationStatus,
+            };
+        });
+
+        const registeredCourseDetails = await Promise.all(courseDetailsPromise);
+
+        return registeredCourseDetails;
+    },
 };
 
 export default firebaseInit;
