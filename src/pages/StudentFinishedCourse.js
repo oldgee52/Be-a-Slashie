@@ -32,16 +32,22 @@ const DivContent = styled.div`
     width: 100%;
 `;
 
-export const StudentClosedCourse = () => {
+export const StudentFinishedCourse = () => {
     const [finishedCourses, setFinishedCourses] = useState();
     const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
     useEffect(() => {
         firebaseInit.getStudentRegisteredCourseDetails(studentID).then(data => {
-            const finishedCourse = data.filter(course => {
-                return (
-                    course.registrationStatus === 1 && course.courseStatus === 2
+            const finishedCourse = data
+                .filter(course => {
+                    return (
+                        course.registrationStatus === 1 &&
+                        course.courseStatus === 2
+                    );
+                })
+                .sort(
+                    (a, b) =>
+                        b.courseClosedDate.seconds - a.courseClosedDate.seconds,
                 );
-            });
             console.log(finishedCourse);
             setFinishedCourses(finishedCourse);
         });
@@ -49,7 +55,7 @@ export const StudentClosedCourse = () => {
 
     return (
         <Container>
-            {!finishedCourses ? "loading..." : <Div1>已完成課程</Div1>}
+            {!finishedCourses ? "loading..." : <Div1>學生已完成課程</Div1>}
             {finishedCourses &&
                 finishedCourses.map((course, index) => (
                     <Div13 key={course.courseID}>
@@ -63,21 +69,19 @@ export const StudentClosedCourse = () => {
                             <a href={`mailto: ${course.teacherEmail}`}>
                                 與我聯繫
                             </a>
-                        </DivContent>
-
-                        <DivContent>
-                            開課日期:{" "}
-                            {new Date(
-                                course?.courseOpeningDate.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </DivContent>
+                        </DivContent>{" "}
                         <DivContent>
                             完課日期:{" "}
                             {new Date(
                                 course?.courseClosedDate.seconds * 1000,
                             ).toLocaleDateString()}
                         </DivContent>
-                        <DivContent></DivContent>
+                        <DivContent>
+                            開課日期:{" "}
+                            {new Date(
+                                course?.courseOpeningDate.seconds * 1000,
+                            ).toLocaleDateString()}
+                        </DivContent>
                     </Div13>
                 ))}
         </Container>

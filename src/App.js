@@ -9,7 +9,8 @@ import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
 import Sidebar from "./Component/Sidebar";
 import { Profile } from "./pages/Profile";
 import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
-import { StudentClosedCourse } from "./pages/StudentClosedCourse";
+import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
+import { TeacherFinishedCourse } from "./pages/TeacherFinishedCourse";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -22,8 +23,12 @@ function App() {
                 <Sidebar />
                 <Routes>
                     <Route
-                        path="Student-closed-course"
-                        element={<StudentClosedCourse />}
+                        path="teacher-finished-course"
+                        element={<TeacherFinishedCourse />}
+                    />
+                    <Route
+                        path="student-finished-course"
+                        element={<StudentFinishedCourse />}
                     />
                     <Route
                         path="student-registered-course"

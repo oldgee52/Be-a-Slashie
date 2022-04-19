@@ -85,10 +85,10 @@ const firebaseInit = {
 
         return courseListData;
     },
-    async getTeacherOpeningCorses(teacherID) {
+    async getTeachersStatusCourses(teacherID, status) {
         const teachersCourseSnapshot = await this.getTeachersCourses(
             teacherID,
-            1,
+            status,
         );
         const courseList = teachersCourseSnapshot.docs.map(async course => {
             const studentsCol = query(
@@ -143,12 +143,15 @@ const firebaseInit = {
             );
 
             const teacherSnapshot = await getDoc(teacherCol);
-            console.log(teacherSnapshot.data());
+
+            const courseData = course.data();
 
             return {
-                title: course.data().title,
-                courseID: course.data().courseID,
-                getSkills: course.data().getSkills,
+                title: courseData.title,
+                courseID: courseData.courseID,
+                getSkills: courseData.getSkills,
+                openingDate: courseData.openingDate,
+                closedDate: courseData?.closedDate || "",
                 students,
                 homework: teacherSnapshot.data()?.homework || [],
                 materials: teacherSnapshot.data()?.materials || [],
@@ -289,7 +292,7 @@ const firebaseInit = {
                 teacherName: teacherInfoData.name,
                 teacherEmail: teacherInfoData.email,
                 courseOpeningDate: detail.openingDate,
-                courseClosedDate: detail.closedDate || "",
+                courseClosedDate: detail?.closedDate || "",
                 courseRegistrationDeadline: detail.registrationDeadline,
                 courseID: detail.courseID,
                 courseStatus: detail.status,

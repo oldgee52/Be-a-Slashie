@@ -44,13 +44,16 @@ function Sidebar() {
                 <NavLink to="/teacher-opening-course">
                     <SidebarContent>老師進行中課程</SidebarContent>
                 </NavLink>
+                <NavLink to="/teacher-finished-course">
+                    <SidebarContent>老師已完成課程</SidebarContent>
+                </NavLink>
                 <NavLink to="/student-registered-course">
                     <SidebarContent>學生已報名課程</SidebarContent>
                 </NavLink>
                 <NavLink to="/student-opening-course">
                     <SidebarContent>學生進行中課程</SidebarContent>
                 </NavLink>
-                <NavLink to="/student-closed-course">
+                <NavLink to="/student-finished-course">
                     <SidebarContent>學生已完成課程</SidebarContent>
                 </NavLink>
                 <NavLink to="/search">

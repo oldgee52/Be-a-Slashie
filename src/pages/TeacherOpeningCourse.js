@@ -64,10 +64,9 @@ const Input = styled.input`
 export const TeacherOpeningCourse = () => {
     const [courses, setCourses] = useState();
     const imageInputRef = useRef();
-
+    const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
     useEffect(() => {
-        const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
-        firebaseInit.getTeacherOpeningCorses(teacherID).then(data => {
+        firebaseInit.getTeachersStatusCourses(teacherID, 1).then(data => {
             const newCoursesArray = data.map(newCourses => ({
                 ...newCourses,
                 homeworkTitle: "",
