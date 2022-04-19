@@ -6,6 +6,7 @@ import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
+import Sidebar from "./Component/Sidebar";
 import { Profile } from "./pages/Profile";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -15,22 +16,26 @@ function App() {
         <>
             <GlobalStyle />
             <BrowserRouter>
+                <Sidebar />
                 <Routes>
                     <Route path="profile" element={<Profile />} />
                     <Route
-                        path="studentOpeningCourse"
+                        path="student-opening-course"
                         element={<StudentOpeningCourse />}
                     />
                     <Route
-                        path="teacherOpeningCourse"
+                        path="teacher-opening-course"
                         element={<TeacherOpeningCourse />}
                     />
                     <Route
-                        path="teacherConfirmRegistration"
+                        path="teacher-confirm-registration"
                         element={<TeacherConfirmRegistration />}
                     />
                     <Route path="course" element={<Course />} />
-                    <Route path="teacherUpload" element={<TeacherUpload />} />
+                    <Route
+                        path="teacher-upload-course"
+                        element={<TeacherUpload />}
+                    />
                     <Route path="search" element={<Search />} />
                     <Route
                         path="/paginate"
