@@ -8,6 +8,7 @@ import {
     increment,
     arrayRemove,
     onSnapshot,
+    collection,
 } from "firebase/firestore";
 import styled from "styled-components";
 
@@ -123,10 +124,12 @@ export const Course = () => {
         };
     }, []);
     useEffect(() => {
-        firebaseInit.getCollection("users").then(data => {
-            console.log(data);
-            setUsersInfo(data);
-        });
+        firebaseInit
+            .getCollection(collection(firebaseInit.db, "users"))
+            .then(data => {
+                console.log(data);
+                setUsersInfo(data);
+            });
     }, []);
 
     function renderSkills() {
