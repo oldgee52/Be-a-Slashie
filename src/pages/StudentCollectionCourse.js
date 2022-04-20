@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { collection } from "firebase/firestore";
 const Container = styled.div`
     margin: auto;
     margin-top: 50px;
@@ -57,10 +58,12 @@ export const StudentCollectionCourse = () => {
     }, []);
 
     useEffect(() => {
-        firebaseInit.getCollection("users").then(data => {
-            console.log(data);
-            setUsersInfo(data);
-        });
+        firebaseInit
+            .getCollection(collection(firebaseInit.db, "users"))
+            .then(data => {
+                console.log(data);
+                setUsersInfo(data);
+            });
     }, []);
 
     function findUserInfo(userID, info) {
