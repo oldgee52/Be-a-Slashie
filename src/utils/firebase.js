@@ -317,11 +317,6 @@ const firebaseInit = {
                 return courseData;
             },
         );
-        // const coursesDataPromise = studentData.collectCourses.map(course => {
-        //     const courseData = this.getCollectionData("courses", course);
-        //     return courseData;
-        // });
-
         const coursesData = Promise.all(coursesDataPromise);
 
         return coursesData;
