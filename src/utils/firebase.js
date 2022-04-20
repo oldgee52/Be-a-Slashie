@@ -249,8 +249,8 @@ const firebaseInit = {
         const userDataSnapShop = await getDoc(doc(this.db, col, id));
         return userDataSnapShop.data();
     },
-    async getCollection(col) {
-        const collectionSnapshot = await getDocs(collection(this.db, col));
+    async getCollection(colRef) {
+        const collectionSnapshot = await getDocs(colRef);
         const data = collectionSnapshot.docs.map(doc => doc.data());
 
         return data;
@@ -320,6 +320,29 @@ const firebaseInit = {
         const coursesData = Promise.all(coursesDataPromise);
 
         return coursesData;
+    },
+
+    async getStudentSkills(studentID) {
+        const studentSkills = await this.getCollection(
+            collection(this.db, "users", studentID, "getSkills"),
+        );
+
+        const skillDataPromise = studentSkills.map(async studentSkill => {
+            const skillsDate = await this.getCollectionData(
+                "skills",
+                studentSkill.skillID,
+            );
+
+            return {
+                ...studentSkill,
+                image: skillsDate.image,
+                title: skillsDate.title,
+            };
+        });
+
+        const studentSkillsData = Promise.all(skillDataPromise);
+
+        return studentSkillsData;
     },
 };
 
