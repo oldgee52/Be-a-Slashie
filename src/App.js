@@ -11,6 +11,7 @@ import { Profile } from "./pages/Profile";
 import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
 import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
 import { TeacherFinishedCourse } from "./pages/TeacherFinishedCourse";
+import { StudentCollectionCourse } from "./pages/StudentCollectionCourse";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -22,6 +23,10 @@ function App() {
             <BrowserRouter>
                 <Sidebar />
                 <Routes>
+                    <Route
+                        path="student-collection-course"
+                        element={<StudentCollectionCourse />}
+                    />
                     <Route
                         path="teacher-finished-course"
                         element={<TeacherFinishedCourse />}
