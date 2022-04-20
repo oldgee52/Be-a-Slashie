@@ -304,6 +304,28 @@ const firebaseInit = {
 
         return registeredCourseDetails;
     },
+
+    async getStudentCollectCourses(studentID) {
+        const studentData = await this.getCollectionData("users", studentID);
+
+        const coursesDataPromise = studentData.collectCourses.map(
+            async course => {
+                const courseData = await this.getCollectionData(
+                    "courses",
+                    course,
+                );
+                return courseData;
+            },
+        );
+        // const coursesDataPromise = studentData.collectCourses.map(course => {
+        //     const courseData = this.getCollectionData("courses", course);
+        //     return courseData;
+        // });
+
+        const coursesData = Promise.all(coursesDataPromise);
+
+        return coursesData;
+    },
 };
 
 export default firebaseInit;
