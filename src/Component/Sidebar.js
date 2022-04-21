@@ -25,7 +25,7 @@ const SidebarContent = styled.div`
     line-height: 27px;
     color: #ffffff;
 
-    padding: 20px;
+    padding: 10px;
 `;
 
 function Sidebar() {
@@ -63,7 +63,10 @@ function Sidebar() {
                     <SidebarContent>學生技能徽章</SidebarContent>
                 </NavLink>
                 <NavLink to="/search">
-                    <SidebarContent>搜尋</SidebarContent>
+                    <SidebarContent>課程搜尋</SidebarContent>
+                </NavLink>
+                <NavLink to="/talented-person-search">
+                    <SidebarContent>人才搜尋</SidebarContent>
                 </NavLink>
                 <NavLink to="/profile">
                     <SidebarContent>個人資料頁</SidebarContent>

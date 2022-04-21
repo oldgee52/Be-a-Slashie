@@ -344,6 +344,28 @@ const firebaseInit = {
 
         return studentSkillsData;
     },
+
+    async getUsersInfoIncludeSkill() {
+        const allUsersData = await this.getCollection(
+            collection(firebaseInit.db, "users"),
+        );
+        const getSkillsPromise = allUsersData.map(async user => {
+            const skills = await this.getStudentSkills(user.uid);
+            const filterRepeatSkill = skills.filter(
+                (skill, index, self) =>
+                    index === self.findIndex(t => t.skillID === skill.skillID),
+            );
+
+            return {
+                ...user,
+                skills: filterRepeatSkill,
+            };
+        });
+
+        const userInfoData = Promise.all(getSkillsPromise);
+
+        return userInfoData;
+    },
 };
 
 export default firebaseInit;
