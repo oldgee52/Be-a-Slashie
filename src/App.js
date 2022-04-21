@@ -13,6 +13,7 @@ import { TeacherFinishedCourse } from "./pages/TeacherFinishedCourse";
 import { StudentCollectionCourse } from "./pages/StudentCollectionCourse";
 import { StudentGotSkill } from "./pages/StudentGotSkill";
 import { TalentedPersonSearch } from "./pages/TalentedPersonSearch";
+import { PersonalIntroduction } from "./pages/PersonalIntroduction";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -27,6 +28,11 @@ function App() {
                     <Route
                         path="talented-person-search"
                         element={<TalentedPersonSearch />}
+                    />
+
+                    <Route
+                        path="personal-introduction"
+                        element={<PersonalIntroduction />}
                     />
                     <Route
                         path="student-got-skill"

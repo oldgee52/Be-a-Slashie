@@ -345,7 +345,7 @@ const firebaseInit = {
         return studentSkillsData;
     },
 
-    async getUserInfoIncludeSkill() {
+    async getUsersInfoIncludeSkill() {
         const allUsersData = await this.getCollection(
             collection(firebaseInit.db, "users"),
         );

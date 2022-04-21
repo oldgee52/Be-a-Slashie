@@ -1,5 +1,6 @@
 import { collection } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import PaginatedItems from "../Component/Paginate";
 import firebaseInit from "../utils/firebase";
@@ -46,9 +47,10 @@ export const TalentedPersonSearch = () => {
     const [searchUsers, setSearchUsers] = useState();
     const [skills, setSkills] = useState();
     const [checkedSkills, setCheckedSkills] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        firebaseInit.getUserInfoIncludeSkill().then(data => {
+        firebaseInit.getUsersInfoIncludeSkill().then(data => {
             console.log(data);
             setAllUsers(data);
         });
@@ -137,7 +139,7 @@ export const TalentedPersonSearch = () => {
                     />
                     {skills &&
                         skills.map(skill => (
-                            <p key={skill.skillID}>
+                            <div key={skill.skillID}>
                                 <input
                                     type="checkbox"
                                     value={skill.skillID}
@@ -149,7 +151,7 @@ export const TalentedPersonSearch = () => {
                                 <label htmlFor={skill.skillID}>
                                     {skill.title}
                                 </label>
-                            </p>
+                            </div>
                         ))}
                     <Button onClick={searchUsersByKeyword}>送出</Button>
                     {/* {searchCourses && (
@@ -157,7 +159,14 @@ export const TalentedPersonSearch = () => {
                 )} */}
                     {searchUsers &&
                         searchUsers.map(user => (
-                            <Div12 key={user.uid}>
+                            <Div12
+                                key={user.uid}
+                                onClick={() => {
+                                    navigate(
+                                        `/personal-introduction?uid=${user.uid}`,
+                                    );
+                                }}
+                            >
                                 <DivContent>姓名:{user.name}</DivContent>
                                 <DivContent>
                                     介紹:{user.selfIntroduction}

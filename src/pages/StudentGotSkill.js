@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Skills } from "../Component/Skills";
 import firebaseInit from "../utils/firebase";
 
 const Container = styled.div`
@@ -49,21 +50,7 @@ export const StudentGotSkill = () => {
     return (
         <Container>
             {!gotSkills ? "loading..." : <Div1>獲得技能</Div1>}
-            {gotSkills && gotSkills.length === 0 ? (
-                <div>還沒有獲得技能QQ</div>
-            ) : (
-                gotSkills?.map(skill => (
-                    <div key={skill.skillID} style={{ paddingRight: 20 }}>
-                        <Image src={skill.image} alt={skill.title} />
-                        <div>{skill.title}</div>
-                        <div>
-                            {new Date(
-                                skill.getDate.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </div>
-                    </div>
-                ))
-            )}
+            {gotSkills && <Skills skills={gotSkills} />}
         </Container>
     );
 };
