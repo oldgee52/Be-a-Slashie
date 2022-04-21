@@ -58,7 +58,7 @@ function Items({ currentItems }) {
     );
 }
 
-function PaginatedItems({ itemsPerPage, courses }) {
+function PaginatedItems({ itemsPerPage, searchData }) {
     // We start with an empty list of items.
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
@@ -70,13 +70,13 @@ function PaginatedItems({ itemsPerPage, courses }) {
         // Fetch items from another resources.
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        setCurrentItems(courses.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(courses?.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage, courses]);
+        setCurrentItems(searchData.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(searchData?.length / itemsPerPage));
+    }, [itemOffset, itemsPerPage, searchData]);
 
     // Invoke when user click to request another page.
     const handlePageClick = event => {
-        const newOffset = (event.selected * itemsPerPage) % courses.length;
+        const newOffset = (event.selected * itemsPerPage) % searchData.length;
         console.log(
             `User requested page number ${event.selected}, which is offset ${newOffset}`,
         );

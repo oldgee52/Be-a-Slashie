@@ -1,7 +1,6 @@
 import { LandingPage } from "./Component/LandingPage";
 import { Search } from "./Component/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
-import PaginatedItems from "./Component/Paginate";
 import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
@@ -13,6 +12,7 @@ import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
 import { TeacherFinishedCourse } from "./pages/TeacherFinishedCourse";
 import { StudentCollectionCourse } from "./pages/StudentCollectionCourse";
 import { StudentGotSkill } from "./pages/StudentGotSkill";
+import { TalentedPersonSearch } from "./pages/TalentedPersonSearch";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -24,6 +24,10 @@ function App() {
             <BrowserRouter>
                 <Sidebar />
                 <Routes>
+                    <Route
+                        path="talented-person-search"
+                        element={<TalentedPersonSearch />}
+                    />
                     <Route
                         path="student-got-skill"
                         element={<StudentGotSkill />}
@@ -63,10 +67,7 @@ function App() {
                         element={<TeacherUpload />}
                     />
                     <Route path="search" element={<Search />} />
-                    <Route
-                        path="/paginate"
-                        element={<PaginatedItems itemsPerPage={2} />}
-                    />
+
                     <Route path="/" element={<LandingPage />} />
                 </Routes>
             </BrowserRouter>

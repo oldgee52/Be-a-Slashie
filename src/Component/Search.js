@@ -96,7 +96,10 @@ export const Search = () => {
                 <Button onClick={orderByCreatDate}>依上架日期</Button>
                 <Button onClick={orderByView}>依熱門程度</Button>
                 {searchCourses && (
-                    <PaginatedItems itemsPerPage={1} courses={searchCourses} />
+                    <PaginatedItems
+                        itemsPerPage={1}
+                        searchData={searchCourses}
+                    />
                 )}
             </SearchArea>
         </Container>
