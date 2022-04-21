@@ -23,12 +23,6 @@ const Div1 = styled.div`
     margin-bottom: 10px;
 `;
 
-const Image = styled.img`
-    width: 50px;
-    height: 50px;
-    margin-left: 25%;
-`;
-
 export const StudentGotSkill = () => {
     const [gotSkills, SetGotSkill] = useState();
     const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
