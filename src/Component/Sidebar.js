@@ -68,6 +68,9 @@ function Sidebar() {
                 <NavLink to="/talented-person-search">
                     <SidebarContent>人才搜尋</SidebarContent>
                 </NavLink>
+                <NavLink to="/wishing-well">
+                    <SidebarContent>許願池</SidebarContent>
+                </NavLink>
                 <NavLink to="/profile">
                     <SidebarContent>個人資料頁</SidebarContent>
                 </NavLink>
