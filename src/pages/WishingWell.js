@@ -1,17 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TextInput } from "../Component/TextInput";
 import styled from "styled-components";
-import {
-    collection,
-    doc,
-    query,
-    setDoc,
-    orderBy,
-    limit,
-    startAfter,
-    getDocs,
-    Timestamp,
-} from "firebase/firestore";
+import { collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 const Container = styled.div`
@@ -67,50 +57,26 @@ export const WishingWell = () => {
     const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
-        (async function (db) {
-            const q = query(
-                collection(db, "wishingWells"),
-                orderBy("creatDate", "desc"),
-                limit(3),
-            );
-            const firstWishesSnapshot = await getDocs(q);
-            const data = firstWishesSnapshot.docs.map(wish => {
-                return wish.data();
-            });
-            console.log(data);
-            lasWishSnapshotRef.current =
-                firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
-
-            setWishes(data);
-
-            console.log(data[0].creatDate.toDate());
-        })(firebaseInit.db);
+        firebaseInit.getFirstBatchWishes().then(data => {
+            lasWishSnapshotRef.current = data.lastKey;
+            setWishes(data.wishes);
+        });
     }, []);
+
     useEffect(() => {
         firebaseInit
             .getCollection(collection(firebaseInit.db, "users"))
             .then(data => {
-                console.log(data);
                 setUsersInfo(data);
             });
     }, []);
 
     async function loadingNextWishes(key) {
         if (key) {
-            const q = query(
-                collection(firebaseInit.db, "wishingWells"),
-                orderBy("creatDate", "desc"),
-                startAfter(key),
-                limit(3),
-            );
-            const firstWishesSnapshot = await getDocs(q);
-            const data = firstWishesSnapshot.docs.map(wish => {
-                return wish.data();
+            firebaseInit.getNextBatchWishes(key).then(data => {
+                lasWishSnapshotRef.current = data.lastKey;
+                setWishes([...wishes, ...data.wishes]);
             });
-            console.log(data);
-            lasWishSnapshotRef.current =
-                firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
-            setWishes([...wishes, ...data]);
         }
     }
 

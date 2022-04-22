@@ -376,11 +376,14 @@ const firebaseInit = {
             limit(3),
         );
         const firstWishesSnapshot = await getDocs(q);
-        const data = firstWishesSnapshot.docs.map(wish => {
+        const wishes = firstWishesSnapshot.docs.map(wish => {
             return wish.data();
         });
 
-        return data;
+        const lastKey =
+            firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
+
+        return { wishes, lastKey };
     },
     async getNextBatchWishes(key) {
         const q = query(
@@ -389,12 +392,14 @@ const firebaseInit = {
             startAfter(key),
             limit(3),
         );
-        const firstWishesSnapshot = await getDocs(q);
-        const data = firstWishesSnapshot.docs.map(wish => {
+        const nextWishesSnapshot = await getDocs(q);
+        const wishes = nextWishesSnapshot.docs.map(wish => {
             return wish.data();
         });
+        const lastKey =
+            nextWishesSnapshot.docs[nextWishesSnapshot.docs.length - 1];
 
-        return data;
+        return { wishes, lastKey };
     },
 };
 
