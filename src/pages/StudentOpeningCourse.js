@@ -145,6 +145,8 @@ export const StudentOpeningCourse = () => {
                 .files[0],
         );
 
+        console.log(courseDetails[indexOfAllCourse].courseID);
+
         const mountainImagesRef = ref(
             firebaseInit.storage,
             e.target.id +
@@ -152,6 +154,7 @@ export const StudentOpeningCourse = () => {
                     "file"
                 ].value,
         );
+
         const uploadTask = uploadBytesResumable(
             mountainImagesRef,
             inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
@@ -180,8 +183,8 @@ export const StudentOpeningCourse = () => {
                 window.alert("上傳失敗");
             },
             () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(
-                    async downloadURL => {
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then(async downloadURL => {
                         await updateDoc(
                             doc(
                                 firebaseInit.db,
@@ -198,10 +201,13 @@ export const StudentOpeningCourse = () => {
                                 }),
                             },
                         );
-                    },
-                );
-                window.alert("上傳成功");
-                return window.location.reload();
+                        window.alert("上傳成功");
+                        return window.location.reload();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        window.alert("上傳失敗");
+                    });
             },
         );
     };

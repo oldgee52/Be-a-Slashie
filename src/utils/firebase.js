@@ -9,6 +9,9 @@ import {
     getDocs,
     updateDoc,
     increment,
+    orderBy,
+    limit,
+    startAfter,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -365,6 +368,38 @@ const firebaseInit = {
         const userInfoData = Promise.all(getSkillsPromise);
 
         return userInfoData;
+    },
+    async getFirstBatchWishes() {
+        const q = query(
+            collection(this.db, "wishingWells"),
+            orderBy("creatDate", "desc"),
+            limit(3),
+        );
+        const firstWishesSnapshot = await getDocs(q);
+        const wishes = firstWishesSnapshot.docs.map(wish => {
+            return wish.data();
+        });
+
+        const lastKey =
+            firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
+
+        return { wishes, lastKey };
+    },
+    async getNextBatchWishes(key) {
+        const q = query(
+            collection(this.db, "wishingWells"),
+            orderBy("creatDate", "desc"),
+            startAfter(key),
+            limit(3),
+        );
+        const nextWishesSnapshot = await getDocs(q);
+        const wishes = nextWishesSnapshot.docs.map(wish => {
+            return wish.data();
+        });
+        const lastKey =
+            nextWishesSnapshot.docs[nextWishesSnapshot.docs.length - 1];
+
+        return { wishes, lastKey };
     },
 };
 

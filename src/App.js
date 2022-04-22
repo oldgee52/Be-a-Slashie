@@ -14,6 +14,7 @@ import { StudentCollectionCourse } from "./pages/StudentCollectionCourse";
 import { StudentGotSkill } from "./pages/StudentGotSkill";
 import { TalentedPersonSearch } from "./pages/TalentedPersonSearch";
 import { PersonalIntroduction } from "./pages/PersonalIntroduction";
+import { WishingWell } from "./pages/WishingWell";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -25,6 +26,7 @@ function App() {
             <BrowserRouter>
                 <Sidebar />
                 <Routes>
+                    <Route path="wishing-well" element={<WishingWell />} />
                     <Route
                         path="talented-person-search"
                         element={<TalentedPersonSearch />}
