@@ -10,6 +10,7 @@ import {
     limit,
     startAfter,
     getDocs,
+    Timestamp,
 } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
@@ -59,7 +60,7 @@ export const WishingWell = () => {
         type: "",
         content: "",
     });
-    const [posts, setPosts] = useState([]);
+    const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
 
     const lasWishSnapshotRef = useRef();
@@ -80,7 +81,9 @@ export const WishingWell = () => {
             lasWishSnapshotRef.current =
                 firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
 
-            setPosts(data);
+            setWishes(data);
+
+            console.log(data[0].creatDate.toDate());
         })(firebaseInit.db);
     }, []);
     useEffect(() => {
@@ -107,12 +110,12 @@ export const WishingWell = () => {
             console.log(data);
             lasWishSnapshotRef.current =
                 firstWishesSnapshot.docs[firstWishesSnapshot.docs.length - 1];
-            setPosts([...posts, ...data]);
+            setWishes([...wishes, ...data]);
         }
     }
 
     function findUserInfo(userID, info) {
-        const result = usersInfo?.filter(array => array.uid === userID);
+        const result = usersInfo.filter(array => array.uid === userID);
 
         return result[0][info];
     }
@@ -132,7 +135,7 @@ export const WishingWell = () => {
 
             const data = {
                 ...wishingContent,
-                creatDate: new Date(),
+                creatDate: Timestamp.now(),
                 userID: studentID,
                 id: docRef.id,
             };
@@ -142,7 +145,7 @@ export const WishingWell = () => {
                 type: "",
                 content: "",
             });
-            setPosts([data, ...posts]);
+            setWishes([data, ...wishes]);
             window.alert("許願成功");
         } catch (error) {
             window.alert("許願失敗，請再試一次");
@@ -150,53 +153,70 @@ export const WishingWell = () => {
         }
     }
 
-    const allPosts = (
-        <div>
-            {posts &&
-                posts.map(post => {
-                    return (
-                        <Div12 key={post.id}>
-                            <Div1>
-                                日期:
-                                {new Date(
-                                    post.creatDate.seconds * 1000,
-                                ).toLocaleDateString()}{" "}
-                            </Div1>
-                            <Div1>類型: {post.type}</Div1>
-                            <Div1>內容: {post.content}</Div1>
-                            <Div1>許願者姓名: {post.userID}</Div1>
-                        </Div12>
-                    );
-                })}
-        </div>
-    );
+    function renderWishes() {
+        return (
+            <div>
+                {wishes &&
+                    wishes.map(wish => {
+                        return (
+                            <Div12 key={wish.id}>
+                                <Div1>
+                                    日期:
+                                    {new Date(
+                                        wish.creatDate.toDate(),
+                                    ).toLocaleDateString()}{" "}
+                                </Div1>
+                                <Div1>類型: {wish.type}</Div1>
+                                <Div1>內容: {wish.content}</Div1>
+                                <Div1>
+                                    許願者姓名:{" "}
+                                    {usersInfo &&
+                                        findUserInfo(wish.userID, "name")}
+                                </Div1>
+                            </Div12>
+                        );
+                    })}
+            </div>
+        );
+    }
+
     return (
         <Container>
-            <TextInput
-                title="類型"
-                value={wishingContent.type}
-                handleChange={handleChange}
-                name="type"
-            />
-            <TextInput
-                title="許願內容"
-                value={wishingContent.content}
-                handleChange={handleChange}
-                name="content"
-            />
-            <Button onClick={makeWish}>我要許願</Button>
-            <Div13>
-                <h2>許願池</h2>
-                <Div15>
-                    <div>{allPosts}</div>
-                    <Waypoint
-                        onEnter={() =>
-                            loadingNextWishes(lasWishSnapshotRef.current)
-                        }
+            {!usersInfo || !wishes ? (
+                "loading..."
+            ) : (
+                <>
+                    <TextInput
+                        title="類型"
+                        value={wishingContent.type}
+                        handleChange={handleChange}
+                        name="type"
                     />
-                    {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
-                </Div15>
-            </Div13>
+                    <TextInput
+                        title="許願內容"
+                        value={wishingContent.content}
+                        handleChange={handleChange}
+                        name="content"
+                    />
+                    <Button onClick={makeWish}>我要許願</Button>
+                    <Div13>
+                        <h2>許願池</h2>
+                        <Div15>
+                            {renderWishes()}
+                            <Waypoint
+                                onEnter={() =>
+                                    loadingNextWishes(
+                                        lasWishSnapshotRef.current,
+                                    )
+                                }
+                            />
+                            {lasWishSnapshotRef.current
+                                ? "下滑看更多"
+                                : "最後囉"}
+                        </Div15>
+                    </Div13>
+                </>
+            )}{" "}
         </Container>
     );
 };
