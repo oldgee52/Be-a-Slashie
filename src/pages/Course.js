@@ -98,6 +98,7 @@ export const Course = () => {
             doc(firebaseInit.db, "courses", courseID),
             snapshot => {
                 const courseDate = snapshot.data();
+                console.log(courseDate);
                 setCourseData(courseDate);
                 setInputFields(
                     Array(courseDate.askedQuestions?.length || 0)
@@ -175,6 +176,27 @@ export const Course = () => {
                         registrationNumber: increment(1),
                     },
                 ),
+                fetch("http://localhost:8080/access", {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: findUserInfo(userID, "email"),
+                        title: courseData.title,
+                        openingDate: new Date(
+                            courseData.openingDate.seconds * 1000,
+                        ).toLocaleDateString(),
+                        teacherName: findUserInfo(
+                            courseData.teacherUserID,
+                            "name",
+                        ),
+                        teacherEmail: findUserInfo(
+                            courseData.teacherUserID,
+                            "email",
+                        ),
+                    }),
+                }),
             ]);
             return window.alert("報名成功");
         } catch (error) {
