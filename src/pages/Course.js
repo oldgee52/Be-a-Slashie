@@ -9,8 +9,10 @@ import {
     arrayRemove,
     onSnapshot,
     collection,
+    Timestamp,
 } from "firebase/firestore";
 import styled from "styled-components";
+import { Skills } from "../Component/Skills";
 
 const Container = styled.div`
     margin: auto;
@@ -59,34 +61,24 @@ export const Course = () => {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
     const [message, setMessage] = useState("");
-    const [messagesOnSnapShot, setMessagesOnSnapShot] = useState();
-    const [inputFields, SetInputFields] = useState([]);
+    const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
+    const [skillsInfo, setSkillsInfo] = useState();
     const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const courseID = new URLSearchParams(window.location.search).get(
+        "courseID",
+    );
 
     useEffect(() => {
-        const courseID = new URLSearchParams(window.location.search).get(
-            "courseID",
-        );
-        let isMounted = true;
-
-        if (isMounted) {
-            firebaseInit.getCourseDetail(courseID).then(data => {
-                setCourseData(data);
-                console.log(data);
+        async function addView() {
+            await updateDoc(doc(firebaseInit.db, "courses", courseID), {
+                view: increment(1),
             });
         }
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+        addView();
+    }, [courseID]);
 
     useEffect(() => {
-        const courseID = new URLSearchParams(window.location.search).get(
-            "courseID",
-        );
-
         let isMounted = true;
         if (isMounted) {
             firebaseInit.getCollectionData("users", userID).then(data => {
@@ -99,30 +91,32 @@ export const Course = () => {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [courseID]);
 
     useEffect(() => {
-        const courseID = new URLSearchParams(window.location.search).get(
-            "courseID",
-        );
-
         const unsubscribe = onSnapshot(
             doc(firebaseInit.db, "courses", courseID),
             snapshot => {
-                setMessagesOnSnapShot(snapshot.data().askedQuestions);
-
-                SetInputFields(
-                    Array(snapshot.data().askedQuestions?.length || 0)
+                const courseDate = snapshot.data();
+                setCourseData(courseDate);
+                setInputFields(
+                    Array(courseDate.askedQuestions?.length || 0)
                         .fill()
                         .map(() => ({ reply: "" })),
                 );
+
+                const SkillsPromise = courseDate.getSkills.map(skill =>
+                    firebaseInit.getCollectionData("skills", skill),
+                );
+
+                Promise.all(SkillsPromise).then(data => setSkillsInfo(data));
             },
         );
 
         return () => {
             unsubscribe();
         };
-    }, []);
+    }, [courseID]);
     useEffect(() => {
         firebaseInit
             .getCollection(collection(firebaseInit.db, "users"))
@@ -131,20 +125,6 @@ export const Course = () => {
                 setUsersInfo(data);
             });
     }, []);
-
-    function renderSkills() {
-        return courseData.skillsData.map(skill => (
-            <div key={skill.skillID} style={{ paddingRight: 20 }}>
-                <img
-                    src={skill.image}
-                    alt={skill.title}
-                    width="20"
-                    heigh="20"
-                />
-                <div>{skill.title}</div>
-            </div>
-        ));
-    }
 
     function findUserInfo(userID, info) {
         const result = usersInfo.filter(array => array.uid === userID);
@@ -210,6 +190,7 @@ export const Course = () => {
                 askedContent: message,
                 askedDate: new Date(),
                 askedUserID: userID,
+                replies: [],
             }),
         });
         setMessage("");
@@ -218,100 +199,115 @@ export const Course = () => {
     }
 
     function renderMessages() {
-        return messagesOnSnapShot
-            ?.map((question, index) => (
-                <div
-                    key={question.askedDate.seconds}
-                    style={{ paddingBottom: 20 }}
-                >
-                    <div>
-                        {" "}
-                        姓名: {findUserInfo(question.askedUserID, "name")}
-                    </div>
-                    <div>內容:{question.askedContent}</div>
-                    <div>
-                        留言日期:
-                        {new Date(
-                            question.askedDate.seconds * 1000,
-                        ).toLocaleDateString()}
-                    </div>
-                    {question.replies &&
-                        question.replies?.map(reply => (
+        return (
+            courseData.askedQuestions &&
+            courseData.askedQuestions
+                .map((question, index) => (
+                    <div key={index} style={{ paddingBottom: 20 }}>
+                        <div>
+                            {" "}
+                            姓名:{" "}
+                            {usersInfo &&
+                                findUserInfo(question.askedUserID, "name")}
+                        </div>
+                        <div>內容:{question.askedContent}</div>
+                        <div>
+                            留言日期:
+                            {new Date(
+                                question.askedDate.seconds * 1000,
+                            ).toLocaleString("TW-zh", { hour12: false })}
+                        </div>
+                        {question.replies &&
+                            question.replies
+                                .map((reply, index_2) => (
+                                    <div
+                                        key={index_2}
+                                        style={{
+                                            paddingLeft: 50,
+                                            marginTop: 10,
+                                        }}
+                                    >
+                                        <div>
+                                            姓名:
+                                            {usersInfo &&
+                                                findUserInfo(
+                                                    reply.repliedUserID,
+                                                    "name",
+                                                )}
+                                        </div>
+                                        <div>
+                                            回覆內容:
+                                            {reply.repliedContent}
+                                        </div>
+                                        <div>
+                                            回覆日期:
+                                            {new Date(
+                                                reply.repliedDate.seconds *
+                                                    1000,
+                                            ).toLocaleString("TW-zh", {
+                                                hour12: false,
+                                            })}
+                                        </div>
+                                    </div>
+                                ))
+                                .reverse()}
+                        <div>
                             <div
-                                key={reply.repliedDate?.seconds}
+                                key={index}
                                 style={{
                                     paddingLeft: 50,
                                     marginTop: 10,
                                 }}
                             >
-                                <div>
-                                    姓名:
-                                    {reply.repliedUserID}
-                                </div>
-                                <div>
-                                    回覆內容:
-                                    {reply.repliedContent}
-                                </div>
-                                <div>
-                                    回覆日期:
-                                    {new Date(
-                                        reply.repliedDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                </div>
+                                <Input
+                                    value={inputFields[index]?.reply || ""}
+                                    name="reply"
+                                    onChange={e => handleReplyMessage(e, index)}
+                                />
+                                <button
+                                    onClick={() =>
+                                        handleSendReplyMessage(index)
+                                    }
+                                >
+                                    送出
+                                </button>
                             </div>
-                        ))}
-                    <div>
-                        <div
-                            key={index}
-                            style={{
-                                paddingLeft: 50,
-                                marginTop: 10,
-                            }}
-                        >
-                            <Input
-                                value={inputFields[index]?.reply || ""}
-                                name="reply"
-                                onChange={e => handleReplyMessage(e, index)}
-                            />
-                            <button
-                                onClick={() => handleSendReplyMessage(index)}
-                            >
-                                送出
-                            </button>
                         </div>
                     </div>
-                </div>
-            ))
-            .reverse();
+                ))
+                .reverse()
+        );
     }
 
     const handleReplyMessage = (e, index) => {
         let data = [...inputFields];
         data[index][e.target.name] = e.target.value;
-        SetInputFields(data);
+        setInputFields(data);
     };
 
     const handleSendReplyMessage = async index => {
         if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
-        const dataaa = courseData.askedQuestions[0].replies || [];
-        dataaa.push({
-            repliedContent: inputFields[0].reply,
-            repliedDate: new Date(),
-            repliedUserID: userID,
+        const stateCopy = JSON.parse(JSON.stringify(courseData));
+        // const data = { ...courseData };
+
+        stateCopy.askedQuestions.forEach((question, i) => {
+            if (i === index) {
+                question.replies.push({
+                    repliedContent: inputFields[index].reply,
+                    repliedDate: Timestamp.now(),
+                    repliedUserID: userID,
+                });
+            }
         });
 
-        const stateCopy = JSON.parse(JSON.stringify(courseData));
+        await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
+            askedQuestions: stateCopy.askedQuestions,
+        });
 
-        console.log(stateCopy.askedQuestions[0]);
-        console.log(courseData);
-        console.log(dataaa);
-        // await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
-        //     askedQuestions: stateCopy.askedQuestions[0]
-        // });
-
-        // setMessage("");
-        // return window.alert("留言已送出");
+        return window.alert("回覆已送出");
     };
+
+    console.log(skillsInfo);
 
     return (
         <>
@@ -335,8 +331,9 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>可獲技能</DivTitle>
-                        <DivContent>{renderSkills()}</DivContent>
+                        {skillsInfo && <Skills skills={skillsInfo} />}
                     </Div1>
+
                     <Div1>
                         <DivTitle>老師簡介</DivTitle>
                         <DivContent>
@@ -345,7 +342,10 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>老師姓名</DivTitle>
-                        <DivContent>{courseData.teacherData.name}</DivContent>
+                        <DivContent>
+                            {usersInfo &&
+                                findUserInfo(courseData.teacherUserID, "name")}
+                        </DivContent>
                     </Div1>
                     <Div1>
                         <DivTitle>目前報名人數</DivTitle>
@@ -353,7 +353,7 @@ export const Course = () => {
                     </Div1>
                     <Div1>
                         <DivTitle>目前瀏覽人數</DivTitle>
-                        <DivContent>{courseData.view + 1}</DivContent>
+                        <DivContent>{courseData.view}</DivContent>
                     </Div1>
                     <Div1>
                         <DivTitle>收藏</DivTitle>
