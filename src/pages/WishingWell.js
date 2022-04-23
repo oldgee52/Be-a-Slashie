@@ -59,6 +59,7 @@ export const WishingWell = () => {
     useEffect(() => {
         firebaseInit.getFirstBatchWishes().then(data => {
             lasWishSnapshotRef.current = data.lastKey;
+            console.log(data);
             setWishes(data.wishes);
         });
     }, []);
@@ -76,6 +77,7 @@ export const WishingWell = () => {
             firebaseInit.getNextBatchWishes(key).then(data => {
                 lasWishSnapshotRef.current = data.lastKey;
                 setWishes([...wishes, ...data.wishes]);
+                console.log(data);
             });
         }
     }
@@ -169,6 +171,9 @@ export const WishingWell = () => {
                         <h2>許願池</h2>
                         <Div15>
                             {renderWishes()}
+                            {lasWishSnapshotRef.current
+                                ? "下滑看更多"
+                                : "最後囉"}{" "}
                             <Waypoint
                                 onEnter={() =>
                                     loadingNextWishes(
@@ -176,9 +181,6 @@ export const WishingWell = () => {
                                     )
                                 }
                             />
-                            {lasWishSnapshotRef.current
-                                ? "下滑看更多"
-                                : "最後囉"}
                         </Div15>
                     </Div13>
                 </>

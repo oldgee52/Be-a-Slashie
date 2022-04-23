@@ -16,9 +16,10 @@ export const Skills = ({ skills }) => {
                 <Image src={skill.image} alt={skill.title} />
                 <div>{skill.title}</div>
                 <div>
-                    {new Date(
-                        skill.getDate.seconds * 1000,
-                    ).toLocaleDateString()}
+                    {skill.getDate &&
+                        new Date(
+                            skill.getDate.seconds * 1000,
+                        ).toLocaleDateString()}
                 </div>
             </div>
         ))
