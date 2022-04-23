@@ -176,25 +176,17 @@ export const Course = () => {
                         registrationNumber: increment(1),
                     },
                 ),
-                fetch("http://localhost:8080/access", {
+                fetch("https://be-a-slashie.herokuapp.com/email", {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json",
                     },
                     body: JSON.stringify({
                         email: findUserInfo(userID, "email"),
-                        title: courseData.title,
-                        openingDate: new Date(
+                        subject: `您已報名${courseData.title}，請靜待老師通知`,
+                        html: `<h1>預計上課時間: ${new Date(
                             courseData.openingDate.seconds * 1000,
-                        ).toLocaleDateString(),
-                        teacherName: findUserInfo(
-                            courseData.teacherUserID,
-                            "name",
-                        ),
-                        teacherEmail: findUserInfo(
-                            courseData.teacherUserID,
-                            "email",
-                        ),
+                        ).toLocaleDateString()}</h1>`,
                     }),
                 }),
             ]);
