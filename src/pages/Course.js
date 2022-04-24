@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import styled from "styled-components";
 import { Skills } from "../Component/Skills";
+import email from "../utils/email";
 
 const Container = styled.div`
     margin: auto;
@@ -98,6 +99,7 @@ export const Course = () => {
             doc(firebaseInit.db, "courses", courseID),
             snapshot => {
                 const courseDate = snapshot.data();
+                console.log(courseDate);
                 setCourseData(courseDate);
                 setInputFields(
                     Array(courseDate.askedQuestions?.length || 0)
@@ -149,6 +151,37 @@ export const Course = () => {
     async function handleRegistration(e) {
         e.preventDefault();
 
+        const studentName = findUserInfo(userID, "name");
+        const studentEmail = findUserInfo(userID, "email");
+        const teacherName = findUserInfo(courseData.teacherUserID, "name");
+        const teacherEmail = findUserInfo(courseData.teacherUserID, "email");
+        const openingDate = new Date(
+            courseData.openingDate.seconds * 1000,
+        ).toLocaleDateString();
+        const courseTitle = courseData.title;
+
+        const teacherEmailContent = {
+            email: teacherEmail,
+            subject: `${studentName}已報名 ${courseData.title}，請再與學生連繫`,
+            html: email.registerTeacher({
+                courseTitle,
+                studentName,
+                studentEmail,
+                openingDate,
+            }),
+        };
+
+        const studentEmailContent = {
+            email: studentEmail,
+            subject: `您已報名${courseData.title}，請靜待老師確認`,
+            html: email.registerStudent(
+                courseTitle,
+                openingDate,
+                teacherName,
+                teacherEmail,
+            ),
+        };
+
         try {
             await Promise.all([
                 setDoc(
@@ -175,6 +208,8 @@ export const Course = () => {
                         registrationNumber: increment(1),
                     },
                 ),
+                email.sendEmail(studentEmailContent),
+                email.sendEmail(teacherEmailContent),
             ]);
             return window.alert("報名成功");
         } catch (error) {
