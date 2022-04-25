@@ -12,6 +12,7 @@ import {
     orderBy,
     limit,
     startAfter,
+    Timestamp,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -400,6 +401,18 @@ const firebaseInit = {
             nextWishesSnapshot.docs[nextWishesSnapshot.docs.length - 1];
 
         return { wishes, lastKey };
+    },
+    async getRegisteringCourse() {
+        const q = query(
+            collection(this.db, "courses"),
+            where("registrationDeadline", ">=", Timestamp.now()),
+            where("status", "==", 0),
+        );
+
+        const courseSnapshot = await getDocs(q);
+        const course = courseSnapshot.docs.map(course => course.data());
+
+        return course;
     },
 };
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PaginatedItems from "./Paginate";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     margin: auto;
@@ -27,58 +27,56 @@ const Button = styled.button`
 `;
 
 export const Search = () => {
-    const [searchField, setSearchField] = useState("");
-    const [allCourses, setAllCourses] = useState();
+    const q = new URLSearchParams(window.location.search).get("q");
+    const [searchField, setSearchField] = useState(
+        q === "latest" || q === "popular" ? "" : q,
+    );
+
     const [searchCourses, setSearchCourses] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        (async function (db) {
-            const coursesCol = collection(db, "courses");
-            const isRegistrationCourse = query(
-                coursesCol,
-                where("registrationDeadline", ">=", new Date()),
-                orderBy("registrationDeadline", "asc"),
+        let isMounted = true;
+
+        firebaseInit.getRegisteringCourse().then(data => {
+            console.log(data);
+            let copyForOrderByCreatTimeData = [...data];
+            const orderByCreatTime = copyForOrderByCreatTimeData.sort(
+                (a, b) => b.creatTime.seconds - a.creatTime.seconds,
             );
-            const coursesSnapshot = await getDocs(isRegistrationCourse);
-            const courseList = coursesSnapshot.docs.map(doc => doc.data());
-            setAllCourses(courseList);
-            console.log(courseList);
-        })(firebaseInit.db);
-    }, []);
+            console.log("排序時間", orderByCreatTime);
+
+            const orderByView = data.sort((a, b) => b.view - a.view);
+            console.log("排序次數", orderByView);
+
+            if (isMounted) {
+                if (q === "latest") return setSearchCourses(orderByCreatTime);
+                if (q === "popular") return setSearchCourses(orderByView);
+
+                const filteredCourses = orderByCreatTime.filter(data => {
+                    return (
+                        data.title
+                            .toLowerCase()
+                            .includes(q.toLowerCase().trim()) ||
+                        data.courseIntroduction
+                            .toLowerCase()
+                            .includes(q.toLowerCase().trim())
+                    );
+                });
+                console.log(filteredCourses);
+                if (filteredCourses.length === 0)
+                    return window.alert("查無資料");
+                setSearchCourses(filteredCourses);
+            }
+        });
+
+        return () => (isMounted = false);
+    }, [q]);
 
     const handleChange = e => {
         e.preventDefault();
         if (!searchField.trim()) return;
-
-        const filteredCourses = allCourses.filter(data => {
-            return (
-                data.title
-                    .toLowerCase()
-                    .includes(searchField.toLowerCase().trim()) ||
-                data.courseIntroduction
-                    .toLowerCase()
-                    .includes(searchField.toLowerCase().trim())
-            );
-        });
-        console.log(filteredCourses);
-        if (filteredCourses.length === 0) return window.alert("查無資料");
-        setSearchCourses(filteredCourses);
-    };
-
-    const orderByCreatDate = e => {
-        e.preventDefault();
-        const reOrderByCreatDateAllCourses = allCourses.sort(function (a, b) {
-            return b.creatTime - a.creatTime;
-        });
-        setSearchCourses(reOrderByCreatDateAllCourses);
-    };
-
-    const orderByView = e => {
-        e.preventDefault();
-        const reOrderByViewAllCourses = allCourses.sort(function (a, b) {
-            return b.view - a.view;
-        });
-        setSearchCourses(reOrderByViewAllCourses);
+        navigate(`/search?q=${searchField}`);
     };
 
     return (
@@ -86,15 +84,13 @@ export const Search = () => {
             <SearchArea>
                 <InputArea
                     type="search"
-                    placeholder="Search"
+                    placeholder={"Search"}
                     value={searchField}
                     onChange={e => {
                         setSearchField(e.target.value);
                     }}
                 />
                 <Button onClick={handleChange}>送出</Button>
-                <Button onClick={orderByCreatDate}>依上架日期</Button>
-                <Button onClick={orderByView}>依熱門程度</Button>
                 {searchCourses && (
                     <PaginatedItems
                         itemsPerPage={1}

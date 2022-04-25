@@ -1,4 +1,4 @@
-import { LandingPage } from "./Component/LandingPage";
+import { Home } from "./pages/Home";
 import { Search } from "./Component/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
 import { Course } from "./pages/Course";
@@ -76,7 +76,7 @@ function App() {
                     />
                     <Route path="search" element={<Search />} />
 
-                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/" element={<Home />} />
                 </Routes>
             </BrowserRouter>
         </>
