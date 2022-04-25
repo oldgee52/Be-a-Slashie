@@ -4,6 +4,7 @@ import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { SearchInput } from "../Component/SearchInput";
 
 const Container = styled.div`
     margin: auto;
@@ -38,6 +39,8 @@ export const Home = () => {
     const [latestCourse, setLatestCourse] = useState();
     const [popularCourse, setPopularCourse] = useState();
     const [usersInfo, setUsersInfo] = useState();
+    const [searchField, setSearchField] = useState("");
+
     const navigate = useNavigate();
     useEffect(() => {
         let isMounted = true;
@@ -84,6 +87,16 @@ export const Home = () => {
                 "loading..."
             ) : (
                 <Div1>
+                    <SearchInput
+                        searchField={searchField}
+                        changeValueCallback={e =>
+                            setSearchField(e.target.value)
+                        }
+                        searchCallback={() => {
+                            if (!searchField.trim()) return;
+                            navigate(`/search?q=${searchField.trim()}`);
+                        }}
+                    />
                     <Title>最新上架</Title>
                     <DivFlex>
                         {latestCourse.map(course => (

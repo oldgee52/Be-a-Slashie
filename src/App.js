@@ -1,5 +1,5 @@
 import { Home } from "./pages/Home";
-import { Search } from "./Component/Search";
+import { Search } from "./pages/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
 import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";

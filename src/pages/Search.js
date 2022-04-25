@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import PaginatedItems from "./Paginate";
+import PaginatedItems from "../Component/Paginate";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
+import { SearchInput } from "../Component/SearchInput";
 
 const Container = styled.div`
     margin: auto;
@@ -18,18 +19,10 @@ const SearchArea = styled.div`
     width: 100%;
 `;
 
-const InputArea = styled.input`
-    width: 100%;
-`;
-
-const Button = styled.button`
-    width: 100%;
-`;
-
 export const Search = () => {
     const q = new URLSearchParams(window.location.search).get("q");
     const [searchField, setSearchField] = useState(
-        q === "latest" || q === "popular" ? "" : q,
+        q === "latest" || q === "popular" || !q ? "" : q,
     );
 
     const [searchCourses, setSearchCourses] = useState();
@@ -52,52 +45,49 @@ export const Search = () => {
             if (isMounted) {
                 if (q === "latest") return setSearchCourses(orderByCreatTime);
                 if (q === "popular") return setSearchCourses(orderByView);
-
-                const filteredCourses = orderByCreatTime.filter(data => {
-                    return (
-                        data.title
-                            .toLowerCase()
-                            .includes(q.toLowerCase().trim()) ||
-                        data.courseIntroduction
-                            .toLowerCase()
-                            .includes(q.toLowerCase().trim())
-                    );
-                });
-                console.log(filteredCourses);
-                if (filteredCourses.length === 0)
-                    return window.alert("查無資料");
-                setSearchCourses(filteredCourses);
+                if (q) {
+                    const filteredCourses = orderByCreatTime.filter(data => {
+                        return (
+                            data.title
+                                .toLowerCase()
+                                .includes(q.toLowerCase().trim()) ||
+                            data.courseIntroduction
+                                .toLowerCase()
+                                .includes(q.toLowerCase().trim())
+                        );
+                    });
+                    console.log(filteredCourses);
+                    if (filteredCourses.length === 0) {
+                        setSearchCourses();
+                        return window.alert("查無資料");
+                    }
+                    setSearchCourses(filteredCourses);
+                }
             }
         });
 
         return () => (isMounted = false);
     }, [q]);
 
-    const handleChange = e => {
-        e.preventDefault();
+    const handleChange = () => {
         if (!searchField.trim()) return;
-        navigate(`/search?q=${searchField}`);
+        navigate(`/search?q=${searchField.trim()}`);
     };
 
     return (
         <Container>
             <SearchArea>
-                <InputArea
-                    type="search"
-                    placeholder={"Search"}
-                    value={searchField}
-                    onChange={e => {
-                        setSearchField(e.target.value);
+                <SearchInput
+                    searchField={searchField}
+                    changeValueCallback={e => setSearchField(e.target.value)}
+                    searchCallback={() => {
+                        handleChange();
                     }}
                 />
-                <Button onClick={handleChange}>送出</Button>
-                {searchCourses && (
-                    <PaginatedItems
-                        itemsPerPage={1}
-                        searchData={searchCourses}
-                    />
-                )}
             </SearchArea>
+            {searchCourses && (
+                <PaginatedItems itemsPerPage={2} searchData={searchCourses} />
+            )}
         </Container>
     );
 };
