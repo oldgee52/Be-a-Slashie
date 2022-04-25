@@ -13,7 +13,6 @@ export const SearchInput = ({
     searchField,
     changeValueCallback,
     searchCallback,
-    searchKeyDownCallback,
 }) => {
     return (
         <>
@@ -23,9 +22,7 @@ export const SearchInput = ({
                 value={searchField}
                 onChange={changeValueCallback}
             />
-            <Button onClick={searchCallback} onKeyDown={searchKeyDownCallback}>
-                送出
-            </Button>
+            <Button onClick={searchCallback}>送出</Button>
         </>
     );
 };
