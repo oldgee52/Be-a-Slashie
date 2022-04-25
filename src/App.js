@@ -1,5 +1,5 @@
-import { LandingPage } from "./Component/LandingPage";
-import { Search } from "./Component/Search";
+import { Home } from "./pages/Home";
+import { Search } from "./pages/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
 import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
@@ -76,7 +76,7 @@ function App() {
                     />
                     <Route path="search" element={<Search />} />
 
-                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/" element={<Home />} />
                 </Routes>
             </BrowserRouter>
         </>
