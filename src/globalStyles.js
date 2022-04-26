@@ -9,6 +9,8 @@ const GlobalStyle = createGlobalStyle`
   font-family: "微軟正黑體", Arial, Helvetica, sans-serif;
   vertical-align: top;
   box-sizing: border-box;
+
+  
 }
 address, caption, cite, code, dfn, em, strong, th, var, b {
   font-weight: normal;

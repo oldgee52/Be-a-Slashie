@@ -12,7 +12,7 @@ import profile from "../images/profile.png";
 const SidebarContainer = styled.div`
     width: 100%;
     height: 50px;
-    background-color: gray;
+    background-color: whitesmoke;
     display: flex;
     justify-content: space-between;
     position: fixed;
@@ -30,7 +30,7 @@ const MobileItemContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    background-color: gray;
+    background-color: whitesmoke;
 
     position: fixed;
     top: ${props => (props.show ? "50px" : "-50px")};
@@ -86,9 +86,8 @@ const ProfileImg = styled(MenuImg)`
 `;
 
 const SidebarContent = styled.div`
-    font-size: 18px;
-    line-height: 27px;
-    color: #ffffff;
+    font-size: 16px;
+    color: #7f7f7f;
     padding: 10px;
 `;
 

@@ -22,6 +22,7 @@ import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { Login } from "./pages/Login";
+import { Personal } from "./Component/Personal";
 
 function App() {
     const [userID, setUserID] = useState("");
@@ -45,6 +46,7 @@ function App() {
                 <Sidebar userID={userID} />
 
                 <Routes>
+                    <Route path="/personal" element={<Personal />} />
                     <Route path="login" element={<Login />} />
                     <Route path="wishing-well" element={<WishingWell />} />
                     <Route
