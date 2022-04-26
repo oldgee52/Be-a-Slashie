@@ -38,7 +38,6 @@ const DivFlex = styled.div`
 export const Home = () => {
     const [latestCourse, setLatestCourse] = useState();
     const [popularCourse, setPopularCourse] = useState();
-    const [usersInfo, setUsersInfo] = useState();
     const [searchField, setSearchField] = useState("");
 
     const navigate = useNavigate();
@@ -65,25 +64,9 @@ export const Home = () => {
         });
     }, []);
 
-    useEffect(() => {
-        let isMounted = true;
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "users"))
-            .then(data => {
-                if (isMounted) setUsersInfo(data);
-            });
-        return () => (isMounted = false);
-    }, []);
-
-    function findUserInfo(userID, info) {
-        const result = usersInfo.filter(array => array.uid === userID);
-
-        return result[0][info];
-    }
-
     return (
         <Container>
-            {!latestCourse || !popularCourse || !usersInfo ? (
+            {!latestCourse || !popularCourse ? (
                 "loading..."
             ) : (
                 <Div1>
@@ -104,10 +87,7 @@ export const Home = () => {
                                 key={course.courseID}
                                 courseID={course.courseID}
                                 title={course.title}
-                                teacherName={findUserInfo(
-                                    course.teacherUserID,
-                                    "name",
-                                )}
+                                teacherName={course.teacherInfo.name}
                                 creatDate={new Date(
                                     course.creatTime.seconds * 1000,
                                 ).toLocaleDateString()}
@@ -127,10 +107,7 @@ export const Home = () => {
                                 key={course.courseID}
                                 courseID={course.courseID}
                                 title={course.title}
-                                teacherName={findUserInfo(
-                                    course.teacherUserID,
-                                    "name",
-                                )}
+                                teacherName={course.teacherInfo.name}
                                 openingDate={new Date(
                                     course.openingDate.seconds * 1000,
                                 ).toLocaleDateString()}

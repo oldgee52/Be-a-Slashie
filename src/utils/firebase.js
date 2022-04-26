@@ -411,8 +411,21 @@ const firebaseInit = {
 
         const courseSnapshot = await getDocs(q);
         const course = courseSnapshot.docs.map(course => course.data());
+        const courseWithTeacherInfo = course.map(async item => {
+            const teacherInfo = await this.getCollectionData(
+                "users",
+                item.teacherUserID,
+            );
 
-        return course;
+            return {
+                ...item,
+                teacherInfo,
+            };
+        });
+
+        const data = Promise.all(courseWithTeacherInfo);
+
+        return data;
     },
 };
 
