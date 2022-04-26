@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import firebaseInit from "../utils/firebase";
 
 const SidebarContainer = styled.div`
     width: 300px;
@@ -28,7 +30,16 @@ const SidebarContent = styled.div`
     padding: 10px;
 `;
 
-function Sidebar() {
+function Sidebar({ userID }) {
+    function handleSignOut() {
+        signOut(firebaseInit.auth)
+            .then(() => {
+                window.alert("已登出成功");
+            })
+            .catch(error => {
+                window.alert(error);
+            });
+    }
     return (
         <>
             <SidebarContainer>
@@ -74,6 +85,11 @@ function Sidebar() {
                 <NavLink to="/profile">
                     <SidebarContent>個人資料頁</SidebarContent>
                 </NavLink>
+                {userID && (
+                    <SidebarContent onClick={handleSignOut}>
+                        登出
+                    </SidebarContent>
+                )}
             </SidebarContainer>
         </>
     );

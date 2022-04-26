@@ -15,6 +15,7 @@ import {
     Timestamp,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCJUou9zUfb6A9XJTQgohPz5PPdMvZxybA",
@@ -32,6 +33,7 @@ const app = initializeApp(firebaseConfig);
 const firebaseInit = {
     db: getFirestore(app),
     storage: getStorage(app),
+    auth: getAuth(),
     async getTeachersCourses(teacherID, state) {
         const teachersCourse = query(
             collection(this.db, "courses"),
@@ -411,8 +413,21 @@ const firebaseInit = {
 
         const courseSnapshot = await getDocs(q);
         const course = courseSnapshot.docs.map(course => course.data());
+        const courseWithTeacherInfo = course.map(async item => {
+            const teacherInfo = await this.getCollectionData(
+                "users",
+                item.teacherUserID,
+            );
 
-        return course;
+            return {
+                ...item,
+                teacherInfo,
+            };
+        });
+
+        const data = Promise.all(courseWithTeacherInfo);
+
+        return data;
     },
 };
 

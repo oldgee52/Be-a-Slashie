@@ -23,12 +23,12 @@ const Input = styled.input`
     height: 40px;
 `;
 
-export const TextInput = ({ title, value, handleChange, name }) => {
+export const TextInput = ({ title, value, handleChange, name, type }) => {
     return (
         <Label>
             <FormDiv>{title}</FormDiv>
             <Input
-                type="text"
+                type={type || "text"}
                 value={value}
                 onChange={e => handleChange(e)}
                 name={name}
