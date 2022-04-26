@@ -53,9 +53,9 @@ const Button = styled.button`
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: #f44336;
+    background-color: ${props => (props.active ? "gray" : "#f44336")};
     border: none;
-    cursor: pointer;
+    cursor: ${props => (props.active ? "not-allowed" : "pointer")};
 `;
 
 export const Course = () => {
@@ -65,7 +65,7 @@ export const Course = () => {
     const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
-    const userID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const userID = "YrAPqt4kT6MYrwjk4U9S4JwdxPC3";
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
@@ -83,7 +83,7 @@ export const Course = () => {
         let isMounted = true;
         if (isMounted) {
             firebaseInit.getCollectionData("users", userID).then(data => {
-                const isCollect = data.collectCourses.some(
+                const isCollect = data.collectCourses?.some(
                     collectCourse => collectCourse === courseID,
                 );
                 setUserCollection(isCollect);
@@ -346,7 +346,7 @@ export const Course = () => {
 
     return (
         <>
-            {courseData && (
+            {courseData && usersInfo && (
                 <Container>
                     <Div1>
                         <DivTitle>課程名稱</DivTitle>
@@ -416,7 +416,29 @@ export const Course = () => {
                         </DivContent>
                     </Div1>
 
-                    <Button onClick={handleRegistration}>我要報名</Button>
+                    <Button
+                        onClick={handleRegistration}
+                        disabled={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                        active={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                    >
+                        {courseData.teacherUserID === userID
+                            ? "您是老師喔"
+                            : findUserInfo(userID, "studentsCourses")?.some(
+                                  value => value === courseID,
+                              )
+                            ? "你已經報名囉"
+                            : "我要報名"}
+                    </Button>
                 </Container>
             )}
         </>
