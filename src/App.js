@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Home } from "./pages/Home";
 import { Search } from "./pages/Search";
 import { TeacherUpload } from "./pages/TeacherUpload";
@@ -15,23 +16,41 @@ import { StudentGotSkill } from "./pages/StudentGotSkill";
 import { TalentedPersonSearch } from "./pages/TalentedPersonSearch";
 import { PersonalIntroduction } from "./pages/PersonalIntroduction";
 import { WishingWell } from "./pages/WishingWell";
+import firebaseInit from "./utils/firebase";
 import GlobalStyle from "./globalStyles";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { Login } from "./pages/Login";
 
 function App() {
+    const [userID, setUserID] = useState("");
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(firebaseInit.auth, user => {
+            if (user) {
+                setUserID(user.uid);
+                console.log(user.uid);
+            } else {
+                setUserID("");
+            }
+        });
+
+        return unsubscribe;
+    }, [userID]);
     return (
         <>
             <GlobalStyle />
             <BrowserRouter>
-                <Sidebar />
+                <Sidebar userID={userID} />
+
                 <Routes>
+                    <Route path="login" element={<Login />} />
                     <Route path="wishing-well" element={<WishingWell />} />
                     <Route
                         path="talented-person-search"
                         element={<TalentedPersonSearch />}
                     />
-
                     <Route
                         path="personal-introduction"
                         element={<PersonalIntroduction />}
@@ -75,7 +94,6 @@ function App() {
                         element={<TeacherUpload />}
                     />
                     <Route path="search" element={<Search />} />
-
                     <Route path="/" element={<Home />} />
                 </Routes>
             </BrowserRouter>

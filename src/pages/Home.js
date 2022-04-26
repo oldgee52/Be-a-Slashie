@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CourseInfo } from "../Component/CourseInfo";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
-import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
 
