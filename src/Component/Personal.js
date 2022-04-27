@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 
@@ -22,6 +23,7 @@ const TitleArea = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10px;
+    color: #7f7f7f;
 
     @media ${breakPoint.desktop} {
         width: 10%;
@@ -43,6 +45,7 @@ const Title = styled.div`
     font-size: 12px;
     text-align: center;
     padding-right: 15px;
+    color: ${prop => (prop.active ? "red" : "inherit")};
 
     cursor: pointer;
 
@@ -67,26 +70,88 @@ const SubTitle = styled(Title)`
     }
 `;
 export const Personal = () => {
+    const [isActiveArea, setIsActiveArea] = useState();
+    const location = useLocation();
+    const pathname = location.pathname;
+
+    useEffect(() => {
+        if (pathname.indexOf("student") !== -1)
+            return setIsActiveArea("student");
+        if (pathname.indexOf("teacher") !== -1)
+            return setIsActiveArea("teacher");
+        setIsActiveArea("profile");
+    }, [pathname]);
+
+    function handleRoleChange(role) {
+        setIsActiveArea(role);
+    }
+    const studentRouter = [
+        { link: "student-got-skill", title: "技能徽章" },
+        { link: "student-collection-course", title: "收藏課程" },
+        { link: "student-registered-course", title: "已報名課程" },
+        { link: "student-opening-course", title: "進行中課程" },
+        { link: "student-finished-course", title: "已完成課程" },
+    ];
+    const teacherRouter = [
+        { link: "teacher-upload-course", title: "上架課程" },
+        { link: "teacher-confirm-registration", title: "尚未開課程" },
+        { link: "teacher-opening-course", title: "進行中課程" },
+        { link: "teacher-finished-course", title: "已完成課程" },
+    ];
+
     return (
         <Container>
             <TitleArea>
-                <Title>基本資料</Title>
-                <Title>我是學生</Title>
-                <Title>我是老師</Title>
+                <NavLink
+                    to="profile"
+                    onClick={() => handleRoleChange("profile")}
+                >
+                    <Title active={isActiveArea === "profile"}>基本資料</Title>
+                </NavLink>
+                <NavLink
+                    to="student-got-skill"
+                    onClick={() => handleRoleChange("student")}
+                >
+                    <Title active={isActiveArea === "student"}>我是學生</Title>
+                </NavLink>
+                <NavLink
+                    to="teacher-upload-course"
+                    onClick={() => handleRoleChange("teacher")}
+                >
+                    <Title active={isActiveArea === "teacher"}>我是老師</Title>
+                </NavLink>
             </TitleArea>
-            {/* <SubTitleArea>
-                <SubTitle>技能徽章</SubTitle>
-                <SubTitle>收藏課程</SubTitle>
-                <SubTitle>進行中課程</SubTitle>
-                <SubTitle>已報名課程</SubTitle>
-                <SubTitle>已完成課程</SubTitle>
-            </SubTitleArea> */}
-            <SubTitleArea>
-                <SubTitle>上架課程</SubTitle>
-                <SubTitle>尚未開課程</SubTitle>
-                <SubTitle>進行中課程</SubTitle>
-                <SubTitle>已完成課程</SubTitle>
-            </SubTitleArea>
+            {isActiveArea === "student" ? (
+                <SubTitleArea>
+                    {studentRouter.map(router => (
+                        <NavLink to={router.link} key={router.link}>
+                            {({ isActive }) => (
+                                <SubTitle active={isActive}>
+                                    {router.title}
+                                </SubTitle>
+                            )}
+                        </NavLink>
+                    ))}
+                </SubTitleArea>
+            ) : (
+                ""
+            )}
+            {isActiveArea === "teacher" ? (
+                <SubTitleArea>
+                    {teacherRouter.map(router => (
+                        <NavLink to={router.link} key={router.link}>
+                            {({ isActive }) => (
+                                <SubTitle active={isActive}>
+                                    {router.title}
+                                </SubTitle>
+                            )}
+                        </NavLink>
+                    ))}
+                </SubTitleArea>
+            ) : (
+                ""
+            )}
+            <Outlet />
         </Container>
     );
 };

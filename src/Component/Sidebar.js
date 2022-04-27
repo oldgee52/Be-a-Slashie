@@ -9,7 +9,7 @@ import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import profile from "../images/profile.png";
 
-const SidebarContainer = styled.div`
+const SidebarContainer = styled.nav`
     width: 100%;
     height: 50px;
     background-color: whitesmoke;
@@ -87,7 +87,7 @@ const ProfileImg = styled(MenuImg)`
 
 const SidebarContent = styled.div`
     font-size: 16px;
-    color: #7f7f7f;
+    color: ${props => (props.active ? "red" : "#7f7f7f")};
     padding: 10px;
 `;
 
@@ -96,6 +96,10 @@ function Sidebar({ userID }) {
 
     function handleMobileNavShow() {
         setIsShow(prev => !prev);
+    }
+
+    function handleLinkToOtherRouterNavShow() {
+        if (isShow) setIsShow(false);
     }
 
     function handleSignOut() {
@@ -107,64 +111,67 @@ function Sidebar({ userID }) {
                 window.alert(error);
             });
     }
+
+    const narbarRouter = [
+        { link: "search", title: "課程搜尋" },
+        { link: "talented-person-search", title: "人才搜尋" },
+        { link: "wishing-well", title: "許願池" },
+    ];
     return (
         <>
             <NavShowBackground show={isShow} onClick={handleMobileNavShow} />
             <SidebarContainer>
                 <NavLink to="/">
-                    <LogoImg src={logo} alt="logo" />
+                    <LogoImg
+                        src={logo}
+                        alt="logo"
+                        onClick={handleLinkToOtherRouterNavShow}
+                    />
                 </NavLink>
-                {/* <NavLink to="/teacher-upload-course">
-                    <SidebarContent>老師上架課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/teacher-confirm-registration">
-                    <SidebarContent>老師同意報名</SidebarContent>
-                </NavLink>
-                <NavLink to="/teacher-opening-course">
-                    <SidebarContent>老師進行中課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/teacher-finished-course">
-                    <SidebarContent>老師已完成課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/student-registered-course">
-                    <SidebarContent>學生已報名課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/student-opening-course">
-                    <SidebarContent>學生進行中課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/student-finished-course">
-                    <SidebarContent>學生已完成課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/student-collection-course">
-                    <SidebarContent>學生蒐藏課程</SidebarContent>
-                </NavLink>
-                <NavLink to="/student-got-skill">
-                    <SidebarContent>學生技能徽章</SidebarContent>
-                </NavLink> */}
-                {/* <NavLink to="/search">
-                    <SidebarContent>課程搜尋</SidebarContent>
-                </NavLink>
-                <NavLink to="/talented-person-search">
-                    <SidebarContent>人才搜尋</SidebarContent>
-                </NavLink>
-                <NavLink to="/wishing-well">
-                    <SidebarContent>許願池</SidebarContent>
-                </NavLink> */}
 
                 <MobileItemContainer show={isShow}>
-                    <NavLink to="/search">
-                        <SidebarContent>課程搜尋</SidebarContent>
+                    {narbarRouter.map(router => (
+                        <NavLink to={router.link}>
+                            {({ isActive }) => (
+                                <SidebarContent
+                                    active={isActive}
+                                    onClick={handleLinkToOtherRouterNavShow}
+                                >
+                                    {router.title}
+                                </SidebarContent>
+                            )}
+                        </NavLink>
+                    ))}
+
+                    {/* <NavLink to="search">
+                        <SidebarContent
+                            onClick={handleLinkToOtherRouterNavShow}
+                        >
+                            課程搜尋
+                        </SidebarContent>
                     </NavLink>
                     <NavLink to="/talented-person-search">
-                        <SidebarContent>人才搜尋</SidebarContent>
+                        <SidebarContent
+                            onClick={handleLinkToOtherRouterNavShow}
+                        >
+                            人才搜尋
+                        </SidebarContent>
                     </NavLink>
                     <NavLink to="/wishing-well">
-                        <SidebarContent>許願池</SidebarContent>
-                    </NavLink>
+                        <SidebarContent
+                            onClick={handleLinkToOtherRouterNavShow}
+                        >
+                            許願池
+                        </SidebarContent>
+                    </NavLink> */}
                 </MobileItemContainer>
                 <div>
-                    <NavLink to="/profile">
-                        <ProfileImg src={profile} alt="個人資料" />
+                    <NavLink to="personal/profile">
+                        <ProfileImg
+                            src={profile}
+                            alt="個人資料"
+                            onClick={handleLinkToOtherRouterNavShow}
+                        />
                     </NavLink>
                     <MenuImg
                         src={isShow ? cross : hamburger_menu}

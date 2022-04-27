@@ -69,6 +69,11 @@ a {
   text-decoration: none;
   cursor: pointer;
 }
+a:link,
+a:visited,
+a:active {
+    color: inherit;
+}
 button {
   padding: 0;
   border: none;

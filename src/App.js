@@ -46,7 +46,52 @@ function App() {
                 <Sidebar userID={userID} />
 
                 <Routes>
-                    <Route path="/personal" element={<Personal />} />
+                    <Route path="personal" element={<Personal />}>
+                        <Route
+                            path="student-got-skill"
+                            element={<StudentGotSkill />}
+                        />
+                        <Route
+                            path="student-got-skill"
+                            element={<StudentGotSkill />}
+                        />
+                        <Route
+                            path="student-collection-course"
+                            element={<StudentCollectionCourse />}
+                        />
+                        <Route
+                            path="student-finished-course"
+                            element={<StudentFinishedCourse />}
+                        />
+                        <Route
+                            path="student-registered-course"
+                            element={<StudentRegisteredCourse />}
+                        />
+                        <Route
+                            path="student-opening-course"
+                            element={<StudentOpeningCourse />}
+                        />
+
+                        <Route path="profile" element={<Profile />} />
+                        <Route
+                            path="teacher-finished-course"
+                            element={<TeacherFinishedCourse />}
+                        />
+                        <Route path="profile" element={<Profile />} />
+                        <Route
+                            path="teacher-confirm-registration"
+                            element={<TeacherConfirmRegistration />}
+                        />
+                        <Route
+                            path="teacher-upload-course"
+                            element={<TeacherUpload />}
+                        />
+                        <Route
+                            path="teacher-opening-course"
+                            element={<TeacherOpeningCourse />}
+                        />
+                    </Route>
+
                     <Route path="login" element={<Login />} />
                     <Route path="wishing-well" element={<WishingWell />} />
                     <Route
@@ -57,44 +102,8 @@ function App() {
                         path="personal-introduction"
                         element={<PersonalIntroduction />}
                     />
-                    <Route
-                        path="student-got-skill"
-                        element={<StudentGotSkill />}
-                    />
-                    <Route
-                        path="student-collection-course"
-                        element={<StudentCollectionCourse />}
-                    />
-                    <Route
-                        path="teacher-finished-course"
-                        element={<TeacherFinishedCourse />}
-                    />
-                    <Route
-                        path="student-finished-course"
-                        element={<StudentFinishedCourse />}
-                    />
-                    <Route
-                        path="student-registered-course"
-                        element={<StudentRegisteredCourse />}
-                    />
-                    <Route path="profile" element={<Profile />} />
-                    <Route
-                        path="student-opening-course"
-                        element={<StudentOpeningCourse />}
-                    />
-                    <Route
-                        path="teacher-opening-course"
-                        element={<TeacherOpeningCourse />}
-                    />
-                    <Route
-                        path="teacher-confirm-registration"
-                        element={<TeacherConfirmRegistration />}
-                    />
+
                     <Route path="course" element={<Course />} />
-                    <Route
-                        path="teacher-upload-course"
-                        element={<TeacherUpload />}
-                    />
                     <Route path="search" element={<Search />} />
                     <Route path="/" element={<Home />} />
                 </Routes>
