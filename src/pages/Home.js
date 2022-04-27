@@ -7,8 +7,6 @@ import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -22,18 +20,18 @@ const Banner = styled.div`
     background-color: #ff6100;
 `;
 
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 10px;
-`;
 const Title = styled.h2`
-    width: 100%;
     margin-top: 20px;
-    display: flex;
-    justify-content: center;
+    margin-bottom: 20px;
+    width: 70%;
+`;
+const SeeMore = styled.div`
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 30%;
+    text-align: right;
+
+    cursor: pointer;
 `;
 
 const InputArea = styled.div`
@@ -60,6 +58,13 @@ const BannerTitle = styled.div`
         text-align: left;
         padding-left: 10%;
     }
+`;
+
+const CourseArea = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 10px 0 10px;
 `;
 
 export const Home = () => {
@@ -111,19 +116,27 @@ export const Home = () => {
                     />
                 </InputArea>
             </Banner>
-            {/* <Container>
+            <Container>
                 {!latestCourse || !popularCourse ? (
                     "loading..."
                 ) : (
-                    <Div1>
-                        <Title>最新上架</Title>
-                        <DivFlex>
+                    <>
+                        <CourseArea>
+                            <Title>最新上架</Title>
+                            <SeeMore
+                                onClick={() => navigate(`/search?q=latest`)}
+                            >
+                                點我看更多
+                            </SeeMore>
+
                             {latestCourse.map(course => (
                                 <CourseInfo
                                     key={course.courseID}
+                                    image={course.image}
                                     courseID={course.courseID}
                                     title={course.title}
                                     teacherName={course.teacherInfo.name}
+                                    view={course.view}
                                     creatDate={new Date(
                                         course.creatTime.seconds * 1000,
                                     ).toLocaleDateString()}
@@ -132,31 +145,32 @@ export const Home = () => {
                                     ).toLocaleDateString()}
                                 />
                             ))}
-                        </DivFlex>
-                        <button onClick={() => navigate(`/search?q=latest`)}>
-                            點我看更多
-                        </button>
-                        <Title>熱門課程</Title>
-                        <DivFlex>
-                            {popularCourse.map(course => (
-                                <CourseInfo
-                                    key={course.courseID}
-                                    courseID={course.courseID}
-                                    title={course.title}
-                                    teacherName={course.teacherInfo.name}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    view={course.view}
-                                />
-                            ))}
-                        </DivFlex>
-                        <button onClick={() => navigate(`/search?q=popular`)}>
-                            點我看更多
-                        </button>
-                    </Div1>
+                        </CourseArea>
+                        {/* <CourseArea>
+                            <Title>熱門課程</Title>
+                            <DivFlex>
+                                {popularCourse.map(course => (
+                                    <CourseInfo
+                                        key={course.courseID}
+                                        courseID={course.courseID}
+                                        title={course.title}
+                                        teacherName={course.teacherInfo.name}
+                                        openingDate={new Date(
+                                            course.openingDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                        view={course.view}
+                                    />
+                                ))}
+                            </DivFlex>
+                            <button
+                                onClick={() => navigate(`/search?q=popular`)}
+                            >
+                                點我看更多
+                            </button>
+                        </CourseArea> */}
+                    </>
                 )}
-            </Container> */}
+            </Container>
         </>
     );
 };

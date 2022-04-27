@@ -1,26 +1,49 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { FiEye } from "react-icons/fi";
 
-const Div1 = styled.div`
+const CourseCard = styled.div`
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
+
     justify-content: center;
     margin-top: 10px;
+
+    padding-bottom: 20px;
+    border-bottom: 2px solid black;
 `;
 
-const Div13 = styled(Div1)`
-    border: 1px solid black;
-    width: 200px;
+const CourseImg = styled.img`
+    width: 100px;
     height: auto;
-    cursor: pointer;
-    justify-content: flex-start;
+    flex-shrink: 0;
+    /* padding-bottom: 20%; */
+`;
+const CourseTitle = styled.div`
+    flex: 1 0 auto;
+    padding-left: 10px;
 `;
 
-const DivContent = styled.div`
-    padding-right: 20px;
-    /* width: 100%; */
+const CourseName = styled.h4`
+    width: 60vw;
+    font-size: 20px;
+    font-weight: 700;
+
+    margin-bottom: 10px;
+    word-break: break-all;
+`;
+
+const TeacherName = styled.p`
+    color: #7f7f7f;
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 5px;
+`;
+
+const View = styled.p`
+    flex-shrink: 0;
+    font-size: 12px;
 `;
 
 export const CourseInfo = ({
@@ -30,19 +53,26 @@ export const CourseInfo = ({
     creatDate,
     openingDate,
     view,
+    image,
 }) => {
     const navigate = useNavigate();
     return (
-        <Div13
+        <CourseCard
             onClick={() => {
                 navigate(`/course?courseID=${courseID}`);
             }}
         >
-            <DivContent>課程名稱: {title}</DivContent>
-            <DivContent>老師: {teacherName}</DivContent>
-            {creatDate && <DivContent>上架日期: {creatDate}</DivContent>}
-            <DivContent>開課日期: {openingDate}</DivContent>
-            {view && <DivContent>預覽人數: {view}</DivContent>}
-        </Div13>
+            <CourseImg src={image} />
+            <CourseTitle>
+                <CourseName>{title}</CourseName>
+                <TeacherName>{teacherName}</TeacherName>
+                <TeacherName>上架日期 {creatDate}</TeacherName>
+                <TeacherName>開課日期 {openingDate}</TeacherName>
+            </CourseTitle>
+
+            <View>
+                <FiEye viewBox="0 -3 24 24 " /> {view}
+            </View>
+        </CourseCard>
     );
 };
