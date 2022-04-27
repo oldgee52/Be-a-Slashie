@@ -18,21 +18,24 @@ import { PersonalIntroduction } from "./pages/PersonalIntroduction";
 import { WishingWell } from "./pages/WishingWell";
 import firebaseInit from "./utils/firebase";
 import GlobalStyle from "./globalStyles";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { Login } from "./pages/Login";
 import { Personal } from "./Component/Personal";
+import RequireAuth from "./Component/RequireAuth";
 
 function App() {
     const [userID, setUserID] = useState("");
+    const [userLogin, setUserLogin] = useState("check");
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(firebaseInit.auth, user => {
             if (user) {
+                setUserLogin("in");
                 setUserID(user.uid);
                 console.log(user.uid);
             } else {
+                setUserLogin("out");
                 setUserID("");
             }
         });
@@ -46,11 +49,14 @@ function App() {
                 <Sidebar userID={userID} />
 
                 <Routes>
-                    <Route path="personal" element={<Personal />}>
-                        <Route
-                            path="student-got-skill"
-                            element={<StudentGotSkill />}
-                        />
+                    <Route
+                        path="personal"
+                        element={
+                            <RequireAuth userLogin={userLogin}>
+                                <Personal userID={userID} />
+                            </RequireAuth>
+                        }
+                    >
                         <Route
                             path="student-got-skill"
                             element={<StudentGotSkill />}
@@ -77,7 +83,7 @@ function App() {
                             path="teacher-finished-course"
                             element={<TeacherFinishedCourse />}
                         />
-                        <Route path="profile" element={<Profile />} />
+
                         <Route
                             path="teacher-confirm-registration"
                             element={<TeacherConfirmRegistration />}
@@ -91,9 +97,16 @@ function App() {
                             element={<TeacherOpeningCourse />}
                         />
                     </Route>
+                    <Route
+                        path="wishing-well"
+                        element={
+                            <RequireAuth userLogin={userLogin}>
+                                <WishingWell userID={userID} />
+                            </RequireAuth>
+                        }
+                    />
 
                     <Route path="login" element={<Login />} />
-                    <Route path="wishing-well" element={<WishingWell />} />
                     <Route
                         path="talented-person-search"
                         element={<TalentedPersonSearch />}

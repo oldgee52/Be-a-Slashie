@@ -1,14 +1,13 @@
-import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-} from "firebase/auth";
 import React, { useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { TextInput } from "../Component/TextInput";
 import { doc, setDoc } from "firebase/firestore";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const Container = styled.div`
     margin: auto;
@@ -21,7 +20,7 @@ const Container = styled.div`
     width: 500px;
 `;
 
-export const Login = () => {
+export const Login = ({ userID }) => {
     const [info, setInfo] = useState({
         email: "",
         password: "",
@@ -114,16 +113,6 @@ export const Login = () => {
             });
     }
 
-    function handleSignOut() {
-        signOut(firebaseInit.auth)
-            .then(() => {
-                window.alert("已登出成功");
-            })
-            .catch(error => {
-                window.alert(error);
-            });
-    }
-
     function handleChange(e) {
         let data = { ...info };
         data[e.target.name] = e.target.value;
@@ -157,7 +146,6 @@ export const Login = () => {
             )}
             {login && <button onClick={signIn}>登入</button>}
             {!login && <button onClick={singUp}>註冊</button>}
-            <button onClick={handleSignOut}>登出</button>
         </Container>
     );
 };

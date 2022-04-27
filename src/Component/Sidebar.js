@@ -131,7 +131,7 @@ function Sidebar({ userID }) {
 
                 <MobileItemContainer show={isShow}>
                     {narbarRouter.map(router => (
-                        <NavLink to={router.link}>
+                        <NavLink to={router.link} key={router.link}>
                             {({ isActive }) => (
                                 <SidebarContent
                                     active={isActive}
