@@ -12,6 +12,11 @@ const Container = styled.div`
     align-items: center;
     flex-wrap: wrap;
     width: 100%;
+    margin: auto;
+
+    @media ${breakPoint.desktop} {
+        max-width: 1200px;
+    }
 `;
 
 const Banner = styled.div`
@@ -24,6 +29,10 @@ const Title = styled.h2`
     margin-top: 20px;
     margin-bottom: 20px;
     width: 70%;
+    @media ${breakPoint.desktop} {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
 `;
 const SeeMore = styled.div`
     margin-top: 20px;
@@ -32,6 +41,12 @@ const SeeMore = styled.div`
     text-align: right;
 
     cursor: pointer;
+
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+        padding-top: 10px;
+        margin-bottom: 40px;
+    }
 `;
 
 const InputArea = styled.div`
@@ -65,6 +80,11 @@ const CourseArea = styled.div`
     flex-wrap: wrap;
     width: 100%;
     padding: 0 10px 0 10px;
+    margin-bottom: 100px;
+
+    @media ${breakPoint.desktop} {
+        justify-content: space-between;
+    }
 `;
 
 export const Home = () => {
@@ -132,6 +152,7 @@ export const Home = () => {
                             {latestCourse.map(course => (
                                 <CourseInfo
                                     key={course.courseID}
+                                    teacherPhoto={course.teacherInfo.photo}
                                     image={course.image}
                                     courseID={course.courseID}
                                     title={course.title}
@@ -146,28 +167,32 @@ export const Home = () => {
                                 />
                             ))}
                         </CourseArea>
-                        {/* <CourseArea>
+                        <CourseArea>
                             <Title>熱門課程</Title>
-                            <DivFlex>
-                                {popularCourse.map(course => (
-                                    <CourseInfo
-                                        key={course.courseID}
-                                        courseID={course.courseID}
-                                        title={course.title}
-                                        teacherName={course.teacherInfo.name}
-                                        openingDate={new Date(
-                                            course.openingDate.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                        view={course.view}
-                                    />
-                                ))}
-                            </DivFlex>
-                            <button
+                            <SeeMore
                                 onClick={() => navigate(`/search?q=popular`)}
                             >
                                 點我看更多
-                            </button>
-                        </CourseArea> */}
+                            </SeeMore>
+
+                            {popularCourse.map(course => (
+                                <CourseInfo
+                                    key={course.courseID}
+                                    teacherPhoto={course.teacherInfo.photo}
+                                    image={course.image}
+                                    courseID={course.courseID}
+                                    title={course.title}
+                                    teacherName={course.teacherInfo.name}
+                                    view={course.view}
+                                    creatDate={new Date(
+                                        course.creatTime.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                    openingDate={new Date(
+                                        course.openingDate.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                />
+                            ))}
+                        </CourseArea>
                     </>
                 )}
             </Container>
