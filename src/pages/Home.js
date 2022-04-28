@@ -23,6 +23,10 @@ const Banner = styled.div`
     width: 100%;
     height: 500px;
     background-color: #ff6100;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 const Title = styled.h2`
@@ -59,6 +63,8 @@ const InputArea = styled.div`
 
     @media ${breakPoint.desktop} {
         top: 200px;
+        max-width: 1200px;
+        justify-content: flex-start;
     }
 `;
 const BannerTitle = styled.div`
@@ -66,12 +72,12 @@ const BannerTitle = styled.div`
     color: black;
     font-weight: 700;
     text-align: center;
-    flex: 1 0 100%;
+    width: 100%;
     margin-bottom: 20px;
 
     @media ${breakPoint.desktop} {
         text-align: left;
-        padding-left: 10%;
+        padding-left: 20px;
     }
 `;
 
@@ -84,6 +90,24 @@ const CourseArea = styled.div`
 
     @media ${breakPoint.desktop} {
         justify-content: space-between;
+    }
+`;
+
+const CourseDiv = styled.div`
+    width: 100%;
+    /* margin-top: 20px; */
+
+    @media ${breakPoint.desktop} {
+        width: calc(33.3% - 30px);
+    }
+`;
+
+const InputDiv = styled.div`
+    width: 95%;
+
+    @media ${breakPoint.desktop} {
+        width: 30%;
+        padding-left: 20px;
     }
 `;
 
@@ -121,19 +145,21 @@ export const Home = () => {
             <Banner>
                 <InputArea>
                     <BannerTitle>今晚要來點什麼?</BannerTitle>
-                    <SearchInput
-                        searchField={searchField}
-                        setSearchField={setSearchField}
-                        changeValueCallback={e => {
-                            e.preventDefault();
-                            setSearchField(e.target.value);
-                        }}
-                        searchCallback={e => {
-                            e.preventDefault();
-                            if (!searchField.trim()) return;
-                            navigate(`/search?q=${searchField.trim()}`);
-                        }}
-                    />
+                    <InputDiv>
+                        <SearchInput
+                            searchField={searchField}
+                            setSearchField={setSearchField}
+                            changeValueCallback={e => {
+                                e.preventDefault();
+                                setSearchField(e.target.value);
+                            }}
+                            searchCallback={e => {
+                                e.preventDefault();
+                                if (!searchField.trim()) return;
+                                navigate(`/search?q=${searchField.trim()}`);
+                            }}
+                        />
+                    </InputDiv>
                 </InputArea>
             </Banner>
             <Container>
@@ -150,21 +176,23 @@ export const Home = () => {
                             </SeeMore>
 
                             {latestCourse.map(course => (
-                                <CourseInfo
-                                    key={course.courseID}
-                                    teacherPhoto={course.teacherInfo.photo}
-                                    image={course.image}
-                                    courseID={course.courseID}
-                                    title={course.title}
-                                    teacherName={course.teacherInfo.name}
-                                    view={course.view}
-                                    creatDate={new Date(
-                                        course.creatTime.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                />
+                                <CourseDiv>
+                                    <CourseInfo
+                                        key={course.courseID}
+                                        teacherPhoto={course.teacherInfo.photo}
+                                        image={course.image}
+                                        courseID={course.courseID}
+                                        title={course.title}
+                                        teacherName={course.teacherInfo.name}
+                                        view={course.view}
+                                        creatDate={new Date(
+                                            course.creatTime.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                        openingDate={new Date(
+                                            course.openingDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    />
+                                </CourseDiv>
                             ))}
                         </CourseArea>
                         <CourseArea>
@@ -176,21 +204,23 @@ export const Home = () => {
                             </SeeMore>
 
                             {popularCourse.map(course => (
-                                <CourseInfo
-                                    key={course.courseID}
-                                    teacherPhoto={course.teacherInfo.photo}
-                                    image={course.image}
-                                    courseID={course.courseID}
-                                    title={course.title}
-                                    teacherName={course.teacherInfo.name}
-                                    view={course.view}
-                                    creatDate={new Date(
-                                        course.creatTime.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                />
+                                <CourseDiv>
+                                    <CourseInfo
+                                        key={course.courseID}
+                                        teacherPhoto={course.teacherInfo.photo}
+                                        image={course.image}
+                                        courseID={course.courseID}
+                                        title={course.title}
+                                        teacherName={course.teacherInfo.name}
+                                        view={course.view}
+                                        creatDate={new Date(
+                                            course.creatTime.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                        openingDate={new Date(
+                                            course.openingDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    />
+                                </CourseDiv>
                             ))}
                         </CourseArea>
                     </>

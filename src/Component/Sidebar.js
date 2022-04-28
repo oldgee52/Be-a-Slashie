@@ -142,28 +142,6 @@ function Sidebar({ userID }) {
                             )}
                         </NavLink>
                     ))}
-
-                    {/* <NavLink to="search">
-                        <SidebarContent
-                            onClick={handleLinkToOtherRouterNavShow}
-                        >
-                            課程搜尋
-                        </SidebarContent>
-                    </NavLink>
-                    <NavLink to="/talented-person-search">
-                        <SidebarContent
-                            onClick={handleLinkToOtherRouterNavShow}
-                        >
-                            人才搜尋
-                        </SidebarContent>
-                    </NavLink>
-                    <NavLink to="/wishing-well">
-                        <SidebarContent
-                            onClick={handleLinkToOtherRouterNavShow}
-                        >
-                            許願池
-                        </SidebarContent>
-                    </NavLink> */}
                 </MobileItemContainer>
                 <div>
                     <NavLink to="personal/profile">

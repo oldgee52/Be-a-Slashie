@@ -9,12 +9,11 @@ const SearchFrom = styled.form`
     justify-content: center;
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
-        padding-left: 10%;
     }
 `;
 
 const InputArea = styled.input`
-    width: 80%;
+    width: 100%;
     height: 30px;
     background: whitesmoke;
     border: 2px solid black;
@@ -29,9 +28,9 @@ const InputArea = styled.input`
         outline: none;
     }
 
-    @media ${breakPoint.desktop} {
+    /* @media ${breakPoint.desktop} {
         width: 350px;
-    }
+    } */
 `;
 
 const Search = styled(FiSearch)`

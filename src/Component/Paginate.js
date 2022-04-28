@@ -1,6 +1,9 @@
 import ReactPaginate from "react-paginate";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { CourseInfo } from "./CourseInfo";
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import { breakPoint } from "../utils/breakPoint";
 
 // You can style your pagination component
 // thanks to styled-components.
@@ -12,32 +15,63 @@ const MyPaginate = styled(ReactPaginate).attrs({
     margin-bottom: 2rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     list-style-type: none;
     padding: 0 5rem;
     li a {
         border-radius: 7px;
         padding: 0.1rem 1rem;
-        border: gray 1px solid;
+        /* border: gray 1px solid; */
         cursor: pointer;
     }
     li.previous a,
     li.next a,
     li.break a {
         border-color: transparent;
+        color: #ff6100;
     }
     li.active a {
-        background-color: #0366d6;
-        border-color: transparent;
+        background-color: #ff6100;
+        /* border-color: transparent; */
         color: white;
         min-width: 32px;
     }
     li.disabled a {
-        color: grey;
+        opacity: 0;
     }
     li.disable,
     li.disabled a {
         cursor: default;
+    }
+`;
+
+const PaginateArea = styled.div`
+    margin: auto;
+    margin-top: 130px;
+    opacity: ${props => (props.active ? 0 : 1)};
+    z-index: ${props => (props.active ? -1 : 0)};
+`;
+
+const CourseArea = styled.div`
+    height: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 10px 0 10px;
+    margin-bottom: 100px;
+    @media ${breakPoint.desktop} {
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+`;
+
+const CourseDiv = styled.div`
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: calc(33.3% - 30px);
+        margin-top: 50px;
     }
 `;
 
@@ -81,17 +115,44 @@ function PaginatedItems({ itemsPerPage, searchData }) {
             `User requested page number ${event.selected}, which is offset ${newOffset}`,
         );
         setItemOffset(newOffset);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
+
+    console.log(pageCount);
 
     return (
         <>
-            <Items currentItems={currentItems} />
-            <MyPaginate
-                pageCount={pageCount}
-                onPageChange={handlePageClick}
-                nextLabel="next"
-                renderOnZeroPageCount={null}
-            />
+            <CourseArea>
+                {currentItems &&
+                    currentItems.map(course => (
+                        <CourseDiv>
+                            <CourseInfo
+                                key={course.courseID}
+                                teacherPhoto={course.teacherInfo.photo}
+                                image={course.image}
+                                courseID={course.courseID}
+                                title={course.title}
+                                teacherName={course.teacherInfo.name}
+                                view={course.view}
+                                creatDate={new Date(
+                                    course.creatTime.seconds * 1000,
+                                ).toLocaleDateString()}
+                                openingDate={new Date(
+                                    course.openingDate.seconds * 1000,
+                                ).toLocaleDateString()}
+                            />
+                        </CourseDiv>
+                    ))}
+            </CourseArea>
+            <PaginateArea active={pageCount === 1}>
+                <MyPaginate
+                    pageCount={pageCount}
+                    onPageChange={handlePageClick}
+                    renderOnZeroPageCount={null}
+                    previousLabel={<MdKeyboardArrowLeft />}
+                    nextLabel={<MdKeyboardArrowRight />}
+                />
+            </PaginateArea>
             {/* <ReactPaginate
                 nextLabel="next"
                 onPageChange={handlePageClick}

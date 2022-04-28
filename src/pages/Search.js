@@ -4,19 +4,31 @@ import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
+import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin: auto;
+
+    padding: 80px 10px 0 10px;
+
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+        max-width: 1200px;
+    }
 `;
 
-const SearchArea = styled.div`
+const InputDiv = styled.div`
     width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: 31%;
+        padding-left: 15px;
+    }
 `;
 
 export const Search = () => {
@@ -69,24 +81,25 @@ export const Search = () => {
         return () => (isMounted = false);
     }, [q]);
 
-    const handleChange = () => {
+    const handleChange = e => {
+        e.preventDefault();
         if (!searchField.trim()) return;
         navigate(`/search?q=${searchField.trim()}`);
     };
 
     return (
         <Container>
-            <SearchArea>
+            <InputDiv>
                 <SearchInput
                     searchField={searchField}
                     changeValueCallback={e => setSearchField(e.target.value)}
-                    searchCallback={() => {
-                        handleChange();
+                    searchCallback={e => {
+                        handleChange(e);
                     }}
                 />
-            </SearchArea>
+            </InputDiv>
             {searchCourses && (
-                <PaginatedItems itemsPerPage={2} searchData={searchCourses} />
+                <PaginatedItems itemsPerPage={6} searchData={searchCourses} />
             )}
         </Container>
     );

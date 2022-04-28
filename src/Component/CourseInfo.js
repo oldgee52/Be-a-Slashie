@@ -17,7 +17,6 @@ const CourseCard = styled.div`
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
-        width: calc(33.3% - 30px);
         flex-direction: column;
         align-items: center;
         border: 2px solid black;
