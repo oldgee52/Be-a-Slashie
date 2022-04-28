@@ -14,46 +14,177 @@ import {
 import styled from "styled-components";
 import { Skills } from "../Component/Skills";
 import email from "../utils/email";
+import { breakPoint } from "../utils/breakPoint";
+import { FiMail } from "react-icons/fi";
+import { BsBookmark } from "react-icons/bs";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin: auto;
+
+    padding: 80px 10px 80px 10px;
+
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+        max-width: 1200px;
+    }
 `;
 
-const Div1 = styled.div`
+const CourseTitle = styled.div`
+    font-size: 20px;
+    font-weight: 700;
     width: 100%;
+    /* height: 200px; */
+
+    text-align: center;
+
+    /* background-image: url(${props => props.img});
+    background-repeat: no-repeat;
+    background-size: cover;
+    backdrop-filter: blur(5px); */
+
+    line-height: 1.5;
+`;
+// const Test = styled.div`
+//  backdrop-filter: blur(5px);
+//  width: 100%;
+//  height: 100px;
+//  position: fixed;
+//  top: 200px;
+
+// `
+
+const Collection = styled.div`
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid black;
+    border-radius: 5px;
+
+    color: ${props => (props.collected ? "white" : "black")};
+    background-color: ${props => (props.collected ? "#ff6100" : "white")};
+
+    cursor: pointer;
+`;
+
+const CourseInfo = styled.div`
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+`;
+const InfoTitle = styled.div`
+    margin-left: 5px;
+    margin-right: 5px;
+`;
+
+const TeacherInfo = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-top: 20px;
+
+    /* height: 150px;
+    overflow: hidden;
+    transition-duration: 2s;
+    &:hover {
+        height: unset;
+    } */
+`;
+
+const TeacherImg = styled.img`
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    margin-top: 10px;
+    margin-bottom: 15px;
+`;
+const TeacherName = styled.div`
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+`;
+const TeacherIntroduction = styled.div`
+    font-size: 12px;
+    line-height: 1.5;
+
+    padding: 20px;
+`;
+const NewFiMail = styled(FiMail)`
+    color: rgba(0, 0, 0, 0.3);
+`;
+
+const AboutCourse = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: 5px;
+`;
+const AboutTitle = styled.h3`
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+const AboutContent = styled.div`
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
+const FlexDiv = styled.div`
     display: flex;
     margin-top: 20px;
+    justify-content: center;
+    width: 100%;
+`;
+const CourseIntroduction = styled.p`
+    margin-top: 15px;
+    font-size: 12px;
+    line-height: 1.5;
 `;
 
-const DivTitle = styled.div`
-    width: 20%;
-`;
-const DivContent = styled.div`
-    width: 80%;
-    display: flex;
-`;
+// const NewBiTag = styled(BiTag)`
+//     transform: rotate(270deg);
+//     width: 20px;
+//     height: 20px;
+// `;
 
 const Input = styled.input`
     width: 50%;
     height: 20px;
 `;
+const RegisterArea = styled.div`
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    width: 100vw;
+    background-color: whitesmoke;
+    height: 50px;
+`;
 
 const Button = styled.button`
-    width: 100%;
-    height: 48px;
+    width: 80%;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
-    margin-top: 20px;
+    border-radius: 5px;
 
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: ${props => (props.active ? "gray" : "#f44336")};
+    background-color: ${props => (props.active ? "gray" : "#ff6100")};
     border: none;
     cursor: ${props => (props.active ? "not-allowed" : "pointer")};
 `;
@@ -342,13 +473,81 @@ export const Course = () => {
         return window.alert("回覆已送出");
     };
 
-    console.log(skillsInfo);
-
     return (
         <>
             {courseData && usersInfo && (
                 <Container>
-                    <Div1>
+                    <CourseTitle>{courseData.title}</CourseTitle>
+                    <CourseInfo>
+                        <InfoTitle>
+                            報名人數 {courseData.registrationNumber}
+                        </InfoTitle>
+
+                        <InfoTitle>瀏覽人數 {courseData.view}</InfoTitle>
+                    </CourseInfo>
+                    <TeacherInfo>
+                        <TeacherImg
+                            src={findUserInfo(
+                                courseData.teacherUserID,
+                                "photo",
+                            )}
+                        />
+                        <a
+                            href={`mailto:${findUserInfo(
+                                courseData.teacherUserID,
+                                "email",
+                            )}`}
+                        >
+                            <NewFiMail />
+                        </a>
+                        <TeacherName>
+                            {findUserInfo(courseData.teacherUserID, "name")}
+                        </TeacherName>
+                        <TeacherIntroduction>
+                            {courseData.teacherIntroduction}
+                        </TeacherIntroduction>
+                    </TeacherInfo>
+                    <Collection
+                        onClick={handleCollection}
+                        collected={userCollection}
+                    >
+                        {/* <NewBiTag  viewBox="3 0 24 24"/>{" "} */}
+                        {/* <BsBookmark /> */}
+                        {userCollection ? "已收藏" : "加入收藏"}
+                    </Collection>
+                    <AboutCourse>
+                        <AboutTitle>關於課程</AboutTitle>
+                        <AboutContent>
+                            開班人數 {courseData.minOpeningNumber}
+                        </AboutContent>
+                        <AboutContent>
+                            報名截止{" "}
+                            {new Date(
+                                courseData.registrationDeadline.seconds * 1000,
+                            ).toLocaleDateString()}
+                        </AboutContent>
+                        <AboutContent>
+                            開課時間{" "}
+                            {new Date(
+                                courseData.openingDate.seconds * 1000,
+                            ).toLocaleDateString()}
+                        </AboutContent>
+                        <AboutContent>
+                            可獲技能{" "}
+                            <FlexDiv>
+                                {" "}
+                                {skillsInfo && <Skills skills={skillsInfo} />}
+                            </FlexDiv>
+                        </AboutContent>
+                        <AboutContent>
+                            課程詳情
+                            <CourseIntroduction>
+                                {courseData.courseIntroduction}
+                            </CourseIntroduction>
+                        </AboutContent>
+                    </AboutCourse>
+
+                    {/* <Div1>
                         <DivTitle>課程名稱</DivTitle>
                         <DivContent>{courseData.title}</DivContent>
                     </Div1>
@@ -357,7 +556,7 @@ export const Course = () => {
                         <DivContent>{courseData.courseIntroduction}</DivContent>
                     </Div1>
                     <Div1>
-                        <DivTitle>報名截止日</DivTitle>
+                        <DivTitle>報名截止</DivTitle>
                         <DivContent>
                             {new Date(
                                 courseData.registrationDeadline.seconds * 1000,
@@ -438,8 +637,35 @@ export const Course = () => {
                               )
                             ? "你已經報名囉"
                             : "我要報名"}
-                    </Button>
+                    </Button> */}
                 </Container>
+            )}
+            {courseData && usersInfo && (
+                <RegisterArea>
+                    <Button
+                        onClick={handleRegistration}
+                        disabled={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                        active={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                    >
+                        {courseData.teacherUserID === userID
+                            ? "您是老師喔"
+                            : findUserInfo(userID, "studentsCourses")?.some(
+                                  value => value === courseID,
+                              )
+                            ? "你已經報名囉"
+                            : "我要報名"}
+                    </Button>
+                </RegisterArea>
             )}
         </>
     );
