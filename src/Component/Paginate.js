@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "./CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { FiEye } from "react-icons/fi";
+import { breakPoint } from "../utils/breakPoint";
 
 // You can style your pagination component
 // thanks to styled-components.
@@ -46,14 +46,33 @@ const MyPaginate = styled(ReactPaginate).attrs({
 `;
 
 const PaginateArea = styled.div`
+    margin: auto;
     margin-top: 130px;
     opacity: ${props => (props.active ? 0 : 1)};
     z-index: ${props => (props.active ? -1 : 0)};
 `;
 
 const CourseArea = styled.div`
-    margin-top: 50px;
-    height: 700px;
+    height: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0 10px 0 10px;
+    margin-bottom: 100px;
+    @media ${breakPoint.desktop} {
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+`;
+
+const CourseDiv = styled.div`
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: calc(33.3% - 30px);
+        margin-top: 50px;
+    }
 `;
 
 function Items({ currentItems }) {
@@ -106,21 +125,23 @@ function PaginatedItems({ itemsPerPage, searchData }) {
             <CourseArea>
                 {currentItems &&
                     currentItems.map(course => (
-                        <CourseInfo
-                            key={course.courseID}
-                            teacherPhoto={course.teacherInfo.photo}
-                            image={course.image}
-                            courseID={course.courseID}
-                            title={course.title}
-                            teacherName={course.teacherInfo.name}
-                            view={course.view}
-                            creatDate={new Date(
-                                course.creatTime.seconds * 1000,
-                            ).toLocaleDateString()}
-                            openingDate={new Date(
-                                course.openingDate.seconds * 1000,
-                            ).toLocaleDateString()}
-                        />
+                        <CourseDiv>
+                            <CourseInfo
+                                key={course.courseID}
+                                teacherPhoto={course.teacherInfo.photo}
+                                image={course.image}
+                                courseID={course.courseID}
+                                title={course.title}
+                                teacherName={course.teacherInfo.name}
+                                view={course.view}
+                                creatDate={new Date(
+                                    course.creatTime.seconds * 1000,
+                                ).toLocaleDateString()}
+                                openingDate={new Date(
+                                    course.openingDate.seconds * 1000,
+                                ).toLocaleDateString()}
+                            />
+                        </CourseDiv>
                     ))}
             </CourseArea>
             <PaginateArea active={pageCount === 1}>

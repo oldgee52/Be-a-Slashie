@@ -17,12 +17,18 @@ const Container = styled.div`
     padding: 80px 10px 0 10px;
 
     @media ${breakPoint.desktop} {
+        justify-content: flex-start;
         max-width: 1200px;
     }
 `;
 
-const SearchArea = styled.div`
+const InputDiv = styled.div`
     width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: 31%;
+        padding-left: 15px;
+    }
 `;
 
 export const Search = () => {
@@ -75,20 +81,23 @@ export const Search = () => {
         return () => (isMounted = false);
     }, [q]);
 
-    const handleChange = () => {
+    const handleChange = e => {
+        e.preventDefault();
         if (!searchField.trim()) return;
         navigate(`/search?q=${searchField.trim()}`);
     };
 
     return (
         <Container>
-            <SearchInput
-                searchField={searchField}
-                changeValueCallback={e => setSearchField(e.target.value)}
-                searchCallback={() => {
-                    handleChange();
-                }}
-            />
+            <InputDiv>
+                <SearchInput
+                    searchField={searchField}
+                    changeValueCallback={e => setSearchField(e.target.value)}
+                    searchCallback={e => {
+                        handleChange(e);
+                    }}
+                />
+            </InputDiv>
             {searchCourses && (
                 <PaginatedItems itemsPerPage={6} searchData={searchCourses} />
             )}
