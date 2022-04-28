@@ -4,15 +4,21 @@ import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
+import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin: auto;
+
+    padding: 80px 10px 0 10px;
+
+    @media ${breakPoint.desktop} {
+        max-width: 1200px;
+    }
 `;
 
 const SearchArea = styled.div`
@@ -76,17 +82,15 @@ export const Search = () => {
 
     return (
         <Container>
-            <SearchArea>
-                <SearchInput
-                    searchField={searchField}
-                    changeValueCallback={e => setSearchField(e.target.value)}
-                    searchCallback={() => {
-                        handleChange();
-                    }}
-                />
-            </SearchArea>
+            <SearchInput
+                searchField={searchField}
+                changeValueCallback={e => setSearchField(e.target.value)}
+                searchCallback={() => {
+                    handleChange();
+                }}
+            />
             {searchCourses && (
-                <PaginatedItems itemsPerPage={2} searchData={searchCourses} />
+                <PaginatedItems itemsPerPage={6} searchData={searchCourses} />
             )}
         </Container>
     );
