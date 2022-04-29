@@ -294,6 +294,7 @@ const firebaseInit = {
 
             return {
                 title: detail.title,
+                image: detail.image,
                 teacherUserID: detail.teacherUserID,
                 teacherName: teacherInfoData.name,
                 teacherEmail: teacherInfoData.email,

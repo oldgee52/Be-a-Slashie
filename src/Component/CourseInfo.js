@@ -14,7 +14,7 @@ const CourseCard = styled.div`
     padding-bottom: 20px;
     border-bottom: 2px solid black;
 
-    cursor: pointer;
+    cursor: ${props => (props.isLink ? "pointer" : "default")};
 
     @media ${breakPoint.desktop} {
         flex-direction: column;
@@ -29,11 +29,11 @@ const CourseImg = styled.img`
     width: 100px;
     height: auto;
     flex-shrink: 0;
-    object-fit: contain;
+    object-fit: cover;
     @media ${breakPoint.desktop} {
         width: 100%;
         height: 200px;
-        object-fit: contain;
+        object-fit: cover;
     }
 `;
 const CourseTitle = styled.div`
@@ -131,6 +131,7 @@ export const CourseInfo = ({
     view,
     image,
     teacherPhoto,
+    closedDate,
 }) => {
     const navigate = useNavigate();
     return (
@@ -138,25 +139,36 @@ export const CourseInfo = ({
             {/* <TeacherPhoto src={image} alt={title}></TeacherPhoto> */}
             <CourseCard
                 onClick={() => {
-                    navigate(`/course?courseID=${courseID}`);
+                    if (courseID) navigate(`/course?courseID=${courseID}`);
                 }}
+                isLink={courseID}
             >
                 {/* <Label>New</Label> */}
-                <TeacherPhoto
-                    src={teacherPhoto}
-                    alt={teacherName}
-                ></TeacherPhoto>
+                {teacherPhoto && (
+                    <TeacherPhoto
+                        src={teacherPhoto}
+                        alt={teacherName}
+                    ></TeacherPhoto>
+                )}
                 <CourseImg src={image} alt={title} />
                 <CourseTitle>
                     <CourseName>{title}</CourseName>
                     <TeacherName>{teacherName}</TeacherName>
-                    <TeacherName>上架日期 {creatDate}</TeacherName>
-                    <TeacherName>開課日期 {openingDate}</TeacherName>
+                    {creatDate && (
+                        <TeacherName>上架日期 {creatDate}</TeacherName>
+                    )}
+                    {openingDate && (
+                        <TeacherName>開課日期 {openingDate}</TeacherName>
+                    )}
+                    {closedDate && (
+                        <TeacherName>完課日期 {closedDate}</TeacherName>
+                    )}
                 </CourseTitle>
-
-                <View>
-                    <FiEye viewBox="0 -3 24 24 " /> {view}
-                </View>
+                {view && (
+                    <View>
+                        <FiEye viewBox="0 -3 24 24 " /> {view}
+                    </View>
+                )}
             </CourseCard>
         </>
     );
