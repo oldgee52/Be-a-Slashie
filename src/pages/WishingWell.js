@@ -5,6 +5,7 @@ import { collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -15,7 +16,7 @@ const Container = styled.div`
     padding: 80px 10px 0px 10px;
 
     @media ${breakPoint.desktop} {
-        justify-content: flex-start;
+        margin: auto;
         max-width: 1200px;
     }
 `;
@@ -43,11 +44,22 @@ const Button = styled.button`
     margin-bottom: 20px;
 
     @media ${breakPoint.desktop} {
+        width: 100px;
+        margin: 0;
+        margin-left: 10px;
     }
 `;
 
 const InputArea = styled.div`
     width: 100%;
+
+    @media ${breakPoint.desktop} {
+        display: flex;
+        width: 500px;
+
+        align-self: start;
+        margin-bottom: 20px;
+    }
 `;
 
 const Title = styled.div`
@@ -74,11 +86,10 @@ const CourseCard = styled.div`
     border-bottom: 3px solid rgb(0 190 164);
 
     @media ${breakPoint.desktop} {
-        flex-direction: column;
-        align-items: center;
-        border: 2px solid black;
-        border-radius: 5px;
-        border-bottom: 10px solid black;
+        break-inside: avoid-column;
+        &:first-child {
+            margin-top: 0;
+        }
     }
 `;
 const UserPhoto = styled.img`
@@ -96,38 +107,24 @@ const ContentArea = styled.div`
     padding: 0 25px;
     @media ${breakPoint.desktop} {
         width: 85%;
-        order: 0;
+
         padding: 0;
     }
 `;
 
 const InfoArea = styled.div`
     width: calc(100% - 80px);
+    @media ${breakPoint.desktop} {
+    }
 `;
 
 const Info = styled.p`
     color: #7f7f7f;
     font-size: 14px;
-    margin-top: 10px;
+    margin-top: 22px;
     @media ${breakPoint.desktop} {
         font-size: 18px;
-        margin-top: 10px;
-    }
-`;
-
-const CourseName = styled.h4`
-    width: 60vw;
-    font-size: 20px;
-    font-weight: 700;
-    word-wrap: break-word;
-
-    margin-bottom: 10px;
-    @media ${breakPoint.desktop} {
-        width: inherit;
-        font-size: 24px;
-        padding-top: 40px;
-        height: 120px;
-        word-wrap: break-word;
+        margin-top: 20px;
     }
 `;
 
@@ -142,11 +139,20 @@ const TeacherName = styled.p`
     }
 `;
 
+const WishContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    @media ${breakPoint.desktop} {
+        display: block;
+        column-count: 3;
+        column-gap: 20px;
+    }
+`;
+
 export const WishingWell = () => {
-    const [wishingContent, setWishingContent] = useState({
-        type: "",
-        content: "",
-    });
+    const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
 
@@ -186,30 +192,24 @@ export const WishingWell = () => {
     }
 
     function handleChange(e) {
-        let data = { ...wishingContent };
-        data[e.target.name] = e.target.value;
-        setWishingContent(data);
+        setWishingContent(e.target.value);
     }
 
     async function makeWish() {
-        if (!wishingContent.type.trim() || !wishingContent.content.trim())
-            return window.alert("請輸入內容");
+        if (!wishingContent.trim()) return window.alert("請輸入內容");
         try {
             const coursesRef = collection(firebaseInit.db, "wishingWells");
             const docRef = doc(coursesRef);
 
             const data = {
-                ...wishingContent,
+                content: wishingContent,
                 creatDate: Timestamp.now(),
                 userID: studentID,
                 id: docRef.id,
             };
             await setDoc(docRef, data);
 
-            setWishingContent({
-                type: "",
-                content: "",
-            });
+            setWishingContent("");
             setWishes([data, ...wishes]);
             window.alert("許願成功");
         } catch (error) {
@@ -220,7 +220,7 @@ export const WishingWell = () => {
 
     function renderWishes() {
         return (
-            <>
+            <WishContainer>
                 {wishes &&
                     usersInfo &&
                     wishes.map(wish => {
@@ -234,11 +234,6 @@ export const WishingWell = () => {
                                     <Info>
                                         {findUserInfo(wish.userID, "name")}
                                     </Info>
-                                    <Info>
-                                        {new Date(
-                                            wish.creatDate.toDate(),
-                                        ).toLocaleDateString()}
-                                    </Info>
                                 </InfoArea>
                                 <ContentArea>
                                     <TeacherName>{wish.content}</TeacherName>
@@ -246,9 +241,11 @@ export const WishingWell = () => {
                             </CourseCard>
                         );
                     })}
-            </>
+            </WishContainer>
         );
     }
+
+    console.log(lasWishSnapshotRef.current);
 
     return (
         <Background>
@@ -259,7 +256,7 @@ export const WishingWell = () => {
                     <>
                         <InputArea>
                             <TextInput
-                                value={wishingContent.content}
+                                value={wishingContent}
                                 handleChange={handleChange}
                                 name="content"
                                 placeholder={"請輸入你/妳的願望..."}
@@ -268,6 +265,9 @@ export const WishingWell = () => {
                         </InputArea>
                         <Title>許願池</Title>
                         {renderWishes()}
+                        {lasWishSnapshotRef.current
+                            ? "下滑看更多"
+                            : "最後囉"}{" "}
                         <Waypoint
                             onEnter={() =>
                                 loadingNextWishes(lasWishSnapshotRef.current)

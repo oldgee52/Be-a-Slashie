@@ -376,7 +376,7 @@ const firebaseInit = {
         const q = query(
             collection(this.db, "wishingWells"),
             orderBy("creatDate", "desc"),
-            limit(3),
+            limit(6),
         );
         const firstWishesSnapshot = await getDocs(q);
         const wishes = firstWishesSnapshot.docs.map(wish => {
@@ -393,7 +393,7 @@ const firebaseInit = {
             collection(this.db, "wishingWells"),
             orderBy("creatDate", "desc"),
             startAfter(key),
-            limit(3),
+            limit(6),
         );
         const nextWishesSnapshot = await getDocs(q);
         const wishes = nextWishesSnapshot.docs.map(wish => {
