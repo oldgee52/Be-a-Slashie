@@ -4,52 +4,155 @@ import styled from "styled-components";
 import { collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
+import { breakPoint } from "../utils/breakPoint";
+
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+
+    padding: 80px 10px 0px 10px;
+
+    @media ${breakPoint.desktop} {
+        margin: auto;
+        max-width: 1200px;
+    }
+`;
+
+const Background = styled.div`
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
 `;
 const Button = styled.button`
-    width: 30%;
-    height: 48px;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
+    border-radius: 5px;
 
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: #f44336;
-    border: none;
+    background-color: #ff6100;
+
     cursor: pointer;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 100px;
+        margin: 0;
+        margin-left: 10px;
+    }
 `;
 
-const Div1 = styled.div`
+const InputArea = styled.div`
+    width: 100%;
+
+    @media ${breakPoint.desktop} {
+        display: flex;
+        width: 500px;
+
+        align-self: start;
+        margin-bottom: 20px;
+    }
+`;
+
+const Title = styled.div`
+    font-size: 24px;
+    letter-spacing: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+
+    text-align: center;
+`;
+
+const CourseCard = styled.div`
     width: 100%;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+
+    padding-bottom: 20px;
+    border-bottom: 3px solid rgb(0 190 164);
+
+    @media ${breakPoint.desktop} {
+        break-inside: avoid-column;
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+`;
+const UserPhoto = styled.img`
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    object-fit: cover;
+    margin: 5px 10px 0 10px;
+
+    @media ${breakPoint.desktop} {
+    }
+`;
+const ContentArea = styled.div`
+    width: 100%;
+    padding: 0 25px;
+    @media ${breakPoint.desktop} {
+        width: 85%;
+
+        padding: 0;
+    }
 `;
 
-const Div12 = styled(Div1)`
-    border: 1px solid black;
-`;
-const Div13 = styled(Div1)`
-    margin-bottom: 50px;
+const InfoArea = styled.div`
+    width: calc(100% - 80px);
+    @media ${breakPoint.desktop} {
+    }
 `;
 
-const Div15 = styled(Div1)`
-    height: 230px;
-    overflow-x: hidden;
+const Info = styled.p`
+    color: #7f7f7f;
+    font-size: 14px;
+    margin-top: 22px;
+    @media ${breakPoint.desktop} {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+`;
+
+const TeacherName = styled.p`
+    color: #7f7f7f;
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 5px;
+    @media ${breakPoint.desktop} {
+        font-size: 18px;
+        margin-top: 10px;
+    }
+`;
+
+const WishContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    @media ${breakPoint.desktop} {
+        display: block;
+        column-count: 3;
+        column-gap: 20px;
+    }
 `;
 
 export const WishingWell = () => {
-    const [wishingContent, setWishingContent] = useState({
-        type: "",
-        content: "",
-    });
+    const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
 
@@ -89,30 +192,24 @@ export const WishingWell = () => {
     }
 
     function handleChange(e) {
-        let data = { ...wishingContent };
-        data[e.target.name] = e.target.value;
-        setWishingContent(data);
+        setWishingContent(e.target.value);
     }
 
     async function makeWish() {
-        if (!wishingContent.type.trim() || !wishingContent.content.trim())
-            return window.alert("請輸入內容");
+        if (!wishingContent.trim()) return window.alert("請輸入內容");
         try {
             const coursesRef = collection(firebaseInit.db, "wishingWells");
             const docRef = doc(coursesRef);
 
             const data = {
-                ...wishingContent,
+                content: wishingContent,
                 creatDate: Timestamp.now(),
                 userID: studentID,
                 id: docRef.id,
             };
             await setDoc(docRef, data);
 
-            setWishingContent({
-                type: "",
-                content: "",
-            });
+            setWishingContent("");
             setWishes([data, ...wishes]);
             window.alert("許願成功");
         } catch (error) {
@@ -123,68 +220,62 @@ export const WishingWell = () => {
 
     function renderWishes() {
         return (
-            <div>
+            <WishContainer>
                 {wishes &&
+                    usersInfo &&
                     wishes.map(wish => {
                         return (
-                            <Div12 key={wish.id}>
-                                <Div1>
-                                    日期:
-                                    {new Date(
-                                        wish.creatDate.toDate(),
-                                    ).toLocaleDateString()}{" "}
-                                </Div1>
-                                <Div1>類型: {wish.type}</Div1>
-                                <Div1>內容: {wish.content}</Div1>
-                                <Div1>
-                                    許願者姓名:{" "}
-                                    {usersInfo &&
-                                        findUserInfo(wish.userID, "name")}
-                                </Div1>
-                            </Div12>
+                            <CourseCard key={wish.id}>
+                                <UserPhoto
+                                    src={findUserInfo(wish.userID, "photo")}
+                                    alt={findUserInfo(wish.userID, "name")}
+                                />
+                                <InfoArea>
+                                    <Info>
+                                        {findUserInfo(wish.userID, "name")}
+                                    </Info>
+                                </InfoArea>
+                                <ContentArea>
+                                    <TeacherName>{wish.content}</TeacherName>
+                                </ContentArea>
+                            </CourseCard>
                         );
                     })}
-            </div>
+            </WishContainer>
         );
     }
 
+    console.log(lasWishSnapshotRef.current);
+
     return (
-        <Container>
-            {!usersInfo || !wishes ? (
-                "loading..."
-            ) : (
-                <>
-                    <TextInput
-                        title="類型"
-                        value={wishingContent.type}
-                        handleChange={handleChange}
-                        name="type"
-                    />
-                    <TextInput
-                        title="許願內容"
-                        value={wishingContent.content}
-                        handleChange={handleChange}
-                        name="content"
-                    />
-                    <Button onClick={makeWish}>我要許願</Button>
-                    <Div13>
-                        <h2>許願池</h2>
-                        <Div15>
-                            {renderWishes()}
-                            {lasWishSnapshotRef.current
-                                ? "下滑看更多"
-                                : "最後囉"}{" "}
-                            <Waypoint
-                                onEnter={() =>
-                                    loadingNextWishes(
-                                        lasWishSnapshotRef.current,
-                                    )
-                                }
+        <Background>
+            <Container>
+                {!usersInfo || !wishes ? (
+                    "loading..."
+                ) : (
+                    <>
+                        <InputArea>
+                            <TextInput
+                                value={wishingContent}
+                                handleChange={handleChange}
+                                name="content"
+                                placeholder={"請輸入你/妳的願望..."}
                             />
-                        </Div15>
-                    </Div13>
-                </>
-            )}{" "}
-        </Container>
+                            <Button onClick={makeWish}>我要許願</Button>
+                        </InputArea>
+                        <Title>許願池</Title>
+                        {renderWishes()}
+                        {lasWishSnapshotRef.current
+                            ? "下滑看更多"
+                            : "最後囉"}{" "}
+                        <Waypoint
+                            onEnter={() =>
+                                loadingNextWishes(lasWishSnapshotRef.current)
+                            }
+                        />
+                    </>
+                )}
+            </Container>
+        </Background>
     );
 };
