@@ -30,6 +30,7 @@ const Container = styled.div`
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
+        /* flex-direction: column; */
         max-width: 1200px;
     }
 `;
@@ -48,6 +49,11 @@ const CourseTitle = styled.div`
     backdrop-filter: blur(5px); */
 
     line-height: 1.5;
+
+    @media ${breakPoint.desktop} {
+        text-align: left;
+        font-size: 24px;
+    }
 `;
 // const Test = styled.div`
 //  backdrop-filter: blur(5px);
@@ -71,6 +77,12 @@ const Collection = styled.div`
     background-color: ${props => (props.collected ? "#ff6100" : "white")};
 
     cursor: pointer;
+
+    @media ${breakPoint.desktop} {
+        margin-left: 75%;
+        width: 25%;
+        order: 5;
+    }
 `;
 
 const CourseInfo = styled.div`
@@ -78,10 +90,20 @@ const CourseInfo = styled.div`
     justify-content: center;
     width: 100%;
     margin-top: 10px;
+    @media ${breakPoint.desktop} {
+        margin-bottom: 20px;
+        justify-content: flex-start;
+        /* width: 25%; */
+        order: 1;
+    }
 `;
 const InfoTitle = styled.div`
     margin-left: 5px;
     margin-right: 5px;
+    @media ${breakPoint.desktop} {
+        margin-left: 0;
+        margin-right: 10px;
+    }
 `;
 
 const TeacherInfo = styled.div`
@@ -98,6 +120,14 @@ const TeacherInfo = styled.div`
     &:hover {
         height: unset;
     } */
+
+    @media ${breakPoint.desktop} {
+        /* position: sticky; */
+        order: 4;
+        /* top: 50px; */
+        margin-left: auto;
+        width: 25%;
+    }
 `;
 
 const TeacherImg = styled.img`
@@ -128,6 +158,13 @@ const AboutCourse = styled.div`
     align-items: flex-start;
     width: 100%;
     padding-left: 5px;
+
+    @media ${breakPoint.desktop} {
+        align-self: flex-start;
+        width: calc(75% - 20px);
+        order: 3;
+        padding-left: 0;
+    }
 `;
 const AboutTitle = styled.h3`
     font-size: 20px;
@@ -172,6 +209,10 @@ const RegisterArea = styled.div`
     width: 100vw;
     background-color: whitesmoke;
     height: 50px;
+
+    @media ${breakPoint.desktop} {
+        display: none;
+    }
 `;
 
 const Button = styled.button`
@@ -187,6 +228,27 @@ const Button = styled.button`
     background-color: ${props => (props.active ? "gray" : "#ff6100")};
     border: none;
     cursor: ${props => (props.active ? "not-allowed" : "pointer")};
+
+    @media ${breakPoint.desktop} {
+        margin-top: 20px;
+        height: 50px;
+        width: 25%;
+        margin-left: 75%;
+        order: 6;
+    }
+`;
+
+const WebButton = styled(Button)`
+    display: none;
+
+    @media ${breakPoint.desktop} {
+        display: block;
+        margin-top: 20px;
+        height: 50px;
+        width: 25%;
+        margin-left: 75%;
+        order: 6;
+    }
 `;
 
 export const Course = () => {
@@ -546,6 +608,30 @@ export const Course = () => {
                             </CourseIntroduction>
                         </AboutContent>
                     </AboutCourse>
+
+                    <WebButton
+                        onClick={handleRegistration}
+                        disabled={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                        active={
+                            courseData.teacherUserID === userID ||
+                            findUserInfo(userID, "studentsCourses")?.some(
+                                value => value === courseID,
+                            )
+                        }
+                    >
+                        {courseData.teacherUserID === userID
+                            ? "您是老師喔"
+                            : findUserInfo(userID, "studentsCourses")?.some(
+                                  value => value === courseID,
+                              )
+                            ? "你已經報名囉"
+                            : "我要報名"}
+                    </WebButton>
 
                     {/* <Div1>
                         <DivTitle>課程名稱</DivTitle>
