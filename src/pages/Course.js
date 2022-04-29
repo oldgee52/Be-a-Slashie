@@ -16,7 +16,8 @@ import { Skills } from "../Component/Skills";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
-import { BsBookmark } from "react-icons/bs";
+import { BsReply } from "react-icons/bs";
+import { RiCloseCircleLine } from "react-icons/ri";
 
 const Container = styled.div`
     display: flex;
@@ -220,10 +221,6 @@ const CourseIntroduction = styled.p`
 //     height: 20px;
 // `;
 
-const Input = styled.input`
-    width: 50%;
-    height: 20px;
-`;
 const RegisterArea = styled.div`
     display: flex;
     position: fixed;
@@ -275,6 +272,103 @@ const WebButton = styled(Button)`
     }
 `;
 
+const MessageArea = styled.div`
+    width: 100%;
+    background-color: whitesmoke;
+`;
+
+const MessageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0 30px 0;
+    width: 90%;
+    margin: auto;
+`;
+
+const MessageHeader = styled.div`
+    font-size: 18px;
+`;
+
+const MessageInputArea = styled.div`
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 10px;
+    margin-top: 20px;
+`;
+const Input = styled.textarea`
+    width: 100%;
+    height: 80px;
+
+    padding: 5px;
+
+    font-size: 16px;
+`;
+
+const SendButton = styled.button`
+    width: 50px;
+    height: 30px;
+    line-height: 30px;
+    background-color: rgb(0, 190, 164);
+    color: white;
+    margin-left: auto;
+    margin-top: 10px;
+
+    border-radius: 5px;
+`;
+
+const CurrentMessageArea = styled.div`
+    display: flex;
+    flex-direction: column;
+    color: gray;
+
+    border-bottom: 1px solid gray;
+    padding-bottom: 5px;
+`;
+const CurrentMessageTitle = styled.div`
+    font-size: 14px;
+    margin-bottom: 8px;
+`;
+const CurrentMessageContent = styled.div`
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.8);
+    word-break: break-all;
+`;
+
+const ReplyMessageArea = styled.div`
+    display: flex;
+    flex-direction: column;
+    color: gray;
+
+    align-items: flex-end;
+
+    margin-top: 10px;
+    margin-left: 30px;
+
+    border-bottom: 1px solid gray;
+    padding-bottom: 5px;
+`;
+
+const ReplyMessageContent = styled(CurrentMessageContent)`
+    align-self: flex-start;
+    word-break: break-all;
+`;
+
+const ReplyMessageInputArea = styled(MessageInputArea)`
+    margin: 0;
+    padding-right: 0;
+    padding-left: 30px;
+
+    display: ${props => (props.show ? "flex" : "none")};
+`;
+
+const IsShowReply = styled.div`
+    margin-left: 30px;
+    margin-top: 10px;
+`;
+
 export const Course = () => {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
@@ -321,7 +415,7 @@ export const Course = () => {
                 setInputFields(
                     Array(courseDate.askedQuestions?.length || 0)
                         .fill()
-                        .map(() => ({ reply: "" })),
+                        .map(() => ({ reply: "", isShowReplyInput: false })),
                 );
 
                 const SkillsPromise = courseDate.getSkills.map(skill =>
@@ -455,77 +549,74 @@ export const Course = () => {
             courseData.askedQuestions &&
             courseData.askedQuestions
                 .map((question, index) => (
-                    <div key={index} style={{ paddingBottom: 20 }}>
-                        <div>
-                            {" "}
-                            姓名:{" "}
-                            {usersInfo &&
-                                findUserInfo(question.askedUserID, "name")}
-                        </div>
-                        <div>內容:{question.askedContent}</div>
-                        <div>
-                            留言日期:
-                            {new Date(
-                                question.askedDate.seconds * 1000,
-                            ).toLocaleString("TW-zh", { hour12: false })}
-                        </div>
+                    <MessageInputArea key={index}>
+                        <CurrentMessageArea>
+                            <CurrentMessageTitle>
+                                {usersInfo &&
+                                    findUserInfo(question.askedUserID, "name")}
+                            </CurrentMessageTitle>
+                            <CurrentMessageTitle>
+                                {new Date(
+                                    question.askedDate.seconds * 1000,
+                                ).toLocaleDateString()}
+                            </CurrentMessageTitle>
+                            <CurrentMessageContent>
+                                {question.askedContent}
+                            </CurrentMessageContent>
+                        </CurrentMessageArea>
                         {question.replies &&
-                            question.replies
-                                .map((reply, index_2) => (
-                                    <div
-                                        key={index_2}
-                                        style={{
-                                            paddingLeft: 50,
-                                            marginTop: 10,
-                                        }}
-                                    >
-                                        <div>
-                                            姓名:
-                                            {usersInfo &&
-                                                findUserInfo(
-                                                    reply.repliedUserID,
-                                                    "name",
-                                                )}
-                                        </div>
-                                        <div>
-                                            回覆內容:
-                                            {reply.repliedContent}
-                                        </div>
-                                        <div>
-                                            回覆日期:
-                                            {new Date(
-                                                reply.repliedDate.seconds *
-                                                    1000,
-                                            ).toLocaleString("TW-zh", {
-                                                hour12: false,
-                                            })}
-                                        </div>
-                                    </div>
-                                ))
-                                .reverse()}
-                        <div>
-                            <div
-                                key={index}
-                                style={{
-                                    paddingLeft: 50,
-                                    marginTop: 10,
-                                }}
+                            question.replies.map((reply, index_2) => (
+                                <ReplyMessageArea key={index_2}>
+                                    <CurrentMessageTitle>
+                                        {usersInfo &&
+                                            findUserInfo(
+                                                reply.repliedUserID,
+                                                "name",
+                                            )}
+                                    </CurrentMessageTitle>
+                                    <CurrentMessageTitle>
+                                        {new Date(
+                                            reply.repliedDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    </CurrentMessageTitle>
+                                    <ReplyMessageContent>
+                                        {reply.repliedContent}
+                                    </ReplyMessageContent>
+                                </ReplyMessageArea>
+                            ))}
+                        <IsShowReply
+                            onClick={() => {
+                                console.log(123);
+                                handleShowReplyInput(index);
+                            }}
+                        >
+                            {inputFields[index]?.isShowReplyInput ? (
+                                <>
+                                    <RiCloseCircleLine />
+                                    取消
+                                </>
+                            ) : (
+                                <>
+                                    <BsReply /> 回覆
+                                </>
+                            )}
+                        </IsShowReply>
+                        <ReplyMessageInputArea
+                            key={index}
+                            show={inputFields[index]?.isShowReplyInput}
+                        >
+                            <Input
+                                value={inputFields[index]?.reply || ""}
+                                name="reply"
+                                onChange={e => handleReplyMessage(e, index)}
+                            />
+                            <SendButton
+                                onClick={() => handleSendReplyMessage(index)}
                             >
-                                <Input
-                                    value={inputFields[index]?.reply || ""}
-                                    name="reply"
-                                    onChange={e => handleReplyMessage(e, index)}
-                                />
-                                <button
-                                    onClick={() =>
-                                        handleSendReplyMessage(index)
-                                    }
-                                >
-                                    送出
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                                回覆
+                            </SendButton>
+                        </ReplyMessageInputArea>
+                    </MessageInputArea>
                 ))
                 .reverse()
         );
@@ -534,6 +625,12 @@ export const Course = () => {
     const handleReplyMessage = (e, index) => {
         let data = [...inputFields];
         data[index][e.target.name] = e.target.value;
+        setInputFields(data);
+    };
+
+    const handleShowReplyInput = index => {
+        let data = [...inputFields];
+        data[index]["isShowReplyInput"] = !data[index]["isShowReplyInput"];
         setInputFields(data);
     };
 
@@ -656,7 +753,21 @@ export const Course = () => {
                             ? "你已經報名囉"
                             : "我要報名"}
                     </WebButton>
-
+                    <MessageArea>
+                        <MessageContainer>
+                            <MessageHeader>上課前問問</MessageHeader>
+                            <MessageInputArea>
+                                <Input
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                />
+                                <SendButton onClick={handSendMessage}>
+                                    送出
+                                </SendButton>
+                            </MessageInputArea>
+                            {renderMessages()}
+                        </MessageContainer>
+                    </MessageArea>
                     {/* <Div1>
                         <DivTitle>課程名稱</DivTitle>
                         <DivContent>{courseData.title}</DivContent>
