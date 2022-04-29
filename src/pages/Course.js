@@ -101,7 +101,7 @@ const InfoTitle = styled.div`
     margin-left: 5px;
     margin-right: 5px;
     @media ${breakPoint.desktop} {
-        margin-left: 0;
+        margin-left: 0px;
         margin-right: 10px;
     }
 `;
@@ -113,6 +113,7 @@ const TeacherInfo = styled.div`
     border: 1px solid black;
     border-radius: 5px;
     margin-top: 20px;
+    width: 300px;
 
     /* height: 150px;
     overflow: hidden;
@@ -161,6 +162,8 @@ const AboutCourse = styled.div`
 
     @media ${breakPoint.desktop} {
         align-self: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
         width: calc(75% - 20px);
         order: 3;
         padding-left: 0;
@@ -171,11 +174,26 @@ const AboutTitle = styled.h3`
     font-weight: 700;
     margin-top: 10px;
     margin-bottom: 10px;
+
+    @media ${breakPoint.desktop} {
+        width: 100%;
+    }
 `;
+
 const AboutContent = styled.div`
     font-size: 16px;
     margin-top: 10px;
     margin-bottom: 10px;
+
+    @media ${breakPoint.desktop} {
+        padding-right: 50px;
+    }
+`;
+
+const AboutContentsSkill = styled(AboutContent)`
+    @media ${breakPoint.desktop} {
+        width: 100%;
+    }
 `;
 
 const FlexDiv = styled.div`
@@ -183,11 +201,17 @@ const FlexDiv = styled.div`
     margin-top: 20px;
     justify-content: center;
     width: 100%;
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+    }
 `;
 const CourseIntroduction = styled.p`
     margin-top: 15px;
     font-size: 12px;
     line-height: 1.5;
+    @media ${breakPoint.desktop} {
+        font-size: 14px;
+    }
 `;
 
 // const NewBiTag = styled(BiTag)`
@@ -594,13 +618,13 @@ export const Course = () => {
                                 courseData.openingDate.seconds * 1000,
                             ).toLocaleDateString()}
                         </AboutContent>
-                        <AboutContent>
+                        <AboutContentsSkill>
                             可獲技能{" "}
                             <FlexDiv>
                                 {" "}
                                 {skillsInfo && <Skills skills={skillsInfo} />}
                             </FlexDiv>
-                        </AboutContent>
+                        </AboutContentsSkill>
                         <AboutContent>
                             課程詳情
                             <CourseIntroduction>
