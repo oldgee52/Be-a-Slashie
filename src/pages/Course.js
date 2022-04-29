@@ -83,6 +83,10 @@ const Collection = styled.div`
         margin-left: 75%;
         width: 25%;
         order: 5;
+        position: sticky;
+        top: 460px;
+        order: 5;
+        z-index: 2;
     }
 `;
 
@@ -115,6 +119,7 @@ const TeacherInfo = styled.div`
     border-radius: 5px;
     margin-top: 20px;
     width: 300px;
+    background-color: white;
 
     /* height: 150px;
     overflow: hidden;
@@ -124,11 +129,14 @@ const TeacherInfo = styled.div`
     } */
 
     @media ${breakPoint.desktop} {
-        /* position: sticky; */
+        align-self: stretch;
+        position: sticky;
         order: 4;
-        /* top: 50px; */
+        top: 50px;
         margin-left: auto;
         width: 25%;
+        z-index: 2;
+        margin-top: -75px;
     }
 `;
 
@@ -203,7 +211,7 @@ const FlexDiv = styled.div`
     justify-content: center;
     width: 100%;
     @media ${breakPoint.desktop} {
-        justify-content: flex-start;
+        justify-content: space-between;
     }
 `;
 const CourseIntroduction = styled.p`
@@ -256,6 +264,10 @@ const Button = styled.button`
         width: 25%;
         margin-left: 75%;
         order: 6;
+
+        position: sticky;
+        top: 530px;
+        z-index: 2;
     }
 `;
 
@@ -274,7 +286,10 @@ const WebButton = styled(Button)`
 
 const MessageArea = styled.div`
     width: 100%;
-    background-color: whitesmoke;
+    /* background-color: whitesmoke; */
+    @media ${breakPoint.desktop} {
+        order: 7;
+    }
 `;
 
 const MessageContainer = styled.div`
@@ -283,6 +298,10 @@ const MessageContainer = styled.div`
     padding: 30px 0 30px 0;
     width: 90%;
     margin: auto;
+    @media ${breakPoint.desktop} {
+        width: calc(75% - 10px);
+        margin: 0;
+    }
 `;
 
 const MessageHeader = styled.div`
@@ -292,7 +311,9 @@ const MessageHeader = styled.div`
 const MessageInputArea = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: white;
+    background-color: whitesmoke;
+    border: 1px solid whitesmoke;
+    border-radius: 5px;
     width: 100%;
     padding: 20px;
     padding-bottom: 10px;
@@ -326,15 +347,27 @@ const CurrentMessageArea = styled.div`
 
     border-bottom: 1px solid gray;
     padding-bottom: 5px;
+    @media ${breakPoint.desktop} {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 `;
 const CurrentMessageTitle = styled.div`
     font-size: 14px;
     margin-bottom: 8px;
+    @media ${breakPoint.desktop} {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
 `;
 const CurrentMessageContent = styled.div`
     line-height: 1.5;
     color: rgba(0, 0, 0, 0.8);
     word-break: break-all;
+
+    @media ${breakPoint.desktop} {
+        width: 100%;
+    }
 `;
 
 const ReplyMessageArea = styled.div`
@@ -349,6 +382,11 @@ const ReplyMessageArea = styled.div`
 
     border-bottom: 1px solid gray;
     padding-bottom: 5px;
+    @media ${breakPoint.desktop} {
+        justify-content: flex-end;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 `;
 
 const ReplyMessageContent = styled(CurrentMessageContent)`
@@ -360,13 +398,22 @@ const ReplyMessageInputArea = styled(MessageInputArea)`
     margin: 0;
     padding-right: 0;
     padding-left: 30px;
+    padding-top: 0;
+    transition-duration: 1s;
+    overflow: hidden;
 
-    display: ${props => (props.show ? "flex" : "none")};
+    height: ${props => (props.show ? "150px" : 0)};
 `;
 
 const IsShowReply = styled.div`
     margin-left: 30px;
     margin-top: 10px;
+
+    cursor: pointer;
+`;
+
+const ReplyInput = styled(Input)`
+    margin-top: 20px;
 `;
 
 export const Course = () => {
@@ -586,7 +633,6 @@ export const Course = () => {
                             ))}
                         <IsShowReply
                             onClick={() => {
-                                console.log(123);
                                 handleShowReplyInput(index);
                             }}
                         >
@@ -605,10 +651,11 @@ export const Course = () => {
                             key={index}
                             show={inputFields[index]?.isShowReplyInput}
                         >
-                            <Input
+                            <ReplyInput
                                 value={inputFields[index]?.reply || ""}
                                 name="reply"
                                 onChange={e => handleReplyMessage(e, index)}
+                                show={inputFields[index]?.isShowReplyInput}
                             />
                             <SendButton
                                 onClick={() => handleSendReplyMessage(index)}
@@ -728,8 +775,22 @@ export const Course = () => {
                                 {courseData.courseIntroduction}
                             </CourseIntroduction>
                         </AboutContent>
-                    </AboutCourse>
-
+                    </AboutCourse>{" "}
+                    <MessageArea>
+                        <MessageContainer>
+                            <MessageHeader>上課前問問</MessageHeader>
+                            <MessageInputArea>
+                                <Input
+                                    value={message}
+                                    onChange={e => setMessage(e.target.value)}
+                                />
+                                <SendButton onClick={handSendMessage}>
+                                    送出
+                                </SendButton>
+                            </MessageInputArea>
+                            {renderMessages()}
+                        </MessageContainer>
+                    </MessageArea>
                     <WebButton
                         onClick={handleRegistration}
                         disabled={
@@ -753,23 +814,9 @@ export const Course = () => {
                             ? "你已經報名囉"
                             : "我要報名"}
                     </WebButton>
-                    <MessageArea>
-                        <MessageContainer>
-                            <MessageHeader>上課前問問</MessageHeader>
-                            <MessageInputArea>
-                                <Input
-                                    value={message}
-                                    onChange={e => setMessage(e.target.value)}
-                                />
-                                <SendButton onClick={handSendMessage}>
-                                    送出
-                                </SendButton>
-                            </MessageInputArea>
-                            {renderMessages()}
-                        </MessageContainer>
-                    </MessageArea>
                     {/* <Div1>
                         <DivTitle>課程名稱</DivTitle>
+                   
                         <DivContent>{courseData.title}</DivContent>
                     </Div1>
                     <Div1>
