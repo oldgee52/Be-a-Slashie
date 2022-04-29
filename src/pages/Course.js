@@ -31,7 +31,6 @@ const Container = styled.div`
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
-        /* flex-direction: column; */
         max-width: 1200px;
     }
 `;
@@ -40,14 +39,8 @@ const CourseTitle = styled.div`
     font-size: 20px;
     font-weight: 700;
     width: 100%;
-    /* height: 200px; */
 
     text-align: center;
-
-    /* background-image: url(${props => props.img});
-    background-repeat: no-repeat;
-    background-size: cover;
-    backdrop-filter: blur(5px); */
 
     line-height: 1.5;
 
@@ -56,14 +49,6 @@ const CourseTitle = styled.div`
         font-size: 24px;
     }
 `;
-// const Test = styled.div`
-//  backdrop-filter: blur(5px);
-//  width: 100%;
-//  height: 100px;
-//  position: fixed;
-//  top: 200px;
-
-// `
 
 const Collection = styled.div`
     margin-top: 20px;
@@ -120,13 +105,6 @@ const TeacherInfo = styled.div`
     margin-top: 20px;
     width: 300px;
     background-color: white;
-
-    /* height: 150px;
-    overflow: hidden;
-    transition-duration: 2s;
-    &:hover {
-        height: unset;
-    } */
 
     @media ${breakPoint.desktop} {
         align-self: stretch;
@@ -223,12 +201,6 @@ const CourseIntroduction = styled.p`
     }
 `;
 
-// const NewBiTag = styled(BiTag)`
-//     transform: rotate(270deg);
-//     width: 20px;
-//     height: 20px;
-// `;
-
 const RegisterArea = styled.div`
     display: flex;
     position: fixed;
@@ -286,7 +258,6 @@ const WebButton = styled(Button)`
 
 const MessageArea = styled.div`
     width: 100%;
-    /* background-color: whitesmoke; */
     @media ${breakPoint.desktop} {
         order: 7;
     }
@@ -684,7 +655,6 @@ export const Course = () => {
     const handleSendReplyMessage = async index => {
         if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
         const stateCopy = JSON.parse(JSON.stringify(courseData));
-        // const data = { ...courseData };
 
         stateCopy.askedQuestions.forEach((question, i) => {
             if (i === index) {
@@ -741,8 +711,6 @@ export const Course = () => {
                         onClick={handleCollection}
                         collected={userCollection}
                     >
-                        {/* <NewBiTag  viewBox="3 0 24 24"/>{" "} */}
-                        {/* <BsBookmark /> */}
                         {userCollection ? "已收藏" : "加入收藏"}
                     </Collection>
                     <AboutCourse>
@@ -814,98 +782,6 @@ export const Course = () => {
                             ? "你已經報名囉"
                             : "我要報名"}
                     </WebButton>
-                    {/* <Div1>
-                        <DivTitle>課程名稱</DivTitle>
-                   
-                        <DivContent>{courseData.title}</DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>課程介紹</DivTitle>
-                        <DivContent>{courseData.courseIntroduction}</DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>報名截止</DivTitle>
-                        <DivContent>
-                            {new Date(
-                                courseData.registrationDeadline.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>可獲技能</DivTitle>
-                        {skillsInfo && <Skills skills={skillsInfo} />}
-                    </Div1>
-
-                    <Div1>
-                        <DivTitle>老師簡介</DivTitle>
-                        <DivContent>
-                            {courseData.teacherIntroduction}
-                        </DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>老師姓名</DivTitle>
-                        <DivContent>
-                            {usersInfo &&
-                                findUserInfo(courseData.teacherUserID, "name")}
-                        </DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>目前報名人數</DivTitle>
-                        <DivContent>{courseData.registrationNumber}</DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>目前瀏覽人數</DivTitle>
-                        <DivContent>{courseData.view}</DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>收藏</DivTitle>
-                        <DivContent onClick={handleCollection}>
-                            {userCollection ? "已蒐藏點我取消" : "點我蒐藏"}
-                        </DivContent>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>留言</DivTitle>
-                        <Input
-                            value={message}
-                            onChange={e => setMessage(e.target.value)}
-                        />
-                        <button onClick={handSendMessage}>送出</button>
-                    </Div1>
-                    <Div1>
-                        <DivTitle>留言區</DivTitle>
-                        <DivContent
-                            style={{
-                                flexDirection: "column",
-                                paddingBottom: 20,
-                            }}
-                        >
-                            {renderMessages()}
-                        </DivContent>
-                    </Div1>
-
-                    <Button
-                        onClick={handleRegistration}
-                        disabled={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                        active={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                    >
-                        {courseData.teacherUserID === userID
-                            ? "您是老師喔"
-                            : findUserInfo(userID, "studentsCourses")?.some(
-                                  value => value === courseID,
-                              )
-                            ? "你已經報名囉"
-                            : "我要報名"}
-                    </Button> */}
                 </Container>
             )}
             {courseData && usersInfo && (
