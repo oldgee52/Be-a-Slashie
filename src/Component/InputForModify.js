@@ -2,20 +2,111 @@ import React from "react";
 import styled from "styled-components";
 import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
+import { BsPencil } from "react-icons/bs";
+import { breakPoint } from "../utils/breakPoint";
 
-const Div1 = styled.div`
-    width: 100%;
+const Container = styled.div`
+    width: 80%;
     display: flex;
-    margin-top: 20px;
+    justify-content: center;
+    padding: 20px;
+
+    flex-wrap: wrap;
+    border-bottom: 1px solid black;
+
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+    }
 `;
 
-const DivTitle = styled.div`
-    width: 20%;
+const Title = styled.div`
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+    @media ${breakPoint.desktop} {
+        display: flex;
+        align-items: center;
+        width: 80px;
+        margin-bottom: 0;
+    }
 `;
 
 const Input = styled.input`
     width: 50%;
-    height: 20px;
+    /* height: 50px; */
+    font-size: 20px;
+    padding: 5px;
+
+    word-break: break-word;
+    text-align: center;
+    border: none;
+    &:focus {
+        outline: none;
+    }
+
+    &:disabled {
+        background-color: white;
+    }
+
+    @media ${breakPoint.desktop} {
+        text-align: left;
+        width: 60%;
+    }
+`;
+
+const InputText = styled.textarea`
+    width: 50%;
+    height: 70px;
+    font-size: 14px;
+    padding: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+
+    border: none;
+    &:focus {
+        outline: none;
+        overflow: inherit;
+    }
+
+    &:disabled {
+        background-color: white;
+    }
+
+    @media ${breakPoint.desktop} {
+        width: 60%;
+    }
+`;
+
+const PencilBox = styled.button`
+    @media ${breakPoint.desktop} {
+        align-self: flex-end;
+        margin-left: auto;
+    }
+`;
+
+const ButtonBox = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    @media ${breakPoint.desktop} {
+        width: 20%;
+        margin-left: auto;
+    }
+`;
+
+const ButtonConfirm = styled.button`
+    width: 80px;
+    height: 40px;
+    color: white;
+    background-color: ${props => (props.confirm ? "#ff6100" : "#7f7f7f")};
+
+    border-radius: 5px;
+    margin-right: 10px;
+    @media ${breakPoint.desktop} {
+        width: 50px;
+        height: 30px;
+    }
 `;
 
 export const InputForModify = ({
@@ -28,6 +119,7 @@ export const InputForModify = ({
     setHandleDisable,
     title,
     targetName,
+    inputText,
 }) => {
     function handleInputChange(e) {
         let data = { ...inputFields };
@@ -65,34 +157,61 @@ export const InputForModify = ({
     }
 
     return (
-        <Div1>
-            <DivTitle>{title}</DivTitle>
-            <Input
-                value={inputFields[targetName]}
-                name={targetName}
-                onChange={e => handleInputChange(e)}
-                disabled={handleDisable}
-            ></Input>
-            <button
-                onClick={() =>
-                    handleModifyClick(
-                        handleDisable,
-                        setHandleDisable,
-                        targetName,
-                    )
-                }
-            >
-                {handleDisable ? "修改" : "確定"}
-            </button>
-            {handleDisable || (
-                <button
-                    onClick={() => {
-                        handleCancelModify(setHandleDisable, targetName);
-                    }}
-                >
-                    取消
-                </button>
+        <Container>
+            <Title>{title}</Title>
+            {inputText ? (
+                <Input
+                    value={inputFields[targetName]}
+                    name={targetName}
+                    onChange={e => handleInputChange(e)}
+                    disabled={handleDisable}
+                />
+            ) : (
+                <InputText
+                    value={inputFields[targetName]}
+                    name={targetName}
+                    onChange={e => handleInputChange(e)}
+                    disabled={handleDisable}
+                />
             )}
-        </Div1>
+
+            {handleDisable && (
+                <PencilBox
+                    onClick={() =>
+                        handleModifyClick(
+                            handleDisable,
+                            setHandleDisable,
+                            targetName,
+                        )
+                    }
+                >
+                    <BsPencil />
+                </PencilBox>
+            )}
+            {handleDisable || (
+                <ButtonBox>
+                    <ButtonConfirm
+                        confirm
+                        onClick={() =>
+                            handleModifyClick(
+                                handleDisable,
+                                setHandleDisable,
+                                targetName,
+                            )
+                        }
+                    >
+                        確定
+                    </ButtonConfirm>
+                    <ButtonConfirm
+                        confirm={false}
+                        onClick={() => {
+                            handleCancelModify(setHandleDisable, targetName);
+                        }}
+                    >
+                        取消
+                    </ButtonConfirm>
+                </ButtonBox>
+            )}
+        </Container>
     );
 };

@@ -4,24 +4,52 @@ import styled from "styled-components";
 import { updateDoc, doc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { InputForModify } from "../Component/InputForModify";
+import { FiUpload } from "react-icons/fi";
+import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    width: 500px;
-`;
-const Div1 = styled.div`
     width: 100%;
-    display: flex;
-    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 70%;
+        margin-left: 50px;
+        margin-top: 0;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
 `;
 
-const DivTitle = styled.div`
-    width: 20%;
+const UserPhotoLabel = styled.label`
+    cursor: pointer;
+    @media ${breakPoint.desktop} {
+    }
+`;
+
+const UserPhoto = styled.img`
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    border: 1px solid black;
+`;
+
+const FileInput = styled.input`
+    display: none;
+`;
+
+const UploadIcon = styled(FiUpload)`
+    position: absolute;
+    right: -7px;
+    bottom: 0;
+    height: 30px;
+    width: 30px;
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 100%;
 `;
 
 export const Profile = () => {
@@ -29,7 +57,6 @@ export const Profile = () => {
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
     const [inputFields, SetInputFields] = useState();
-    const [image, setImage] = useState();
     const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
     useEffect(() => {
         firebaseInit.getCollectionData("users", studentID).then(data => {
@@ -41,15 +68,15 @@ export const Profile = () => {
         });
     }, []);
 
-    const uploadImage = () => {
-        if (!image?.value) return window.alert("請先選擇檔案");
+    const uploadImage = e => {
+        if (!e.target.value) return window.alert("請先選擇檔案");
         const mountainImagesRef = ref(
             firebaseInit.storage,
-            `photo-${image.value}`,
+            `photo-${e.target.value}`,
         );
         const uploadTask = uploadBytesResumable(
             mountainImagesRef,
-            image.files[0],
+            e.target.files[0],
         );
         uploadTask.on(
             "state_changed",
@@ -87,7 +114,7 @@ export const Profile = () => {
                             photo: downloadURL,
                         }));
 
-                        image.value = "";
+                        e.target.value = "";
                         window.alert("上傳成功");
                     },
                 );
@@ -97,24 +124,21 @@ export const Profile = () => {
 
     return (
         <Container>
-            <div>Profile</div>
             {userInfo && (
                 <>
-                    <Div1>
-                        <DivTitle>照片</DivTitle>
-                        <img
-                            src={userInfo.photo}
-                            alt={userInfo.name}
-                            width="50"
-                            height="50"
-                        ></img>
-                        <input
+                    <UserPhotoLabel htmlFor="photo">
+                        <UserPhoto src={userInfo.photo} alt={userInfo.name} />
+                        <FileInput
                             type="file"
                             accept="image/*"
-                            onChange={e => setImage(e.target)}
+                            id="photo"
+                            onChange={e => {
+                                uploadImage(e);
+                            }}
                         />
-                        <button onClick={uploadImage}>上傳</button>
-                    </Div1>
+                        <UploadIcon viewBox="-5 -1 30 30" />
+                    </UserPhotoLabel>
+
                     {inputFields && (
                         <>
                             <InputForModify
@@ -127,6 +151,7 @@ export const Profile = () => {
                                 setHandleDisable={setModifyUserName}
                                 title="姓名"
                                 targetName="name"
+                                inputText
                             />
                             <InputForModify
                                 inputFields={inputFields}
@@ -138,6 +163,7 @@ export const Profile = () => {
                                 setHandleDisable={setModifyUserIntroduction}
                                 title="自我介紹"
                                 targetName="selfIntroduction"
+                                inputText={false}
                             />
                         </>
                     )}

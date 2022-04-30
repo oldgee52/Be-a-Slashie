@@ -5,15 +5,17 @@ import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
     margin: auto;
-    margin-top: 100px;
+    margin-top: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    padding: 0 10px;
 
     @media ${breakPoint.desktop} {
         max-width: 1200px;
         justify-content: flex-start;
+        align-items: flex-start;
         padding: 0 20px 0 20px;
     }
 `;
@@ -32,6 +34,7 @@ const TitleArea = styled.div`
 `;
 
 const SubTitleArea = styled(TitleArea)`
+    font-size: 12px;
     @media ${breakPoint.desktop} {
         flex-direction: row;
         width: 60%;
@@ -42,10 +45,9 @@ const SubTitleArea = styled(TitleArea)`
     }
 `;
 const Title = styled.div`
-    font-size: 12px;
     text-align: center;
     padding-right: 15px;
-    color: ${prop => (prop.active ? "red" : "inherit")};
+    color: ${prop => (prop.active ? "#ff6100" : "inherit")};
 
     cursor: pointer;
 
