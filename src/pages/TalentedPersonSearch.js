@@ -25,6 +25,10 @@ const Container = styled.div`
 
 const SearchInputBox = styled.div`
     width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: 400px;
+    }
 `;
 
 const SkillsBox = styled.div`
@@ -33,6 +37,10 @@ const SkillsBox = styled.div`
     align-items: center;
 
     margin: 10px 0 10px 10px;
+
+    @media ${breakPoint.desktop} {
+        margin-bottom: 0;
+    }
 `;
 
 const SkillFilter = styled.div`
@@ -66,15 +74,27 @@ const Card = styled.div`
     margin-top: 10px;
 
     padding-bottom: 20px;
-    border-bottom: 2px solid black;
+    border-bottom: 3px solid rgb(0 190 164);
     cursor: pointer;
 
+    background-color: rgba(0, 0, 0, 0.1);
+
     @media ${breakPoint.desktop} {
+        width: calc(25% - 10px);
         flex-direction: column;
+        margin-right: 10px;
+        margin-top: 30px;
         align-items: center;
-        border: 2px solid black;
         border-radius: 5px;
-        border-bottom: 10px solid black;
+    }
+`;
+const CardBox = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    @media ${breakPoint.desktop} {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 `;
 
@@ -113,8 +133,8 @@ const UserSkillBox = styled.div`
     font-size: 14px;
     margin-top: 5px;
     @media ${breakPoint.desktop} {
-        font-size: 18px;
-        margin-top: 10px;
+        width: 100%;
+        justify-content: flex-start;
     }
 `;
 
@@ -151,29 +171,9 @@ const SelfIntroduction = styled.p`
 
 const UserSkillName = styled.div`
     padding-left: 10px;
-`;
-
-const InputArea = styled.input`
-    width: 100%;
-`;
-
-const Button = styled.button`
-    width: 100%;
-`;
-
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-`;
-
-const Div12 = styled(Div1)`
-    border: 1px solid black;
-`;
-
-const DivContent = styled.div`
-    padding-right: 20px;
-    width: 100%;
+    @media ${breakPoint.desktop} {
+        padding-bottom: 10px;
+    }
 `;
 
 export const TalentedPersonSearch = () => {
@@ -294,44 +294,46 @@ export const TalentedPersonSearch = () => {
                                 </SkillName>
                             ))}
                     </SkillsBox>
-                    {searchUsers &&
-                        searchUsers.map(user => (
-                            <Card
-                                onClick={() => {
-                                    navigate(
-                                        `/personal-introduction?uid=${user.uid}`,
-                                    );
-                                }}
-                            >
-                                <UserPhoto
-                                    src={user.photo}
-                                    alt={user.name}
-                                ></UserPhoto>
+                    <CardBox>
+                        {searchUsers &&
+                            searchUsers.map(user => (
+                                <Card
+                                    onClick={() => {
+                                        navigate(
+                                            `/personal-introduction?uid=${user.uid}`,
+                                        );
+                                    }}
+                                >
+                                    <UserPhoto
+                                        src={user.photo}
+                                        alt={user.name}
+                                    ></UserPhoto>
 
-                                <UserInfo>
-                                    <CourseName>{user.name}</CourseName>
-                                    <SelfIntroduction>
-                                        {user.selfIntroduction.length > 40
-                                            ? `${user.selfIntroduction.substring(
-                                                  0,
-                                                  40,
-                                              )}...`
-                                            : user.selfIntroduction}
-                                    </SelfIntroduction>
-                                </UserInfo>
-                                <UserSkillBox>
-                                    {user.skills.length === 0
-                                        ? ""
-                                        : user.skills.map(skill => (
-                                              <UserSkillName
-                                                  key={skill.skillID}
-                                              >
-                                                  #{skill.title}
-                                              </UserSkillName>
-                                          ))}
-                                </UserSkillBox>
-                            </Card>
-                        ))}
+                                    <UserInfo>
+                                        <CourseName>{user.name}</CourseName>
+                                        <SelfIntroduction>
+                                            {user.selfIntroduction.length > 35
+                                                ? `${user.selfIntroduction.substring(
+                                                      0,
+                                                      35,
+                                                  )}...`
+                                                : user.selfIntroduction}
+                                        </SelfIntroduction>
+                                    </UserInfo>
+                                    <UserSkillBox>
+                                        {user.skills.length === 0
+                                            ? ""
+                                            : user.skills.map(skill => (
+                                                  <UserSkillName
+                                                      key={skill.skillID}
+                                                  >
+                                                      #{skill.title}
+                                                  </UserSkillName>
+                                              ))}
+                                    </UserSkillBox>
+                                </Card>
+                            ))}
+                    </CardBox>
                 </SearchArea>
             )}
         </Container>
