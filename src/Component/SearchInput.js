@@ -50,6 +50,7 @@ export const SearchInput = ({
     searchField,
     changeValueCallback,
     searchCallback,
+    placeholderText,
 }) => {
     return (
         <SearchFrom onSubmit={searchCallback}>
@@ -57,7 +58,7 @@ export const SearchInput = ({
 
             <InputArea
                 type="search"
-                placeholder="今天想學習什麼?"
+                placeholder={placeholderText}
                 value={searchField}
                 onChange={changeValueCallback}
             />
