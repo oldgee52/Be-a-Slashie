@@ -144,6 +144,7 @@ const PreviewImg = styled.img`
 `;
 
 const SkillsBox = styled.div`
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -397,9 +398,9 @@ export const TeacherUpload = () => {
                         }
                     />
                 </Label>
-                <Label>
+                <LabelForDate>
                     <Title>開班人數</Title>
-                    <Input
+                    <InputDate
                         type="number"
                         min={1}
                         value={state.minOpeningNumber}
@@ -410,7 +411,7 @@ export const TeacherUpload = () => {
                             })
                         }
                     />
-                </Label>
+                </LabelForDate>
                 <LabelForDate>
                     <Title>開班日期</Title>
                     <InputDate

@@ -19,6 +19,10 @@ const Container = styled.div`
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
         max-width: 1200px;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
     }
 `;
 

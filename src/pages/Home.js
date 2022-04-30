@@ -90,6 +90,10 @@ const CourseArea = styled.div`
 
     @media ${breakPoint.desktop} {
         justify-content: space-between;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
     }
 `;
 

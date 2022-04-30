@@ -53,7 +53,6 @@ const PaginateArea = styled.div`
 `;
 
 const CourseArea = styled.div`
-    height: 800px;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
@@ -62,6 +61,10 @@ const CourseArea = styled.div`
     @media ${breakPoint.desktop} {
         justify-content: space-between;
         align-items: flex-start;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
     }
 `;
 
