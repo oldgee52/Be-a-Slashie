@@ -5,15 +5,29 @@ import { updateDoc, doc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
+import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    margin: auto;
     margin-top: 50px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
     width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: 70%;
+        margin-left: 50px;
+        margin-top: 0;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+`;
+
+const UserPhotoLabel = styled.label`
+    cursor: pointer;
+    @media ${breakPoint.desktop} {
+    }
 `;
 
 const UserPhoto = styled.img`
@@ -21,7 +35,6 @@ const UserPhoto = styled.img`
     height: 100px;
     border-radius: 100%;
     border: 1px solid black;
-    cursor: pointer;
 `;
 
 const FileInput = styled.input`
@@ -37,16 +50,6 @@ const UploadIcon = styled(FiUpload)`
     background-color: white;
     border: 1px solid white;
     border-radius: 100%;
-    cursor: pointer;
-`;
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    margin-top: 20px;
-`;
-
-const DivTitle = styled.div`
-    width: 20%;
 `;
 
 export const Profile = () => {
@@ -123,7 +126,7 @@ export const Profile = () => {
         <Container>
             {userInfo && (
                 <>
-                    <label htmlFor="photo">
+                    <UserPhotoLabel htmlFor="photo">
                         <UserPhoto src={userInfo.photo} alt={userInfo.name} />
                         <FileInput
                             type="file"
@@ -134,7 +137,7 @@ export const Profile = () => {
                             }}
                         />
                         <UploadIcon viewBox="-5 -1 30 30" />
-                    </label>
+                    </UserPhotoLabel>
 
                     {inputFields && (
                         <>

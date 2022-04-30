@@ -3,24 +3,36 @@ import styled from "styled-components";
 import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { BsPencil } from "react-icons/bs";
+import { breakPoint } from "../utils/breakPoint";
 
 const Container = styled.div`
-    width: 100%;
+    width: 80%;
     display: flex;
     justify-content: center;
     padding: 20px;
 
     flex-wrap: wrap;
+    border-bottom: 1px solid black;
+
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+    }
 `;
 
 const Title = styled.div`
     width: 100%;
     text-align: center;
     margin-bottom: 20px;
+    @media ${breakPoint.desktop} {
+        display: flex;
+        align-items: center;
+        width: 80px;
+        margin-bottom: 0;
+    }
 `;
 
 const Input = styled.input`
-    width: 70%;
+    width: 50%;
     /* height: 50px; */
     font-size: 20px;
     padding: 5px;
@@ -35,14 +47,20 @@ const Input = styled.input`
     &:disabled {
         background-color: white;
     }
+
+    @media ${breakPoint.desktop} {
+        text-align: left;
+        width: 60%;
+    }
 `;
 
 const InputText = styled.textarea`
-    width: 70%;
+    width: 50%;
     height: 70px;
     font-size: 14px;
     padding: 5px;
     overflow: hidden;
+    margin-bottom: 10px;
 
     border: none;
     &:focus {
@@ -53,15 +71,28 @@ const InputText = styled.textarea`
     &:disabled {
         background-color: white;
     }
+
+    @media ${breakPoint.desktop} {
+        width: 60%;
+    }
 `;
 
-const PencilBox = styled.button``;
+const PencilBox = styled.button`
+    @media ${breakPoint.desktop} {
+        align-self: flex-end;
+        margin-left: auto;
+    }
+`;
 
 const ButtonBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
+    @media ${breakPoint.desktop} {
+        width: 20%;
+        margin-left: auto;
+    }
 `;
 
 const ButtonConfirm = styled.button`
@@ -72,6 +103,10 @@ const ButtonConfirm = styled.button`
 
     border-radius: 5px;
     margin-right: 10px;
+    @media ${breakPoint.desktop} {
+        width: 50px;
+        height: 30px;
+    }
 `;
 
 export const InputForModify = ({

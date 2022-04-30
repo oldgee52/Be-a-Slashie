@@ -15,6 +15,7 @@ const Container = styled.div`
     @media ${breakPoint.desktop} {
         max-width: 1200px;
         justify-content: flex-start;
+        align-items: flex-start;
         padding: 0 20px 0 20px;
     }
 `;
@@ -33,6 +34,7 @@ const TitleArea = styled.div`
 `;
 
 const SubTitleArea = styled(TitleArea)`
+    font-size: 12px;
     @media ${breakPoint.desktop} {
         flex-direction: row;
         width: 60%;
@@ -43,7 +45,6 @@ const SubTitleArea = styled(TitleArea)`
     }
 `;
 const Title = styled.div`
-    font-size: 12px;
     text-align: center;
     padding-right: 15px;
     color: ${prop => (prop.active ? "#ff6100" : "inherit")};
