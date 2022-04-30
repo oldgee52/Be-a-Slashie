@@ -91,6 +91,21 @@ const SkillBox = styled.div`
     justify-content: flex-start;
     flex-wrap: wrap;
 `;
+const CourseBox = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+
+    @media ${breakPoint.desktop} {
+        justify-content: space-between;
+        flex-direction: row;
+        flex-wrap: wrap;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
+    }
+`;
 
 const CourseDiv = styled.div`
     width: 100%;
@@ -176,21 +191,25 @@ export const PersonalIntroduction = () => {
                         </UserSkills>
                         <UserSkills>
                             <SkillTitle>完成課程</SkillTitle>
-                            {userFinishCourses.length === 0
-                                ? "還沒有完成的課程QQ"
-                                : userFinishCourses.map((course, index) => (
-                                      <CourseDiv key={course.courseID}>
-                                          <CourseInfo
-                                              image={course.image}
-                                              title={course.title}
-                                              teacherName={course.teacherName}
-                                              closedDate={new Date(
-                                                  course?.courseClosedDate
-                                                      .seconds * 1000,
-                                              ).toLocaleDateString()}
-                                          />
-                                      </CourseDiv>
-                                  ))}
+                            <CourseBox>
+                                {userFinishCourses.length === 0
+                                    ? "還沒有完成的課程QQ"
+                                    : userFinishCourses.map(course => (
+                                          <CourseDiv key={course.courseID}>
+                                              <CourseInfo
+                                                  image={course.image}
+                                                  title={course.title}
+                                                  teacherName={
+                                                      course.teacherName
+                                                  }
+                                                  closedDate={new Date(
+                                                      course?.courseClosedDate
+                                                          .seconds * 1000,
+                                                  ).toLocaleDateString()}
+                                              />
+                                          </CourseDiv>
+                                      ))}
+                            </CourseBox>
                         </UserSkills>
                     </>
                 )}

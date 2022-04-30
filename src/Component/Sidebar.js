@@ -87,7 +87,7 @@ const ProfileImg = styled(MenuImg)`
 
 const SidebarContent = styled.div`
     font-size: 16px;
-    color: ${props => (props.active ? "red" : "#7f7f7f")};
+    color: ${props => (props.active ? "#ff6100" : "#7f7f7f")};
     padding: 10px;
 `;
 
