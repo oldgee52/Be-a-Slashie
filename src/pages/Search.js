@@ -96,6 +96,7 @@ export const Search = () => {
                     searchCallback={e => {
                         handleChange(e);
                     }}
+                    placeholderText="今天想要學習什麼呢..."
                 />
             </InputDiv>
             {searchCourses && (

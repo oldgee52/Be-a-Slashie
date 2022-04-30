@@ -158,6 +158,7 @@ export const Home = () => {
                                 if (!searchField.trim()) return;
                                 navigate(`/search?q=${searchField.trim()}`);
                             }}
+                            placeholderText="今天想要學習什麼呢..."
                         />
                     </InputDiv>
                 </InputArea>
