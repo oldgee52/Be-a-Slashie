@@ -13,6 +13,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { MyButton } from "../Component/MyButton";
 import { TextInput } from "../Component/TextInput";
 import { FiUpload } from "react-icons/fi";
+import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 
 const Container = styled.div`
     display: flex;
@@ -39,6 +40,8 @@ const CourseCard = styled.div`
     margin-bottom: 10px;
 
     border-radius: 5px;
+    height: ${props => (props.isShow ? "fit-content" : "50px")};
+    overflow: hidden;
 
     @media ${breakPoint.desktop} {
     }
@@ -182,7 +185,11 @@ const TeacherBoxTitle = styled.h3`
     margin-bottom: 10px;
 `;
 
-const FileLabel = styled.label``;
+const FileLabel = styled.label`
+    @media ${breakPoint.desktop} {
+        margin-bottom: 10px;
+    }
+`;
 const FileInput = styled.input`
     display: none;
 `;
@@ -239,6 +246,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     homeworkTitle: "",
                     materialsTitle: "",
                     materialsFile: "",
+                    isShow: false,
                 }));
 
                 setCourses(newCoursesArray);
@@ -413,14 +421,27 @@ export const TeacherOpeningCourse = ({ userID }) => {
         setCourses(stateCopy);
     };
 
+    const handleIsShow = index => {
+        let data = [...courses];
+        data[index]["isShow"] = !data[index]["isShow"];
+        setCourses(data);
+    };
+
     return (
         <Container>
             {courses?.length === 0 ? (
                 <div>目前沒有課程喔</div>
             ) : (
                 courses?.map((course, index) => (
-                    <CourseCard key={course.courseID}>
-                        <CourseTitle>{course.title}</CourseTitle>
+                    <CourseCard key={index} isShow={course.isShow}>
+                        <CourseTitle onClick={() => handleIsShow(index)}>
+                            {course.isShow ? (
+                                <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                            ) : (
+                                <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                            )}{" "}
+                            {course.title}
+                        </CourseTitle>
                         {course.students.map((student, index) => (
                             <StudentInfoBoc key={index}>
                                 <Name>{student.name}</Name>
@@ -496,7 +517,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                     ? "尚未上傳"
                                     : course.materials?.map(material => (
                                           <UploadHomework
-                                              key={material.creatDate.secondsL}
+                                              key={material.creatDate.seconds}
                                           >
                                               <HomeworkTitle>
                                                   {material.title}
@@ -531,7 +552,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                     id={`${course.courseID}`}
                                     onChange={e => handleFileChange(index, e)}
                                 />
-                                {courses[index]["materialsFile"] ? (
+                                {course.materialsFile ? (
                                     `已選擇檔案，請輸入資料名稱後上傳`
                                 ) : (
                                     <>
