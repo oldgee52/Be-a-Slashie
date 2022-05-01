@@ -1,24 +1,41 @@
 import React from "react";
 import styled from "styled-components";
+import { breakPoint } from "../utils/breakPoint";
 
 const Label = styled.label`
     display: flex;
     flex-direction: column;
     width: 100%;
+    @media ${breakPoint.desktop} {
+        flex-direction: row;
+    }
 `;
 
 const FormDiv = styled.div`
     height: 40px;
     line-height: 40px;
     font-size: 16px;
+    @media ${breakPoint.desktop} {
+        width: 20%;
+    }
 `;
 
 const Input = styled.input`
     width: 100%;
     height: 40px;
+    padding-left: 10px;
+    border-radius: 5px;
+    border: 1px solid #ff6100;
 
-    padding: 10px;
-    border-radius: 10px;
+    &:focus {
+        outline: none;
+    }
+
+    @media ${breakPoint.desktop} {
+        /* width: 80%; */
+
+        flex: 1 0;
+    }
 `;
 
 export const TextInput = ({
@@ -35,7 +52,7 @@ export const TextInput = ({
             <Input
                 type={type || "text"}
                 value={value}
-                onChange={e => handleChange(e)}
+                onChange={handleChange}
                 name={name}
                 placeholder={placeholder}
             />

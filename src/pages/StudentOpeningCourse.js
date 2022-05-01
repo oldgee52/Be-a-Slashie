@@ -44,7 +44,7 @@ const Input = styled.input`
 export const StudentOpeningCourse = () => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const studentID = "nsYFwHkZEeXM4N4SNnGHc6f9QSu1";
     useEffect(() => {
         let isMounted = true;
         if (isMounted) {
