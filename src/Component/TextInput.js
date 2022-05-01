@@ -35,7 +35,7 @@ export const TextInput = ({
             <Input
                 type={type || "text"}
                 value={value}
-                onChange={e => handleChange(e)}
+                onChange={handleChange}
                 name={name}
                 placeholder={placeholder}
             />

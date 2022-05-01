@@ -9,75 +9,209 @@ import {
     arrayUnion,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { breakPoint } from "../utils/breakPoint";
+import { MyButton } from "../Component/MyButton";
+import { TextInput } from "../Component/TextInput";
+import { FiUpload } from "react-icons/fi";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
-    margin-bottom: 100px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 80%;
+        margin: auto;
+        margin-top: -150px;
+    }
 `;
 
-const Div1 = styled.div`
-    width: 100%;
+const CourseCard = styled.div`
+    width: 90%;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 10px;
+    background-color: whitesmoke;
+    margin-bottom: 10px;
+
+    border-radius: 5px;
 `;
 
-const DivA = styled.a`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-`;
-
-const DivCourse = styled.h3`
-    width: 100%;
-`;
-
-const DivContent = styled.div`
-    width: 80%;
-    padding-top: 10px;
-`;
-
-const Button = styled.button`
-    width: 100%;
-    height: 48px;
-    text-align: center;
-
-    color: #ffffff;
+const CourseTitle = styled.h3`
     font-size: 16px;
-    line-height: 24px;
-    background-color: #f44336;
-    border: none;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+
+    word-break: break-all;
+`;
+
+const StudentInfoBoc = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 10px 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    border-radius: 5px;
+
+    @media ${breakPoint.desktop} {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+`;
+
+const TeacherBox = styled(StudentInfoBoc)`
+    background-color: inherit;
+`;
+
+const Name = styled.div`
+    margin-top: 5px;
+    padding-left: 10px;
+    @media ${breakPoint.desktop} {
+        width: 40%;
+    }
+`;
+
+const Title = styled.h3`
+    font-size: 16px;
+    padding-bottom: 10px;
+`;
+
+const InputArea = styled.div`
+    display: flex;
+    margin: 10px 0;
+    width: 100%;
+    justify-content: space-around;
+    @media ${breakPoint.desktop} {
+        width: 30%;
+        margin-top: 0;
+    }
+`;
+
+const InputLabel = styled.label`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+
     cursor: pointer;
 `;
-const Input = styled.input`
-    width: 100%;
-    height: 40px;
-    margin-bottom: 20px;
-    margin-top: 20px;
+
+const Agreement = styled.div`
+    margin-left: 5px;
 `;
 
-export const TeacherOpeningCourse = () => {
+const StudentUploadHomework = styled.div`
+    display: flex;
+    margin: 10px 0;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
+`;
+const UploadHomework = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+`;
+
+const HomeworkTitle = styled.div`
+    width: 100%;
+    font-weight: 700;
+    word-break: break-all;
+    margin-bottom: 5px;
+`;
+const HomeworkDate = styled.div`
+    width: 70%;
+`;
+const HomeworkDownload = styled.div`
+    /* font-size: 12px; */
+    width: 30%;
+    text-align: right;
+    color: #ff6100;
+    /* height: 15px;
+    padding: 2px;
+
+    text-align: center;
+    background-color: rgb(0 190 164);
+    color: whitesmoke;
+    border-radius: 10px;
+    cursor: pointer; */
+`;
+
+const TeacherBoxTitle = styled.h3`
+    width: 100%;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+`;
+
+const FileLabel = styled.label``;
+const FileInput = styled.input`
+    display: none;
+`;
+
+const TeacherHomeworkBox = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+`;
+const TeacherHomework = styled.div`
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+`;
+const TeacherHomeworkDate = styled.div`
+    width: 50%;
+    text-align: right;
+`;
+
+const ButtonArea = styled.div`
+    width: 100%;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+
+    @media ${breakPoint.desktop} {
+        align-self: center;
+    }
+`;
+
+const LastButtonArea = styled(ButtonArea)`
+    border-bottom: none;
+`;
+
+export const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
     const imageInputRef = useRef();
-    const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
-    useEffect(() => {
-        firebaseInit.getTeachersStatusCourses(teacherID, 1).then(data => {
-            const newCoursesArray = data.map(newCourses => ({
-                ...newCourses,
-                homeworkTitle: "",
-                materialsTitle: "",
-                materialsFile: "",
-            }));
 
-            setCourses(newCoursesArray);
-            console.log(newCoursesArray);
-        });
-    }, []);
+    useEffect(() => {
+        if (userID)
+            firebaseInit.getTeachersStatusCourses(userID, 1).then(data => {
+                const newCoursesArray = data.map(newCourses => ({
+                    ...newCourses,
+                    homeworkTitle: "",
+                    materialsTitle: "",
+                    materialsFile: "",
+                }));
+
+                setCourses(newCoursesArray);
+                console.log(newCoursesArray);
+            });
+    }, [userID]);
 
     const handleAddHomework = async e => {
         const courseID = e.target.id;
@@ -226,6 +360,7 @@ export const TeacherOpeningCourse = () => {
     const handleFileChange = (index, event) => {
         let data = [...courses];
         data[index][event.target.name] = event.target.files[0];
+        console.log(data);
 
         setCourses(data);
     };
@@ -251,47 +386,51 @@ export const TeacherOpeningCourse = () => {
                 <div>目前沒有課程喔</div>
             ) : (
                 courses?.map((course, index) => (
-                    <Div1 key={course.courseID}>
-                        <DivCourse>{course.title}</DivCourse>
+                    <CourseCard key={course.courseID}>
+                        <CourseTitle>{course.title}</CourseTitle>
                         {course.students.map((student, index) => (
-                            <Div1 key={index}>
-                                <DivContent>
-                                    <div>{student.name}</div>
-                                    <div>{student.email}</div>
-                                    <DivCourse>上傳作業</DivCourse>
+                            <StudentInfoBoc key={index}>
+                                <Name>{student.name}</Name>
+                                <StudentUploadHomework>
+                                    <Title>上傳作業</Title>
 
                                     {student.studentsHomework.length === 0 ? (
-                                        <div>尚未有作業</div>
+                                        <div>尚未設定作業或尚未上傳</div>
                                     ) : (
                                         student.studentsHomework.map(
                                             homework => (
-                                                <div key={homework.title}>
-                                                    <div>{homework.title}</div>
-                                                    <>
+                                                <UploadHomework
+                                                    key={homework.title}
+                                                >
+                                                    <HomeworkTitle>
+                                                        {homework.title}
+                                                    </HomeworkTitle>{" "}
+                                                    <HomeworkDate>
+                                                        {new Date(
+                                                            homework.uploadDate
+                                                                .seconds * 1000,
+                                                        ).toLocaleDateString()}
+                                                    </HomeworkDate>
+                                                    <HomeworkDownload>
                                                         <a
                                                             href={
                                                                 homework.fileURL
                                                             }
                                                             download
                                                         >
-                                                            點我下載
+                                                            下載
                                                         </a>
-                                                        <div>
-                                                            上傳日期:
-                                                            {new Date(
-                                                                homework
-                                                                    .uploadDate
-                                                                    .seconds *
-                                                                    1000,
-                                                            ).toLocaleDateString()}
-                                                        </div>
-                                                    </>
-                                                </div>
+                                                    </HomeworkDownload>
+                                                </UploadHomework>
                                             ),
                                         )
                                     )}
-                                    <br></br>
-                                    <Div1>
+                                </StudentUploadHomework>
+
+                                <InputArea>
+                                    <InputLabel
+                                        htmlFor={`${course.courseID}_${student.studentID}_agree`}
+                                    >
                                         <input
                                             type="radio"
                                             id={`${course.courseID}_${student.studentID}_agree`}
@@ -299,13 +438,11 @@ export const TeacherOpeningCourse = () => {
                                             value={1}
                                             onChange={e => handleSkillChange(e)}
                                         />
-                                        <label
-                                            htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                        >
-                                            同意給徽章
-                                        </label>
-                                    </Div1>
-                                    <Div1>
+                                        <Agreement>同意給徽章</Agreement>
+                                    </InputLabel>{" "}
+                                    <InputLabel
+                                        htmlFor={`${course.courseID}_${student.studentID}_disagree`}
+                                    >
                                         <input
                                             type="radio"
                                             id={`${course.courseID}_${student.studentID}_disagree`}
@@ -313,113 +450,125 @@ export const TeacherOpeningCourse = () => {
                                             value={2}
                                             onChange={e => handleSkillChange(e)}
                                         />
-                                        <label
-                                            htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                        >
-                                            不同意給徽章
-                                        </label>
-                                    </Div1>
-                                </DivContent>
-                            </Div1>
+                                        <Agreement>不同意給徽章</Agreement>
+                                    </InputLabel>
+                                </InputArea>
+                            </StudentInfoBoc>
                         ))}
-                        <DivContent>
-                            <DivCourse>課程資料</DivCourse>
-                            <DivCourse>已上傳資料</DivCourse>
-                            <Div1>
-                                {course.materials.length === 0 ? (
-                                    <div>無資料</div>
-                                ) : (
-                                    course.materials?.map(material => (
-                                        <Div1 key={material.fileURL}>
-                                            <DivA
-                                                href={material.fileURL}
-                                                download
-                                            >
-                                                {material.title}
-                                            </DivA>
+                        <TeacherBox>
+                            <TeacherBoxTitle>課程資料</TeacherBoxTitle>
+                            <Title>已上傳資料</Title>
+                            <TeacherHomeworkBox>
+                                {course.materials.length === 0
+                                    ? "尚未上傳"
+                                    : course.materials?.map(material => (
+                                          <UploadHomework
+                                              key={material.creatDate.secondsL}
+                                          >
+                                              <HomeworkTitle>
+                                                  {material.title}
+                                              </HomeworkTitle>
 
-                                            <Div1>
-                                                上傳日期:
-                                                {new Date(
-                                                    Math.floor(
-                                                        material.creatDate
-                                                            .seconds * 1000,
-                                                    ),
-                                                ).toLocaleDateString()}
-                                            </Div1>
-                                        </Div1>
-                                    ))
+                                              <HomeworkDate>
+                                                  {new Date(
+                                                      Math.floor(
+                                                          material.creatDate
+                                                              .seconds * 1000,
+                                                      ),
+                                                  ).toLocaleDateString()}
+                                              </HomeworkDate>
+                                              <HomeworkDownload>
+                                                  <a
+                                                      href={material.fileURL}
+                                                      download
+                                                  >
+                                                      下載
+                                                  </a>
+                                              </HomeworkDownload>
+                                          </UploadHomework>
+                                      ))}
+                            </TeacherHomeworkBox>
+
+                            <Title>新增檔案</Title>
+                            <FileLabel htmlFor={`${course.courseID}`}>
+                                <FileInput
+                                    type="file"
+                                    ref={imageInputRef}
+                                    name="materialsFile"
+                                    id={`${course.courseID}`}
+                                    onChange={e => handleFileChange(index, e)}
+                                />
+                                {courses[index]["materialsFile"] ? (
+                                    `已選擇檔案，請輸入資料名稱後上傳`
+                                ) : (
+                                    <>
+                                        選擇檔案 <FiUpload />
+                                    </>
                                 )}
-                            </Div1>
-                            <Input
-                                type="file"
-                                ref={imageInputRef}
-                                name="materialsFile"
-                                onChange={e => handleFileChange(index, e)}
-                            />
-                            <Input
+                            </FileLabel>
+                            <TextInput
+                                title="資料名稱"
                                 value={course.materialsTitle}
                                 name="materialsTitle"
-                                onChange={e => {
-                                    handleTitleChange(index, e);
-                                }}
+                                handleChange={e => handleTitleChange(index, e)}
                             />
-                            <Button
-                                id={course.courseID}
-                                onClick={handleAddMaterials}
-                            >
-                                上傳
-                            </Button>
-                        </DivContent>
-                        <DivContent>
-                            <DivCourse>已設定作業</DivCourse>
-                            <Div1>
+                            <ButtonArea>
+                                <MyButton
+                                    buttonWord="上傳"
+                                    buttonId={course.courseID}
+                                    clickFunction={handleAddMaterials}
+                                />
+                            </ButtonArea>
+                        </TeacherBox>
+                        <TeacherBox>
+                            <TeacherBoxTitle>課程作業</TeacherBoxTitle>
+                            <Title>已設定作業</Title>
+                            <TeacherHomeworkBox>
                                 {course.homework.length === 0 ? (
                                     <div>無資料</div>
                                 ) : (
                                     course.homework.map(homework => (
-                                        <Div1 key={homework.title}>
-                                            名稱: {homework.title} <br></br>
-                                            設定日期:
-                                            {new Date(
-                                                Math.floor(
-                                                    homework.creatDate.seconds *
-                                                        1000,
-                                                ),
-                                            ).toLocaleDateString()}
-                                            {new Date(
-                                                Math.floor(
-                                                    homework.creatDate.seconds *
-                                                        1000,
-                                                ),
-                                            ).toLocaleTimeString()}
-                                        </Div1>
+                                        <TeacherHomework
+                                            key={homework.creatDate.seconds}
+                                        >
+                                            <HomeworkTitle>
+                                                {homework.title}
+                                            </HomeworkTitle>
+                                            <TeacherHomeworkDate>
+                                                {new Date(
+                                                    Math.floor(
+                                                        homework.creatDate
+                                                            .seconds * 1000,
+                                                    ),
+                                                ).toLocaleDateString()}
+                                            </TeacherHomeworkDate>
+                                        </TeacherHomework>
                                     ))
                                 )}
-                            </Div1>
-                            <DivCourse>設定作業</DivCourse>
-                            <Input
+                            </TeacherHomeworkBox>
+                            <Title>設定作業</Title>
+                            <TextInput
+                                title="作業名稱"
                                 value={course.homeworkTitle}
                                 name="homeworkTitle"
-                                onChange={e => {
-                                    handleTitleChange(index, e);
-                                }}
+                                handleChange={e => handleTitleChange(index, e)}
                             />
-                            <Button
-                                id={course.courseID}
-                                onClick={handleAddHomework}
-                            >
-                                設定作業
-                            </Button>
-                            <hr />
-                            <Button
-                                id={course.courseID}
-                                onClick={handleFinishCourse}
-                            >
-                                結束課程
-                            </Button>
-                        </DivContent>
-                    </Div1>
+                            <ButtonArea>
+                                <MyButton
+                                    buttonWord="設定作業"
+                                    buttonId={course.courseID}
+                                    clickFunction={handleAddHomework}
+                                />
+                            </ButtonArea>
+                        </TeacherBox>
+                        <LastButtonArea>
+                            <MyButton
+                                buttonWord="結束課程"
+                                buttonId={course.courseID}
+                                clickFunction={handleFinishCourse}
+                            />
+                        </LastButtonArea>
+                    </CourseCard>
                 ))
             )}
         </Container>
