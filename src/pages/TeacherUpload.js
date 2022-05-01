@@ -316,7 +316,7 @@ export const TeacherUpload = ({ userID }) => {
             creatTime: new Date(),
             courseID: docRef.id,
             view: 0,
-            teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
+            teacherUserID: userID,
             status: 0,
             askedQuestions: [],
             registrationNumber: 0,

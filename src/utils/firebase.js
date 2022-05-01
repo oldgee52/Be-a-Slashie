@@ -48,6 +48,8 @@ const firebaseInit = {
             teacherID,
             0,
         );
+        const test = teachersCourseSnapshot.docs.map(course => course.data());
+        console.log(test);
         const courseList = teachersCourseSnapshot.docs.map(async course => {
             const studentsCol = collection(
                 this.db,
