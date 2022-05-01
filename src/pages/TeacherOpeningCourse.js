@@ -7,6 +7,7 @@ import {
     addDoc,
     collection,
     arrayUnion,
+    Timestamp,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
@@ -254,7 +255,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
             });
     }, [userID]);
 
-    const handleAddHomework = async e => {
+    const handleAddHomework = async (e, index) => {
         const courseID = e.target.id;
         const thisCourse = courses.filter(
             course => courseID === course.courseID,
@@ -268,18 +269,26 @@ export const TeacherOpeningCourse = ({ userID }) => {
                 {
                     homework: arrayUnion({
                         title: homeworkTitle,
-                        creatDate: new Date(),
+                        creatDate: Timestamp.now(),
                     }),
                 },
             );
-            window.alert("設定作業成功囉!!!");
-            return window.location.reload();
+
+            let data = [...courses];
+            data[index].homework = [
+                ...data[index].homework,
+                { title: homeworkTitle, creatDate: Timestamp.now() },
+            ];
+            data[index].homeworkTitle = "";
+
+            setCourses(data);
+            return window.alert("設定作業成功囉!!!");
         } catch (error) {
             window.alert("設定作業失敗");
             console.log(error);
         }
     };
-    const handleAddMaterials = async e => {
+    const handleAddMaterials = async (e, index) => {
         const courseID = e.target.id;
         const thisCourse = courses.filter(
             course => courseID === course.courseID,
@@ -318,6 +327,11 @@ export const TeacherOpeningCourse = ({ userID }) => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
                     async downloadURL => {
+                        const materialData = {
+                            title: materialsTitle,
+                            creatDate: Timestamp.now(),
+                            fileURL: downloadURL,
+                        };
                         try {
                             await updateDoc(
                                 doc(
@@ -328,15 +342,19 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                     "info",
                                 ),
                                 {
-                                    materials: arrayUnion({
-                                        title: materialsTitle,
-                                        creatDate: new Date(),
-                                        fileURL: downloadURL,
-                                    }),
+                                    materials: arrayUnion(materialData),
                                 },
                             );
 
-                            imageInputRef.current.value = "";
+                            let data = [...courses];
+                            data[index].materials = [
+                                ...data[index].materials,
+                                materialData,
+                            ];
+                            data[index].materialsTitle = "";
+                            data[index].materialsFile = "";
+
+                            setCourses(data);
                             return window.alert("上傳教材成功囉!!!");
                         } catch (error) {
                             window.alert("上傳教材失敗");
@@ -353,7 +371,13 @@ export const TeacherOpeningCourse = ({ userID }) => {
         console.log(courseID);
 
         const courseArray = courses.filter(item => item.courseID === courseID);
-        console.log(courseArray[0]);
+        const checkGetSkillsStatus = courseArray[0].students
+            .map(student => student.getSkillsStatus)
+            .some(value => !value);
+
+        if (checkGetSkillsStatus)
+            return window.alert(`課程 ${courseArray[0].title}
+        請確認所有學生獲得徽章狀態`);
 
         try {
             await Promise.all([
@@ -382,9 +406,14 @@ export const TeacherOpeningCourse = ({ userID }) => {
                             );
                     });
                 }),
-            ]);
-            window.alert("結束上課囉!!!");
-            return window.location.reload();
+            ]).then(() => {
+                const NewCourses = courses.filter(
+                    item => item.courseID !== courseID,
+                );
+                setCourses(NewCourses);
+            });
+
+            return window.alert("結束上課囉!!!");
         } catch (error) {
             window.alert("結束上課失敗");
             console.log(error);
@@ -417,6 +446,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                 }
             });
         });
+        console.log(stateCopy);
 
         setCourses(stateCopy);
     };
@@ -570,7 +600,9 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                 <MyButton
                                     buttonWord="上傳"
                                     buttonId={course.courseID}
-                                    clickFunction={handleAddMaterials}
+                                    clickFunction={e =>
+                                        handleAddMaterials(e, index)
+                                    }
                                 />
                             </ButtonArea>
                         </TeacherBox>
@@ -611,7 +643,9 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                 <MyButton
                                     buttonWord="設定作業"
                                     buttonId={course.courseID}
-                                    clickFunction={handleAddHomework}
+                                    clickFunction={e =>
+                                        handleAddHomework(e, index)
+                                    }
                                 />
                             </ButtonArea>
                         </TeacherBox>
