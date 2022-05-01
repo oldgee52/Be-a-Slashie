@@ -21,11 +21,6 @@ const Container = styled.div`
     }
 `;
 
-const Background = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-`;
 const Button = styled.button`
     width: 100%;
     height: 40px;
@@ -151,13 +146,12 @@ const WishContainer = styled.div`
     }
 `;
 
-export const WishingWell = () => {
+export const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
 
     const lasWishSnapshotRef = useRef();
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
         firebaseInit.getFirstBatchWishes().then(data => {
@@ -204,7 +198,7 @@ export const WishingWell = () => {
             const data = {
                 content: wishingContent,
                 creatDate: Timestamp.now(),
-                userID: studentID,
+                userID: userID,
                 id: docRef.id,
             };
             await setDoc(docRef, data);
@@ -248,34 +242,30 @@ export const WishingWell = () => {
     console.log(lasWishSnapshotRef.current);
 
     return (
-        <Background>
-            <Container>
-                {!usersInfo || !wishes ? (
-                    "loading..."
-                ) : (
-                    <>
-                        <InputArea>
-                            <TextInput
-                                value={wishingContent}
-                                handleChange={handleChange}
-                                name="content"
-                                placeholder={"請輸入你/妳的願望..."}
-                            />
-                            <Button onClick={makeWish}>我要許願</Button>
-                        </InputArea>
-                        <Title>許願池</Title>
-                        {renderWishes()}
-                        {lasWishSnapshotRef.current
-                            ? "下滑看更多"
-                            : "最後囉"}{" "}
-                        <Waypoint
-                            onEnter={() =>
-                                loadingNextWishes(lasWishSnapshotRef.current)
-                            }
+        <Container>
+            {!usersInfo || !wishes ? (
+                "loading..."
+            ) : (
+                <>
+                    <InputArea>
+                        <TextInput
+                            value={wishingContent}
+                            handleChange={handleChange}
+                            name="content"
+                            placeholder={"請輸入你/妳的願望..."}
                         />
-                    </>
-                )}
-            </Container>
-        </Background>
+                        <Button onClick={makeWish}>我要許願</Button>
+                    </InputArea>
+                    <Title>許願池</Title>
+                    {renderWishes()}
+                    {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
+                    <Waypoint
+                        onEnter={() =>
+                            loadingNextWishes(lasWishSnapshotRef.current)
+                        }
+                    />
+                </>
+            )}
+        </Container>
     );
 };

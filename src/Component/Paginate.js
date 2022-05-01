@@ -53,7 +53,6 @@ const PaginateArea = styled.div`
 `;
 
 const CourseArea = styled.div`
-    height: 800px;
     display: flex;
     flex-wrap: wrap;
     width: 100%;
@@ -62,6 +61,10 @@ const CourseArea = styled.div`
     @media ${breakPoint.desktop} {
         justify-content: space-between;
         align-items: flex-start;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
     }
 `;
 
@@ -125,9 +128,8 @@ function PaginatedItems({ itemsPerPage, searchData }) {
             <CourseArea>
                 {currentItems &&
                     currentItems.map(course => (
-                        <CourseDiv>
+                        <CourseDiv key={course.courseID}>
                             <CourseInfo
-                                key={course.courseID}
                                 teacherPhoto={course.teacherInfo.photo}
                                 image={course.image}
                                 courseID={course.courseID}

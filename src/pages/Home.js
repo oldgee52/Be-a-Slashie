@@ -90,6 +90,10 @@ const CourseArea = styled.div`
 
     @media ${breakPoint.desktop} {
         justify-content: space-between;
+        &::after {
+            content: "";
+            width: calc(33.3% - 30px);
+        }
     }
 `;
 
@@ -177,9 +181,8 @@ export const Home = () => {
                             </SeeMore>
 
                             {latestCourse.map(course => (
-                                <CourseDiv>
+                                <CourseDiv key={course.courseID}>
                                     <CourseInfo
-                                        key={course.courseID}
                                         teacherPhoto={course.teacherInfo.photo}
                                         image={course.image}
                                         courseID={course.courseID}
@@ -205,9 +208,8 @@ export const Home = () => {
                             </SeeMore>
 
                             {popularCourse.map(course => (
-                                <CourseDiv>
+                                <CourseDiv key={course.courseID}>
                                     <CourseInfo
-                                        key={course.courseID}
                                         teacherPhoto={course.teacherInfo.photo}
                                         image={course.image}
                                         courseID={course.courseID}

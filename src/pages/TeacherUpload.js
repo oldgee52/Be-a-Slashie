@@ -10,42 +10,111 @@ import {
     arrayUnion,
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { breakPoint } from "../utils/breakPoint";
+import { FiUpload } from "react-icons/fi";
+import { CheckSkills } from "../Component/CheckSkills";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 100px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: 80%;
+        margin: auto;
+        margin-top: -150px;
+    }
 `;
 
 const FormArea = styled.form`
-    width: 100%;
-    margin-top: 16px;
+    width: 90%;
+    @media ${breakPoint.desktop} {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* margin-top: 10px; */
 `;
 
 const Label = styled.label`
     display: flex;
     width: 100%;
     margin-bottom: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap;
 
-    @media (max-width: 992px) {
-        flex-wrap: wrap;
+    @media ${breakPoint.desktop} {
+        flex-wrap: nowrap;
     }
 `;
 
-const FormDiv = styled.div`
-    width: 104px;
+const LabelForDate = styled(Label)`
+    @media ${breakPoint.desktop} {
+        flex-wrap: nowrap;
+        width: 45%;
+    }
+`;
+
+const Title = styled.div`
     height: 40px;
     line-height: 40px;
-    font-size: 16px;
+    @media ${breakPoint.desktop} {
+        display: flex;
+        align-items: center;
+        width: 100px;
+    }
+`;
+
+const TextAreaTitle = styled(Title)`
+    @media ${breakPoint.desktop} {
+        height: 60px;
+        line-height: 60px;
+    }
 `;
 
 const Input = styled.input`
     width: 100%;
     height: 40px;
+    padding-left: 10px;
+    border-radius: 5px;
+    border: 1px solid #ff6100;
+
+    &:focus {
+        outline: none;
+    }
+
+    @media ${breakPoint.desktop} {
+        width: 70%;
+        height: 40px;
+    }
+`;
+
+const InputDate = styled(Input)`
+    @media ${breakPoint.desktop} {
+        width: 55%;
+    }
+`;
+
+const InputText = styled.textarea`
+    width: 100%;
+    height: 60px;
+    padding-left: 10px;
+    border-radius: 5px;
+
+    border: 1px solid #ff6100;
+    &:focus {
+        outline: none;
+    }
+    @media ${breakPoint.desktop} {
+        width: 70%;
+    }
+`;
+
+const FileInput = styled.input`
+    display: none;
 `;
 
 const Button = styled.button`
@@ -54,13 +123,36 @@ const Button = styled.button`
     text-align: center;
 
     color: #ffffff;
-    font-size: 16px;
-    line-height: 24px;
-    background-color: #f44336;
-    border: none;
+    font-size: 14px;
+    background-color: #ff6100;
+    border-radius: 5px;
     cursor: pointer;
+
+    margin: 20px 0;
+
+    @media ${breakPoint.desktop} {
+        width: 200px;
+        margin: auto;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+`;
+const PreviewImg = styled.img`
+    width: 200px;
+    height: 130px;
+    object-fit: contain;
 `;
 
+const SkillsBox = styled.div`
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    @media ${breakPoint.desktop} {
+        margin-bottom: 0;
+    }
+`;
 const initState = {
     title: "",
     courseIntroduction: "",
@@ -124,7 +216,7 @@ function reducer(state, action) {
     }
 }
 
-export const TeacherUpload = () => {
+export const TeacherUpload = ({ userID }) => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
@@ -160,14 +252,15 @@ export const TeacherUpload = () => {
 
     const uploadImage = e => {
         e.preventDefault();
+        if (!e.target.value) return;
         console.log(e.target.value);
         const mountainImagesRef = ref(
             firebaseInit.storage,
-            `image-${image.value}`,
+            `image-${e.target.value}`,
         );
         const uploadTask = uploadBytesResumable(
             mountainImagesRef,
-            image.files[0],
+            e.target.files[0],
         );
         uploadTask.on(
             "state_changed",
@@ -195,13 +288,21 @@ export const TeacherUpload = () => {
                         type: "setImageURL",
                         payload: { image: downloadURL },
                     });
+                    setImage(downloadURL);
                 });
             },
         );
     };
 
-    const sendMessage = async e => {
+    const uploadCourse = async e => {
         e.preventDefault();
+        if (
+            new Date(state.openingDate) < new Date() ||
+            new Date(state.registrationDeadline) < new Date()
+        )
+            return window.alert("日期不得晚於今日");
+        if (new Date(state.openingDate) < new Date(state.registrationDeadline))
+            return window.alert("開課日不得早於報名截止日");
         if (Object.values(state).some(value => !value))
             return window.alert("請輸入完整資料");
         const coursesRef = collection(firebaseInit.db, "courses");
@@ -232,20 +333,13 @@ export const TeacherUpload = () => {
                         "info",
                     ),
                     {
-                        teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
+                        teacherUserID: userID,
                         courseID: docRef.id,
                     },
                 ),
-                updateDoc(
-                    doc(
-                        firebaseInit.db,
-                        "users",
-                        "QptFGccbXGVyiTwmvxFG07JNbjp1",
-                    ),
-                    {
-                        teachersCourses: arrayUnion(docRef.id),
-                    },
-                ),
+                updateDoc(doc(firebaseInit.db, "users", userID), {
+                    teachersCourses: arrayUnion(docRef.id),
+                }),
             ]);
             window.alert("上架成功");
             return window.location.reload();
@@ -259,7 +353,7 @@ export const TeacherUpload = () => {
         <Container>
             <FormArea>
                 <Label>
-                    <FormDiv>課程名稱</FormDiv>
+                    <Title>課程名稱</Title>
                     <Input
                         type="text"
                         value={state.title}
@@ -272,9 +366,8 @@ export const TeacherUpload = () => {
                     />
                 </Label>
                 <Label>
-                    <FormDiv>課程簡介</FormDiv>
-                    <Input
-                        type="text"
+                    <TextAreaTitle>課程簡介</TextAreaTitle>
+                    <InputText
                         value={state.courseIntroduction}
                         onChange={e =>
                             dispatch({
@@ -285,9 +378,8 @@ export const TeacherUpload = () => {
                     />
                 </Label>
                 <Label>
-                    <FormDiv>老師簡介</FormDiv>
-                    <Input
-                        type="text"
+                    <TextAreaTitle>老師簡介</TextAreaTitle>
+                    <InputText
                         value={state.teacherIntroduction}
                         onChange={e =>
                             dispatch({
@@ -299,9 +391,9 @@ export const TeacherUpload = () => {
                         }
                     />
                 </Label>
-                <Label>
-                    <FormDiv>開班人數</FormDiv>
-                    <Input
+                <LabelForDate>
+                    <Title>開班人數</Title>
+                    <InputDate
                         type="number"
                         min={1}
                         value={state.minOpeningNumber}
@@ -312,10 +404,10 @@ export const TeacherUpload = () => {
                             })
                         }
                     />
-                </Label>
-                <Label>
-                    <FormDiv>開班日期</FormDiv>
-                    <Input
+                </LabelForDate>
+                <LabelForDate>
+                    <Title>開班日期</Title>
+                    <InputDate
                         type="date"
                         value={state.openingDate}
                         onChange={e =>
@@ -325,11 +417,11 @@ export const TeacherUpload = () => {
                             })
                         }
                     />
-                </Label>
+                </LabelForDate>
 
-                <Label>
-                    <FormDiv>報名截止日</FormDiv>
-                    <Input
+                <LabelForDate>
+                    <Title>報名截止日</Title>
+                    <InputDate
                         type="date"
                         value={state.registrationDeadline}
                         onChange={e =>
@@ -341,38 +433,36 @@ export const TeacherUpload = () => {
                             })
                         }
                     />
-                </Label>
+                </LabelForDate>
                 <Label>
-                    <FormDiv>上傳封面照</FormDiv>
+                    <Title>
+                        <FiUpload />
+                        上傳封面照
+                    </Title>
 
-                    <Input
+                    <FileInput
                         type="file"
                         accept="image/*"
-                        onChange={e => setImage(e.target)}
+                        onChange={e => uploadImage(e)}
                     />
-                    <button onClick={uploadImage}>上傳</button>
+                    {image && <PreviewImg src={image} alt="上傳圖片" />}
                 </Label>
-                <FormDiv>可得技能</FormDiv>
-                <>
-                    {allSkills &&
-                        allSkills.map(skill => (
-                            <p key={skill.skillID}>
-                                <input
-                                    type="checkbox"
-                                    id={skill.skillID}
-                                    value={skill.skillID}
-                                    key={skill.skillID}
-                                    name="skills"
-                                    onChange={handleSkillChange}
-                                />
-                                <label htmlFor={skill.skillID}>
-                                    {skill.title}
-                                </label>
-                            </p>
-                        ))}
-                </>
 
-                <Button onClick={sendMessage}>Send Message</Button>
+                <Label>
+                    <Title>可得技能</Title>
+                    <SkillsBox>
+                        {allSkills &&
+                            allSkills.map(skill => (
+                                <CheckSkills
+                                    key={skill.skillID}
+                                    skillID={skill.skillID}
+                                    handleSkillChange={handleSkillChange}
+                                    title={skill.title}
+                                />
+                            ))}
+                    </SkillsBox>
+                </Label>
+                <Button onClick={uploadCourse}>上架課程</Button>
             </FormArea>
         </Container>
     );

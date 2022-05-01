@@ -52,21 +52,21 @@ const UploadIcon = styled(FiUpload)`
     border-radius: 100%;
 `;
 
-export const Profile = () => {
+export const Profile = ({ userID }) => {
     const [userInfo, setUserInfo] = useState();
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
     const [inputFields, SetInputFields] = useState();
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
     useEffect(() => {
-        firebaseInit.getCollectionData("users", studentID).then(data => {
-            setUserInfo(data);
-            SetInputFields({
-                name: data.name,
-                selfIntroduction: data.selfIntroduction,
+        if (userID)
+            firebaseInit.getCollectionData("users", userID).then(data => {
+                setUserInfo(data);
+                SetInputFields({
+                    name: data.name,
+                    selfIntroduction: data.selfIntroduction,
+                });
             });
-        });
-    }, []);
+    }, [userID]);
 
     const uploadImage = e => {
         if (!e.target.value) return window.alert("請先選擇檔案");
@@ -102,12 +102,9 @@ export const Profile = () => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
                     async downloadURL => {
-                        await updateDoc(
-                            doc(firebaseInit.db, "users", studentID),
-                            {
-                                photo: downloadURL,
-                            },
-                        );
+                        await updateDoc(doc(firebaseInit.db, "users", userID), {
+                            photo: downloadURL,
+                        });
 
                         setUserInfo(prve => ({
                             ...prve,
@@ -144,7 +141,7 @@ export const Profile = () => {
                             <InputForModify
                                 inputFields={inputFields}
                                 SetInputFields={SetInputFields}
-                                studentID={studentID}
+                                userID={userID}
                                 userInfo={userInfo}
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserName}
@@ -156,7 +153,7 @@ export const Profile = () => {
                             <InputForModify
                                 inputFields={inputFields}
                                 SetInputFields={SetInputFields}
-                                studentID={studentID}
+                                userID={userID}
                                 userInfo={userInfo}
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserIntroduction}

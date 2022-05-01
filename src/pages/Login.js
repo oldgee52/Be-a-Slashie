@@ -29,7 +29,7 @@ export const Login = ({ userID }) => {
     const [login, setLogin] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
+    const from = location.state?.from || "/";
 
     function singUp() {
         if (!info.email.trim() || !info.password.trim() || !info.name.trim())

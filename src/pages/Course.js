@@ -189,7 +189,7 @@ const FlexDiv = styled.div`
     justify-content: center;
     width: 100%;
     @media ${breakPoint.desktop} {
-        justify-content: space-between;
+        justify-content: flex-start;
     }
 `;
 const CourseIntroduction = styled.p`
@@ -387,14 +387,13 @@ const ReplyInput = styled(Input)`
     margin-top: 20px;
 `;
 
-export const Course = () => {
+export const Course = ({ userID }) => {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
     const [message, setMessage] = useState("");
     const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
-    const userID = "YrAPqt4kT6MYrwjk4U9S4JwdxPC3";
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
@@ -409,19 +408,14 @@ export const Course = () => {
     }, [courseID]);
 
     useEffect(() => {
-        let isMounted = true;
-        if (isMounted) {
+        if (userID)
             firebaseInit.getCollectionData("users", userID).then(data => {
                 const isCollect = data.collectCourses?.some(
                     collectCourse => collectCourse === courseID,
                 );
                 setUserCollection(isCollect);
             });
-        }
-        return () => {
-            isMounted = false;
-        };
-    }, [courseID]);
+    }, [courseID, userID]);
 
     useEffect(() => {
         const unsubscribe = onSnapshot(

@@ -2,6 +2,7 @@ import { collection } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { CheckSkills } from "../Component/CheckSkills";
 import PaginatedItems from "../Component/Paginate";
 import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
@@ -37,6 +38,7 @@ const SkillsBox = styled.div`
     align-items: center;
 
     margin: 10px 0 10px 10px;
+    color: #7f7f7f;
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
@@ -49,18 +51,6 @@ const SkillFilter = styled.div`
     letter-spacing: 1px;
     width: 100%;
 `;
-
-const SkillName = styled.div`
-    font-size: 14px;
-    min-width: 100px;
-    color: #7f7f7f;
-    margin: 10px 0;
-`;
-const SkillNameLabel = styled.label`
-    padding-left: 5px;
-`;
-
-const CheckBox = styled.input.attrs({ type: "checkbox" })``;
 
 const SearchArea = styled.div`
     width: 100%;
@@ -279,19 +269,12 @@ export const TalentedPersonSearch = () => {
                         <SkillFilter>技能篩選</SkillFilter>
                         {skills &&
                             skills.map(skill => (
-                                <SkillName key={skill.skillID}>
-                                    <CheckBox
-                                        type="checkbox"
-                                        value={skill.skillID}
-                                        key={skill.skillID}
-                                        id={skill.skillID}
-                                        name="skills"
-                                        onClick={handleSkillChange}
-                                    />
-                                    <SkillNameLabel htmlFor={skill.skillID}>
-                                        {skill.title}
-                                    </SkillNameLabel>
-                                </SkillName>
+                                <CheckSkills
+                                    key={skill.skillID}
+                                    skillID={skill.skillID}
+                                    handleSkillChange={handleSkillChange}
+                                    title={skill.title}
+                                />
                             ))}
                     </SkillsBox>
                     <CardBox>

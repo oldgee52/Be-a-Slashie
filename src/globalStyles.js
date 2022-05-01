@@ -9,9 +9,13 @@ const GlobalStyle = createGlobalStyle`
   font-family: "微軟正黑體", Arial, Helvetica, sans-serif;
   vertical-align: top;
   box-sizing: border-box;
-  ${"" /* border: 1px solid black;    */}
+   ${"" /* border: 1px solid black;     */}
 
   
+}
+body{
+
+  background-color: rgba(0,0,0,0.1);
 }
 address, caption, cite, code, dfn, em, strong, th, var, b {
   font-weight: normal;
