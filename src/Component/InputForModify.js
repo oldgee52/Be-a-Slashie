@@ -112,7 +112,7 @@ const ButtonConfirm = styled.button`
 export const InputForModify = ({
     inputFields,
     SetInputFields,
-    studentID,
+    userID,
     userInfo,
     setUserInfo,
     handleDisable,
@@ -136,10 +136,7 @@ export const InputForModify = ({
                 [`${modifyContent}`]: inputFields[modifyContent],
             };
             console.log(modifyData);
-            await updateDoc(
-                doc(firebaseInit.db, "users", studentID),
-                modifyData,
-            );
+            await updateDoc(doc(firebaseInit.db, "users", userID), modifyData);
             setUserInfo(prve => ({
                 ...prve,
                 [`${modifyContent}`]: inputFields[modifyContent],

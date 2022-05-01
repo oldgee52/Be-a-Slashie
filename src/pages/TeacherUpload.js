@@ -216,7 +216,7 @@ function reducer(state, action) {
     }
 }
 
-export const TeacherUpload = () => {
+export const TeacherUpload = ({ userID }) => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
@@ -333,20 +333,13 @@ export const TeacherUpload = () => {
                         "info",
                     ),
                     {
-                        teacherUserID: "QptFGccbXGVyiTwmvxFG07JNbjp1",
+                        teacherUserID: userID,
                         courseID: docRef.id,
                     },
                 ),
-                updateDoc(
-                    doc(
-                        firebaseInit.db,
-                        "users",
-                        "QptFGccbXGVyiTwmvxFG07JNbjp1",
-                    ),
-                    {
-                        teachersCourses: arrayUnion(docRef.id),
-                    },
-                ),
+                updateDoc(doc(firebaseInit.db, "users", userID), {
+                    teachersCourses: arrayUnion(docRef.id),
+                }),
             ]);
             window.alert("上架成功");
             return window.location.reload();

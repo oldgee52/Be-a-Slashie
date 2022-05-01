@@ -53,48 +53,57 @@ function App() {
                         path="personal"
                         element={
                             <RequireAuth userLogin={userLogin}>
-                                <Personal userID={userID} />
+                                <Personal />
                             </RequireAuth>
                         }
                     >
                         <Route
                             path="student-got-skill"
-                            element={<StudentGotSkill />}
+                            element={<StudentGotSkill userID={userID} />}
                         />
                         <Route
                             path="student-collection-course"
-                            element={<StudentCollectionCourse />}
+                            element={
+                                <StudentCollectionCourse userID={userID} />
+                            }
                         />
                         <Route
                             path="student-finished-course"
-                            element={<StudentFinishedCourse />}
+                            element={<StudentFinishedCourse userID={userID} />}
                         />
                         <Route
                             path="student-registered-course"
-                            element={<StudentRegisteredCourse />}
+                            element={
+                                <StudentRegisteredCourse userID={userID} />
+                            }
                         />
                         <Route
                             path="student-opening-course"
-                            element={<StudentOpeningCourse />}
+                            element={<StudentOpeningCourse userID={userID} />}
                         />
 
-                        <Route path="profile" element={<Profile />} />
+                        <Route
+                            path="profile"
+                            element={<Profile userID={userID} />}
+                        />
                         <Route
                             path="teacher-finished-course"
-                            element={<TeacherFinishedCourse />}
+                            element={<TeacherFinishedCourse userID={userID} />}
                         />
 
                         <Route
                             path="teacher-confirm-registration"
-                            element={<TeacherConfirmRegistration />}
+                            element={
+                                <TeacherConfirmRegistration userID={userID} />
+                            }
                         />
                         <Route
                             path="teacher-upload-course"
-                            element={<TeacherUpload />}
+                            element={<TeacherUpload userID={userID} />}
                         />
                         <Route
                             path="teacher-opening-course"
-                            element={<TeacherOpeningCourse />}
+                            element={<TeacherOpeningCourse userID={userID} />}
                         />
                     </Route>
                     <Route
