@@ -51,11 +51,20 @@ const StudentInfoBoc = styled.div`
     background-color: rgba(0, 0, 0, 0.1);
     padding: 10px 0;
     border-radius: 5px;
+
+    @media ${breakPoint.desktop} {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
 `;
 
 const Name = styled.div`
     margin-top: 5px;
     padding-left: 10px;
+    @media ${breakPoint.desktop} {
+        width: 40%;
+    }
 `;
 
 const InputArea = styled.div`
@@ -63,6 +72,10 @@ const InputArea = styled.div`
     margin-top: 10px;
     width: 100%;
     justify-content: space-around;
+    @media ${breakPoint.desktop} {
+        width: 30%;
+        margin-top: 0;
+    }
 `;
 
 const InputLabel = styled.label`
@@ -78,7 +91,11 @@ const Agreement = styled.div`
     margin-left: 5px;
 `;
 
-const ButtonArea = styled.div``;
+const ButtonArea = styled.div`
+    @media ${breakPoint.desktop} {
+        align-self: center;
+    }
+`;
 
 const NewFiInfo = styled(FiInfo)`
     cursor: pointer;
@@ -121,7 +138,15 @@ export const TeacherConfirmRegistration = ({ userID }) => {
         const courseArray = registrationStatus.filter(
             item => item.courseID === courseID,
         );
-        console.log(courseArray);
+
+        const checkRegistrationStatus = courseArray[0].students
+            .map(student => student.registrationStatus)
+            .some(value => value === 0);
+
+        if (checkRegistrationStatus)
+            return window.alert(`課程:${courseArray[0].title}
+        請確認所有學生是否同意上課`);
+
         try {
             await Promise.all([
                 updateDoc(doc(firebaseInit.db, "courses", courseID), {
@@ -147,7 +172,10 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                 }),
             ]);
             window.alert("開始上課囉!!!");
-            return window.location.reload();
+            const NewCourse = courses.filter(
+                course => course.courseID !== courseID,
+            );
+            setCourses(NewCourse);
         } catch (error) {
             window.alert("開課失敗");
             console.log(error);
