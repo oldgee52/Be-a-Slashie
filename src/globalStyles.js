@@ -13,6 +13,10 @@ const GlobalStyle = createGlobalStyle`
 
   
 }
+body{
+
+  background-color: rgba(0,0,0,0.1);
+}
 address, caption, cite, code, dfn, em, strong, th, var, b {
   font-weight: normal;
   font-style: normal;
