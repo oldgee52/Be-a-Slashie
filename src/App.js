@@ -106,6 +106,15 @@ function App() {
                         }
                     />
 
+                    <Route
+                        path="course"
+                        element={
+                            <RequireAuth userLogin={userLogin}>
+                                <Course userID={userID} />
+                            </RequireAuth>
+                        }
+                    />
+
                     <Route path="login" element={<Login />} />
                     <Route
                         path="talented-person-search"
@@ -116,7 +125,7 @@ function App() {
                         element={<PersonalIntroduction />}
                     />
 
-                    <Route path="course" element={<Course />} />
+                    {/* <Route path="course" element={<Course />} /> */}
                     <Route path="search" element={<Search />} />
                     <Route path="/" element={<Home />} />
                 </Routes>

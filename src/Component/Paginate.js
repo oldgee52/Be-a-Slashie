@@ -128,9 +128,8 @@ function PaginatedItems({ itemsPerPage, searchData }) {
             <CourseArea>
                 {currentItems &&
                     currentItems.map(course => (
-                        <CourseDiv>
+                        <CourseDiv key={course.courseID}>
                             <CourseInfo
-                                key={course.courseID}
                                 teacherPhoto={course.teacherInfo.photo}
                                 image={course.image}
                                 courseID={course.courseID}

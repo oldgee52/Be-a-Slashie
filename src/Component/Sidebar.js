@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import firebaseInit from "../utils/firebase";
 import { breakPoint } from "../utils/breakPoint";
@@ -8,6 +8,7 @@ import logo from "../images/logo.png";
 import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import profile from "../images/profile.png";
+import { BiLogOut } from "react-icons/bi";
 
 const SidebarContainer = styled.nav`
     width: 100%;
@@ -91,8 +92,23 @@ const SidebarContent = styled.div`
     padding: 10px;
 `;
 
+const RightArea = styled.div`
+    display: flex;
+`;
+const SignOutArea = styled.div`
+    align-self: center;
+    margin-right: 30px;
+    cursor: pointer;
+`;
+
+const NewBiLogOut = styled(BiLogOut)`
+    width: 25px;
+    height: 25px;
+`;
+
 function Sidebar({ userID }) {
     const [isShow, setIsShow] = useState(false);
+    const navigate = useNavigate();
 
     function handleMobileNavShow() {
         setIsShow(prev => !prev);
@@ -106,6 +122,7 @@ function Sidebar({ userID }) {
         signOut(firebaseInit.auth)
             .then(() => {
                 window.alert("已登出成功");
+                navigate("/");
             })
             .catch(error => {
                 window.alert(error);
@@ -143,7 +160,12 @@ function Sidebar({ userID }) {
                         </NavLink>
                     ))}
                 </MobileItemContainer>
-                <div>
+                <RightArea>
+                    {userID && (
+                        <SignOutArea onClick={handleSignOut}>
+                            <NewBiLogOut viewBox="0 -1 24 24" />
+                        </SignOutArea>
+                    )}
                     <NavLink to="personal/profile">
                         <ProfileImg
                             src={profile}
@@ -156,12 +178,7 @@ function Sidebar({ userID }) {
                         onClick={handleMobileNavShow}
                         alt="menu"
                     />
-                </div>
-                {userID && (
-                    <SidebarContent onClick={handleSignOut}>
-                        登出
-                    </SidebarContent>
-                )}
+                </RightArea>
             </SidebarContainer>
         </>
     );

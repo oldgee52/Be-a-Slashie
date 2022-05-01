@@ -181,9 +181,8 @@ export const Home = () => {
                             </SeeMore>
 
                             {latestCourse.map(course => (
-                                <CourseDiv>
+                                <CourseDiv key={course.courseID}>
                                     <CourseInfo
-                                        key={course.courseID}
                                         teacherPhoto={course.teacherInfo.photo}
                                         image={course.image}
                                         courseID={course.courseID}
@@ -209,9 +208,8 @@ export const Home = () => {
                             </SeeMore>
 
                             {popularCourse.map(course => (
-                                <CourseDiv>
+                                <CourseDiv key={course.courseID}>
                                     <CourseInfo
-                                        key={course.courseID}
                                         teacherPhoto={course.teacherInfo.photo}
                                         image={course.image}
                                         courseID={course.courseID}
