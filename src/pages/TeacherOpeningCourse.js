@@ -39,15 +39,22 @@ const CourseCard = styled.div`
     margin-bottom: 10px;
 
     border-radius: 5px;
+
+    @media ${breakPoint.desktop} {
+    }
 `;
 
 const CourseTitle = styled.h3`
-    font-size: 16px;
+    font-size: 18px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     line-height: 1.2;
 
     word-break: break-all;
+
+    @media ${breakPoint.desktop} {
+        font-size: 22px;
+    }
 `;
 
 const StudentInfoBoc = styled.div`
@@ -62,7 +69,7 @@ const StudentInfoBoc = styled.div`
 
     @media ${breakPoint.desktop} {
         flex-direction: row;
-        align-items: center;
+        flex-wrap: wrap;
         justify-content: space-between;
     }
 `;
@@ -75,6 +82,7 @@ const Name = styled.div`
     margin-top: 5px;
     padding-left: 10px;
     @media ${breakPoint.desktop} {
+        order: -2;
         width: 40%;
     }
 `;
@@ -82,6 +90,9 @@ const Name = styled.div`
 const Title = styled.h3`
     font-size: 16px;
     padding-bottom: 10px;
+    @media ${breakPoint.desktop} {
+        width: 100%;
+    }
 `;
 
 const InputArea = styled.div`
@@ -90,8 +101,9 @@ const InputArea = styled.div`
     width: 100%;
     justify-content: space-around;
     @media ${breakPoint.desktop} {
-        width: 30%;
+        width: 50%;
         margin-top: 0;
+        order: -1;
     }
 `;
 
@@ -114,6 +126,8 @@ const StudentUploadHomework = styled.div`
     flex-direction: column;
     width: 100%;
     padding: 0 10px;
+    @media ${breakPoint.desktop} {
+    }
 `;
 const UploadHomework = styled.div`
     display: flex;
@@ -121,7 +135,10 @@ const UploadHomework = styled.div`
     justify-content: center;
     margin-top: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+    }
 `;
 
 const HomeworkTitle = styled.div`
@@ -129,9 +146,16 @@ const HomeworkTitle = styled.div`
     font-weight: 700;
     word-break: break-all;
     margin-bottom: 5px;
+
+    @media ${breakPoint.desktop} {
+        width: 80%;
+    }
 `;
 const HomeworkDate = styled.div`
     width: 70%;
+    @media ${breakPoint.desktop} {
+        width: 10%;
+    }
 `;
 const HomeworkDownload = styled.div`
     /* font-size: 12px; */
@@ -146,12 +170,15 @@ const HomeworkDownload = styled.div`
     color: whitesmoke;
     border-radius: 10px;
     cursor: pointer; */
+    @media ${breakPoint.desktop} {
+        width: 10%;
+    }
 `;
 
 const TeacherBoxTitle = styled.h3`
     width: 100%;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
 `;
 
@@ -166,13 +193,16 @@ const TeacherHomeworkBox = styled.div`
     margin-top: 10px;
     margin-bottom: 10px;
     width: 100%;
+    @media ${breakPoint.desktop} {
+        margin-bottom: 20px;
+    }
 `;
 const TeacherHomework = styled.div`
     display: flex;
     width: 100%;
     margin-top: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 `;
 const TeacherHomeworkDate = styled.div`
     width: 50%;
@@ -183,14 +213,17 @@ const ButtonArea = styled.div`
     width: 100%;
     margin-top: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 
     @media ${breakPoint.desktop} {
-        align-self: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 `;
 
 const LastButtonArea = styled(ButtonArea)`
+    padding-bottom: 0;
     border-bottom: none;
 `;
 
