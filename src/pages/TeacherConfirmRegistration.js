@@ -6,6 +6,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { NoDataTitle } from "../Component/NoDataTitle";
 
 const Container = styled.div`
     display: flex;
@@ -184,7 +185,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     return (
         <Container>
             {courses?.length === 0 ? (
-                <NoShow>目前沒有課程喔!</NoShow>
+                <NoDataTitle title="目前沒有課程喔" />
             ) : (
                 courses &&
                 courses.map(course => (

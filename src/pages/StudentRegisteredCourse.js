@@ -13,6 +13,7 @@ const Container = styled.div`
     flex-wrap: wrap;
     width: 100%;
     margin-top: 20px;
+    padding: 0 10px;
 
     @media ${breakPoint.desktop} {
         width: 100%;
@@ -20,6 +21,7 @@ const Container = styled.div`
         margin: auto;
         margin-left: 150px;
         margin-top: -135px;
+        padding: 0;
     }
 `;
 

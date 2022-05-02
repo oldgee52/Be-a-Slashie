@@ -15,6 +15,7 @@ import { MyButton } from "../Component/MyButton";
 import { TextInput } from "../Component/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
+import { NoDataTitle } from "../Component/NoDataTitle";
 
 const Container = styled.div`
     display: flex;
@@ -461,7 +462,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
     return (
         <Container>
             {courses?.length === 0 ? (
-                <div>目前沒有課程喔</div>
+                <NoDataTitle title="目前沒有課程喔" />
             ) : (
                 courses?.map((course, index) => (
                     <CourseCard key={index} isShow={course.isShow}>
