@@ -162,7 +162,12 @@ function Sidebar({ userID }) {
                 </MobileItemContainer>
                 <RightArea>
                     {userID && (
-                        <SignOutArea onClick={handleSignOut}>
+                        <SignOutArea
+                            onClick={() => {
+                                handleLinkToOtherRouterNavShow();
+                                handleSignOut();
+                            }}
+                        >
                             <NewBiLogOut viewBox="0 -1 24 24" />
                         </SignOutArea>
                     )}

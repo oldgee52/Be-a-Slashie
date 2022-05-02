@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { TextInput } from "../Component/TextInput";
@@ -8,28 +8,62 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from "firebase/auth";
+import { MyButton } from "../Component/MyButton";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    margin: 180px auto 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    min-width: 300px;
+    max-width: 400px;
+    height: 350px;
+    padding: 20px;
+    background-color: whitesmoke;
+    border-radius: 10px;
 `;
 
-export const Login = ({ userID }) => {
+const SignInDiv = styled.div`
+    width: 50%;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    background-color: ${props => (props.login ? "#ff6100" : "none")};
+    color: ${props => (props.login ? "white" : "black")};
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+    transition-duration: 0.5s;
+    cursor: pointer;
+`;
+
+const SingUpDiv = styled.div`
+    width: 50%;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    background-color: ${props => (!props.login ? "#ff6100" : "none")};
+    color: ${props => (!props.login ? "white" : "black")};
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    transition-duration: 0.5s;
+    cursor: pointer;
+`;
+
+export const Login = ({ userLogin }) => {
     const [info, setInfo] = useState({
         email: "",
         password: "",
         name: "",
     });
-    const [login, setLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from || "/";
+
+    useEffect(() => {
+        if (userLogin === "in") navigate(from, { replace: true });
+    });
 
     function singUp() {
         if (!info.email.trim() || !info.password.trim() || !info.name.trim())
@@ -47,17 +81,12 @@ export const Login = ({ userID }) => {
                     email: user.email,
                     uid: user.uid,
                     name: info.name,
-                    photo: "https://upload.cc/i1/2022/04/09/KT0J1k.png",
-                    selfIntroduction: "",
-                });
-                setInfo({
-                    email: "",
-                    password: "",
-                    name: "",
+                    photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
+                    selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
                 });
                 window.alert("註冊成功，可以去個人修改大頭照跟自我介紹喔");
-                navigate(from, { replace: true });
             })
+            .then(() => navigate(from, { replace: true }))
             .catch(error => {
                 const errorCode = error.code;
                 console.log(errorCode);
@@ -83,11 +112,6 @@ export const Login = ({ userID }) => {
     function signIn() {
         signInWithEmailAndPassword(firebaseInit.auth, info.email, info.password)
             .then(() => {
-                setInfo({
-                    email: "",
-                    password: "",
-                    name: "",
-                });
                 window.alert("登入成功");
                 navigate(from, { replace: true });
             })
@@ -121,31 +145,78 @@ export const Login = ({ userID }) => {
 
     return (
         <Container>
-            <div onClick={() => setLogin(false)}>註冊</div>
-            <div onClick={() => setLogin(true)}>登入</div>
-            <TextInput
-                title="信箱"
-                value={info.email}
-                handleChange={handleChange}
-                name="email"
-            />
-            <TextInput
-                title="密碼"
-                value={info.password}
-                handleChange={handleChange}
-                name="password"
-                type="password"
-            />
-            {!login && (
-                <TextInput
-                    title="姓名"
-                    value={info.name}
-                    handleChange={handleChange}
-                    name="name"
-                />
+            {userLogin === "check" ? (
+                "身分驗證中"
+            ) : (
+                <>
+                    <SignInDiv
+                        onClick={() => {
+                            setIsLogin(true);
+                            setInfo({
+                                email: "",
+                                password: "",
+                                name: "",
+                            });
+                        }}
+                        login={isLogin}
+                    >
+                        登入
+                    </SignInDiv>
+                    <SingUpDiv
+                        onClick={() => {
+                            setIsLogin(false);
+                            setInfo({
+                                email: "",
+                                password: "",
+                                name: "",
+                            });
+                        }}
+                        login={isLogin}
+                    >
+                        註冊
+                    </SingUpDiv>
+
+                    <TextInput
+                        value={info.email}
+                        handleChange={handleChange}
+                        name="email"
+                        placeholder="請輸入信箱"
+                    />
+                    <TextInput
+                        value={info.password}
+                        handleChange={handleChange}
+                        name="password"
+                        type="password"
+                        placeholder="請輸入密碼"
+                    />
+                    {!isLogin && (
+                        <TextInput
+                            value={info.name}
+                            handleChange={handleChange}
+                            name="name"
+                            placeholder="請輸入姓名"
+                        />
+                    )}
+                    {isLogin && (
+                        <MyButton
+                            clickFunction={signIn}
+                            buttonWord="登入"
+                            isDisabled={!info.password || !info.email}
+                            width="100%"
+                        />
+                    )}
+                    {!isLogin && (
+                        <MyButton
+                            clickFunction={singUp}
+                            buttonWord="註冊"
+                            isDisabled={Object.values(info).some(
+                                value => !value,
+                            )}
+                            width="100%"
+                        />
+                    )}
+                </>
             )}
-            {login && <button onClick={signIn}>登入</button>}
-            {!login && <button onClick={singUp}>註冊</button>}
         </Container>
     );
 };
