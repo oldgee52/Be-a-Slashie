@@ -40,13 +40,14 @@ const Input = styled.input`
     word-break: break-word;
     text-align: center;
     border: none;
+    background-color: none;
     &:focus {
         outline: none;
     }
 
-    &:disabled {
+    /* &:disabled {
         background-color: white;
-    }
+    } */
 
     @media ${breakPoint.desktop} {
         text-align: left;
@@ -62,15 +63,17 @@ const InputText = styled.textarea`
     overflow: hidden;
     margin-bottom: 10px;
 
+    background-color: none;
+
     border: none;
     &:focus {
         outline: none;
         overflow: inherit;
     }
 
-    &:disabled {
+    /* &:disabled {
         background-color: white;
-    }
+    } */
 
     @media ${breakPoint.desktop} {
         width: 60%;

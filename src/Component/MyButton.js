@@ -15,13 +15,13 @@ const Button = styled.div`
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
-        width: 200px;
+        width: ${props => props.width || "200px"};
     }
 `;
 
-export const MyButton = ({ buttonWord, buttonId, clickFunction }) => {
+export const MyButton = ({ buttonWord, buttonId, clickFunction, width }) => {
     return (
-        <Button onClick={clickFunction} id={buttonId}>
+        <Button onClick={clickFunction} id={buttonId} width={width}>
             {buttonWord}
         </Button>
     );
