@@ -72,7 +72,7 @@ const CourseDiv = styled.div`
 
 export const StudentRegisteredCourse = ({ userID }) => {
     const [registeredCourse, setRegisteredCourse] = useState();
-    const [isShow, setIsShow] = useState([false, false, false]);
+    const [isShow, setIsShow] = useState([true, false, false]);
 
     useEffect(() => {
         let isMounted = true;

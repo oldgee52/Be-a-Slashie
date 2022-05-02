@@ -18,6 +18,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
 import { BsReply } from "react-icons/bs";
 import { RiCloseCircleLine } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     display: flex;
@@ -394,6 +395,7 @@ export const Course = ({ userID }) => {
     const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
+    const navigate = useNavigate();
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
@@ -533,8 +535,16 @@ export const Course = ({ userID }) => {
                 ),
                 email.sendEmail(studentEmailContent),
                 email.sendEmail(teacherEmailContent),
-            ]);
-            return window.alert("報名成功");
+            ]).then(() => {
+                const confirmMessage = window.confirm(
+                    "報名成功\n點選「確定」，查看報名狀態。\n點選「取消」，回到首頁。",
+                );
+                if (confirmMessage) {
+                    navigate("/personal/student-registered-course");
+                } else {
+                    navigate("/");
+                }
+            });
         } catch (error) {
             console.log(error);
             window.alert("發生錯誤，請重新試一次");
