@@ -301,6 +301,7 @@ const firebaseInit = {
                 teacherUserID: detail.teacherUserID,
                 teacherName: teacherInfoData.name,
                 teacherEmail: teacherInfoData.email,
+                teacherPhoto: teacherInfoData.photo,
                 courseOpeningDate: detail.openingDate,
                 courseClosedDate: detail?.closedDate || "",
                 courseRegistrationDeadline: detail.registrationDeadline,

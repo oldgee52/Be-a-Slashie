@@ -1,116 +1,165 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { breakPoint } from "../utils/breakPoint";
+import { CourseInfo } from "../Component/CourseInfo";
+import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
+import { NoDataTitle } from "../Component/NoDataTitle";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 100%;
+        justify-content: space-between;
+        margin: auto;
+        margin-left: 150px;
+        margin-top: -135px;
+    }
 `;
 
-const Div1 = styled.div`
+const CourseTitle = styled.h3`
+    font-size: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
     width: 100%;
+    cursor: pointer;
+
+    word-break: break-all;
+
+    @media ${breakPoint.desktop} {
+        width: 90%;
+        font-size: 22px;
+    }
+`;
+
+const CourseArea = styled.div`
     display: flex;
     flex-wrap: wrap;
-`;
-
-const Div12 = styled(Div1)`
-    border: 1px solid black;
-`;
-
-const Div13 = styled(Div1)`
-    border: 1px solid black;
-    width: 50%;
-    height: auto;
-`;
-
-const DivCourse = styled.h3`
+    justify-content: center;
+    align-items: center;
     width: 100%;
+    margin-bottom: 10px;
+
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+        align-items: flex-start;
+        &::after {
+            content: "";
+            width: calc(30% - 10px);
+        }
+    }
 `;
 
-const DivContent = styled.div`
-    padding-right: 20px;
+const CourseDiv = styled.div`
     width: 100%;
+    display: ${props => (props.show ? "black" : "none")};
+
+    @media ${breakPoint.desktop} {
+        width: calc(30% - 10px);
+        margin-right: 10px;
+        margin-bottom: 20px;
+    }
 `;
 
-export const StudentRegisteredCourse = () => {
+export const StudentRegisteredCourse = ({ userID }) => {
     const [registeredCourse, setRegisteredCourse] = useState();
-
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
+    const [isShow, setIsShow] = useState([false, false, false]);
 
     useEffect(() => {
-        firebaseInit.getStudentRegisteredCourseDetails(studentID).then(data => {
-            console.log(data);
-            setRegisteredCourse(data);
-        });
-    }, []);
+        let isMounted = true;
+
+        if (userID)
+            firebaseInit
+                .getStudentRegisteredCourseDetails(userID)
+                .then(data => {
+                    console.log(data);
+                    if (isMounted) setRegisteredCourse(data);
+                });
+
+        return () => (isMounted = false);
+    }, [userID]);
+
+    function handleIsShow(i) {
+        let data = [...isShow];
+        data[i] = !data[i];
+        console.log(data);
+        setIsShow(data);
+    }
 
     function renderCourses(status) {
         const showCourses = registeredCourse
-            ?.filter(item => item.registrationStatus === status)
+            .filter(item => item.registrationStatus === status)
             .sort(
                 (a, b) =>
                     b.courseOpeningDate.seconds - a.courseOpeningDate.seconds,
             );
+        console.log(showCourses);
 
-        return (
-            showCourses &&
-            showCourses.map((course, index) => (
-                <Div13 key={course.courseID}>
-                    <DivContent>
-                        項次
-                        {index + 1}
-                    </DivContent>
-                    <DivContent>課程名稱: {course.title}</DivContent>
-                    <DivContent>老師: {course.teacherName}</DivContent>
-                    <DivContent>
-                        開課日期:{" "}
-                        {new Date(
-                            course?.courseOpeningDate.seconds * 1000,
+        return showCourses.length === 0 ? (
+            <CourseDiv show={isShow[status]}>
+                <NoDataTitle title="無" />
+            </CourseDiv>
+        ) : (
+            showCourses?.map(course => (
+                <CourseDiv key={course.courseID} show={isShow[status]}>
+                    <CourseInfo
+                        teacherPhoto={course.photo}
+                        image={course.image}
+                        title={course.title}
+                        teacherName={course.teacherName}
+                        openingDate={new Date(
+                            course.courseOpeningDate.seconds * 1000,
                         ).toLocaleDateString()}
-                    </DivContent>
-                    <DivContent>
-                        課程報名狀態:
-                        {course.courseStatus === 0 ? (
-                            <Link to={`/course?courseID=${course.courseID}`}>
-                                {" "}
-                                報名中
-                            </Link>
-                        ) : (
-                            " 已結束報名"
-                        )}
-                    </DivContent>
-                </Div13>
+                    />
+                </CourseDiv>
             ))
         );
     }
 
     return (
         <Container>
-            <Div12>
-                <Div1>
-                    <DivCourse>審核中</DivCourse>
-                    {renderCourses(0)}
-                </Div1>
-            </Div12>
-            <Div12>
-                <Div1>
-                    <DivCourse>已同意</DivCourse>
-                    {renderCourses(1)}
-                </Div1>
-            </Div12>
-            <Div12>
-                <Div1>
-                    <DivCourse>不同意</DivCourse>
-                    {renderCourses(2)}
-                </Div1>
-            </Div12>
+            {!registeredCourse ? (
+                "loading..."
+            ) : (
+                <>
+                    <CourseTitle onClick={() => handleIsShow(0)}>
+                        {isShow[0] ? (
+                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                        ) : (
+                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                        )}{" "}
+                        審核中
+                    </CourseTitle>
+                    <CourseArea>{renderCourses(0)}</CourseArea>
+
+                    <CourseTitle onClick={() => handleIsShow(1)}>
+                        {isShow[1] ? (
+                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                        ) : (
+                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                        )}{" "}
+                        已同意
+                    </CourseTitle>
+                    <CourseArea>{renderCourses(1)}</CourseArea>
+
+                    <CourseTitle onClick={() => handleIsShow(2)}>
+                        {isShow[2] ? (
+                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                        ) : (
+                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                        )}{" "}
+                        未同意
+                    </CourseTitle>
+                    <CourseArea>{renderCourses(2)}</CourseArea>
+                </>
+            )}
         </Container>
     );
 };

@@ -96,7 +96,7 @@ export const StudentCollectionCourse = ({ userID }) => {
                     {collectionCourses.length === 0 ? (
                         <NoDataTitle title="還沒有收藏喔，快去逛逛！" />
                     ) : (
-                        collectionCourses?.map((course, index) => (
+                        collectionCourses.map(course => (
                             <CourseDiv key={course.courseID}>
                                 <CourseInfo
                                     courseID={course.courseID}
