@@ -3,45 +3,60 @@ import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { collection } from "firebase/firestore";
+import { NoDataTitle } from "../Component/NoDataTitle";
+import { breakPoint } from "../utils/breakPoint";
+import { CourseInfo } from "../Component/CourseInfo";
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
-    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 100%;
+        justify-content: space-between;
+        margin: auto;
+        margin-left: 150px;
+        margin-top: -135px;
+    }
 `;
 
-const Div1 = styled.div`
-    width: 100%;
+const CourseArea = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 10px;
-`;
-
-const Div13 = styled(Div1)`
-    border: 1px solid black;
-    width: 50%;
-    height: auto;
-`;
-
-const DivContent = styled.div`
-    padding-right: 20px;
+    align-items: center;
     width: 100%;
+    padding: 0 10px 0 10px;
+    margin-bottom: 100px;
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+        align-items: flex-start;
+        &::after {
+            content: "";
+            width: calc(30% - 10px);
+        }
+    }
 `;
 
-export const StudentCollectionCourse = () => {
+const CourseDiv = styled.div`
+    width: 100%;
+
+    @media ${breakPoint.desktop} {
+        width: calc(30% - 10px);
+        margin-right: 10px;
+        margin-bottom: 20px;
+    }
+`;
+
+export const StudentCollectionCourse = ({ userID }) => {
     const [collectionCourses, SetCollectionCourses] = useState();
     const [usersInfo, setUsersInfo] = useState();
-    const navigate = useNavigate();
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
-        firebaseInit.getStudentCollectCourses(studentID).then(data => {
+        firebaseInit.getStudentCollectCourses(userID).then(data => {
             const validCollectionCourses = data
                 .filter(
                     course =>
@@ -55,7 +70,7 @@ export const StudentCollectionCourse = () => {
 
             SetCollectionCourses(validCollectionCourses);
         });
-    }, []);
+    }, [userID]);
 
     useEffect(() => {
         firebaseInit
@@ -74,40 +89,39 @@ export const StudentCollectionCourse = () => {
 
     return (
         <Container>
-            {!collectionCourses ? "loading..." : <Div1>學生收藏課程</Div1>}
-            {collectionCourses?.length !== 0
-                ? collectionCourses?.map((course, index) => (
-                      <Div13
-                          key={course.courseID}
-                          onClick={() => {
-                              navigate(`/course?courseID=${course.courseID}`);
-                          }}
-                      >
-                          <DivContent>
-                              項次
-                              {index + 1}
-                          </DivContent>
-                          <DivContent>課程名稱: {course.title}</DivContent>
-                          <DivContent>
-                              老師: {findUserInfo(course.teacherUserID, "name")}
-                              <a
-                                  href={`mailto: ${findUserInfo(
-                                      course.teacherUserID,
-                                      "email",
-                                  )}`}
-                              >
-                                  與我聯繫
-                              </a>
-                          </DivContent>{" "}
-                          <DivContent>
-                              開課日期:{" "}
-                              {new Date(
-                                  course.openingDate.seconds * 1000,
-                              ).toLocaleDateString()}
-                          </DivContent>
-                      </Div13>
-                  ))
-                : "無課程"}
+            {!collectionCourses || !usersInfo ? (
+                "loading..."
+            ) : (
+                <CourseArea>
+                    {collectionCourses.length === 0 ? (
+                        <NoDataTitle title="還沒有收藏喔，快去逛逛！" />
+                    ) : (
+                        collectionCourses?.map((course, index) => (
+                            <CourseDiv key={course.courseID}>
+                                <CourseInfo
+                                    courseID={course.courseID}
+                                    teacherPhoto={findUserInfo(
+                                        course.teacherUserID,
+                                        "photo",
+                                    )}
+                                    image={course.image}
+                                    title={course.title}
+                                    teacherName={findUserInfo(
+                                        course.teacherUserID,
+                                        "name",
+                                    )}
+                                    creatDate={new Date(
+                                        course.creatTime.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                    openingDate={new Date(
+                                        course.openingDate.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                />
+                            </CourseDiv>
+                        ))
+                    )}
+                </CourseArea>
+            )}
         </Container>
     );
 };
