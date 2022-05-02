@@ -11,8 +11,12 @@ const CourseCard = styled.div`
     justify-content: center;
     margin-top: 10px;
 
+    padding: 10px;
+
     padding-bottom: 20px;
     border-bottom: 2px solid black;
+
+    background-color: whitesmoke;
 
     cursor: ${props => (props.isLink ? "pointer" : "default")};
 
@@ -20,6 +24,8 @@ const CourseCard = styled.div`
         flex-direction: column;
         align-items: center;
         border: 2px solid black;
+        padding: 0;
+        padding-bottom: 20px;
         border-radius: 5px;
         border-bottom: 10px solid black;
     }
@@ -27,7 +33,7 @@ const CourseCard = styled.div`
 
 const CourseImg = styled.img`
     width: 100px;
-    height: auto;
+    height: 80px;
     flex-shrink: 0;
     object-fit: cover;
     @media ${breakPoint.desktop} {
@@ -50,15 +56,18 @@ const CourseName = styled.h4`
     width: 60vw;
     font-size: 20px;
     font-weight: 700;
+    line-height: 1.2;
     word-wrap: break-word;
 
     margin-bottom: 10px;
+
     @media ${breakPoint.desktop} {
-        width: inherit;
+        width: 100%;
         font-size: 24px;
         padding-top: 40px;
         height: 120px;
         word-wrap: break-word;
+        overflow: hidden;
     }
 `;
 
@@ -67,6 +76,7 @@ const TeacherName = styled.p`
     font-size: 14px;
     line-height: 20px;
     margin-top: 5px;
+
     @media ${breakPoint.desktop} {
         font-size: 18px;
         margin-top: 10px;

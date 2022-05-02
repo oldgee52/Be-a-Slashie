@@ -156,6 +156,7 @@ const firebaseInit = {
 
             return {
                 title: courseData.title,
+                image: courseData.image,
                 courseID: courseData.courseID,
                 getSkills: courseData.getSkills,
                 openingDate: courseData.openingDate,
