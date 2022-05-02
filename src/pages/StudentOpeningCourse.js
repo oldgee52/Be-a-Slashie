@@ -7,6 +7,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { MyButton } from "../Component/MyButton";
 import { FiUpload } from "react-icons/fi";
+import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 
 const Container = styled.div`
     display: flex;
@@ -33,10 +34,11 @@ const CourseCard = styled.div`
     margin-bottom: 10px;
 
     border-radius: 5px;
-    /* height: ${props => (props.isShow ? "fit-content" : "50px")}; */
+    height: ${props => (props.show ? "fit-content" : "70px")};
     overflow: hidden;
 
     @media ${breakPoint.desktop} {
+        height: ${props => (props.show ? "fit-content" : "75px")};
     }
 `;
 
@@ -49,6 +51,7 @@ const CourseTitle = styled.h3`
     margin-bottom: 10px;
 
     word-break: break-all;
+    cursor: pointer;
 
     @media ${breakPoint.desktop} {
         font-size: 22px;
@@ -58,10 +61,13 @@ const CourseTitle = styled.h3`
 const Name = styled.div`
     margin-top: 5px;
     font-weight: 500;
+    padding-left: 25px;
+    font-size: 16px;
 
     @media ${breakPoint.desktop} {
         width: 40%;
-        font-size: 16px;
+
+        padding-left: 30px;
     }
 `;
 
@@ -144,9 +150,8 @@ const ButtonArea = styled.div`
     margin-top: 10px;
 
     @media ${breakPoint.desktop} {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: 130px;
+        margin-top: 0px;
     }
 `;
 
@@ -154,7 +159,9 @@ const FileLabel = styled.label`
     width: 50%;
     text-align: right;
     @media ${breakPoint.desktop} {
-        margin-bottom: 10px;
+        flex: 1 0 calc(50% - 150px);
+        margin-right: 10px;
+        line-height: 40px;
     }
 `;
 const FileInput = styled.input`
@@ -180,36 +187,10 @@ const SubTitle = styled(Title)`
     padding-bottom: 0;
 `;
 
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-`;
-
-const Div12 = styled(Div1)`
-    border: 1px solid black;
-`;
-
-const DivCourse = styled.h3`
-    width: 100%;
-`;
-
-const DivTeacher = styled.h5`
-    width: 100%;
-    margin: 0;
-`;
-
-const DivContent = styled.div`
-    padding-right: 20px;
-`;
-
-const Input = styled.input`
-    width: 100%;
-`;
-
 export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
+    const [isShow, setIsShow] = useState();
     useEffect(() => {
         let isMounted = true;
         if (userID) {
@@ -220,6 +201,11 @@ export const StudentOpeningCourse = ({ userID }) => {
 
                     if (isMounted) {
                         setCourseDetails(data);
+                        setIsShow(
+                            Array(data.length || 0)
+                                .fill()
+                                .map(() => false),
+                        );
 
                         SetInputFields(
                             data.map(item =>
@@ -325,16 +311,6 @@ export const StudentOpeningCourse = ({ userID }) => {
                                         <FiUpload /> 選擇檔案
                                     </>
                                 )}
-                                {/* <FiUpload /> 選擇檔案 */}
-                                {/* {e =>
-                                e.target.file ? (
-                                    `已選擇檔案，請輸入資料名稱後上傳`
-                                ) : (
-                                    <>
-                                選擇檔案 <FiUpload />
-                            </>
-                                )
-                            } */}
                             </FileLabel>
                             <ButtonArea>
                                 <MyButton
@@ -343,6 +319,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                                     clickFunction={e =>
                                         handleUploadHomework(e, index, i)
                                     }
+                                    width="130px"
                                 />
                             </ButtonArea>
                         </NotUploadHomework>
@@ -438,6 +415,13 @@ export const StudentOpeningCourse = ({ userID }) => {
         );
     };
 
+    const handleIsShow = index => {
+        let data = [...isShow];
+        data[index] = !data[index];
+        console.log(data);
+        setIsShow(data);
+    };
+
     return (
         <Container>
             {!courseDetails ? (
@@ -446,8 +430,18 @@ export const StudentOpeningCourse = ({ userID }) => {
                 <NoDataTitle title="目前沒有課程喔" />
             ) : (
                 courseDetails.map((detail, indexOfAllCourse) => (
-                    <CourseCard key={detail.courseID}>
-                        <CourseTitle>
+                    <CourseCard
+                        key={detail.courseID}
+                        show={isShow?.[indexOfAllCourse]}
+                    >
+                        <CourseTitle
+                            onClick={() => handleIsShow(indexOfAllCourse)}
+                        >
+                            {isShow?.[indexOfAllCourse] ? (
+                                <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                            ) : (
+                                <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                            )}{" "}
                             {detail.title} <Name>{detail.teacherName}</Name>
                         </CourseTitle>
                         <Title>課程作業</Title>

@@ -55,6 +55,7 @@ const CourseTitle = styled.h3`
     line-height: 1.2;
 
     word-break: break-all;
+    cursor: pointer;
 
     @media ${breakPoint.desktop} {
         font-size: 22px;
