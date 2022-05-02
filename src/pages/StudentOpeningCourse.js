@@ -3,17 +3,183 @@ import firebaseInit from "../utils/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import styled from "styled-components";
 import { updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { breakPoint } from "../utils/breakPoint";
+import { NoDataTitle } from "../Component/NoDataTitle";
+import { MyButton } from "../Component/MyButton";
+import { FiUpload } from "react-icons/fi";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 80%;
+        margin: auto;
+        margin-top: -150px;
+    }
 `;
+
+const CourseCard = styled.div`
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: whitesmoke;
+    margin-bottom: 10px;
+
+    border-radius: 5px;
+    /* height: ${props => (props.isShow ? "fit-content" : "50px")}; */
+    overflow: hidden;
+
+    @media ${breakPoint.desktop} {
+    }
+`;
+
+const CourseTitle = styled.h3`
+    font-size: 18px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    line-height: 1.2;
+
+    margin-bottom: 10px;
+
+    word-break: break-all;
+
+    @media ${breakPoint.desktop} {
+        font-size: 22px;
+    }
+`;
+
+const Name = styled.div`
+    margin-top: 5px;
+    font-weight: 500;
+
+    @media ${breakPoint.desktop} {
+        width: 40%;
+        font-size: 16px;
+    }
+`;
+
+const Title = styled.h3`
+    font-size: 16px;
+
+    @media ${breakPoint.desktop} {
+        width: 100%;
+    }
+`;
+
+const StudentUploadHomework = styled.div`
+    display: flex;
+    margin-bottom: 10px;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 10px;
+    @media ${breakPoint.desktop} {
+    }
+`;
+const UploadHomework = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    @media ${breakPoint.desktop} {
+        justify-content: flex-start;
+    }
+`;
+
+const HomeworkTitle = styled.div`
+    width: 100%;
+    font-weight: 700;
+    word-break: break-all;
+    margin-bottom: 5px;
+
+    @media ${breakPoint.desktop} {
+        width: 80%;
+    }
+`;
+const HomeworkDate = styled.div`
+    width: 70%;
+    @media ${breakPoint.desktop} {
+        width: 10%;
+    }
+`;
+const HomeworkDownload = styled.div`
+    /* font-size: 12px; */
+    width: 30%;
+    text-align: right;
+    color: #ff6100;
+    /* height: 15px;
+    padding: 2px;
+
+    text-align: center;
+    background-color: rgb(0 190 164);
+    color: whitesmoke;
+    border-radius: 10px;
+    cursor: pointer; */
+    @media ${breakPoint.desktop} {
+        width: 10%;
+    }
+`;
+
+const NotUploadHomework = styled(UploadHomework)`
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const NotUploadHomeworkTitle = styled(HomeworkTitle)`
+    width: 50%;
+`;
+
+const ButtonArea = styled.div`
+    width: 100%;
+    margin-top: 10px;
+
+    @media ${breakPoint.desktop} {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+`;
+
+const FileLabel = styled.label`
+    width: 50%;
+    text-align: right;
+    @media ${breakPoint.desktop} {
+        margin-bottom: 10px;
+    }
+`;
+const FileInput = styled.input`
+    display: none;
+`;
+
+const AllHomeworkArea = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.1);
+`;
+const SubTitle = styled(Title)`
+    border-bottom: none;
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 100%;
+    padding-bottom: 0;
+`;
+
 const Div1 = styled.div`
     width: 100%;
     display: flex;
@@ -41,32 +207,34 @@ const Input = styled.input`
     width: 100%;
 `;
 
-export const StudentOpeningCourse = () => {
+export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
-    const studentID = "nsYFwHkZEeXM4N4SNnGHc6f9QSu1";
     useEffect(() => {
         let isMounted = true;
-        if (isMounted) {
+        if (userID) {
             firebaseInit
-                .getStudentOpeningCourseDetails(studentID, 1)
+                .getStudentOpeningCourseDetails(userID, 1)
                 .then(data => {
-                    setCourseDetails(data);
                     console.log(data);
 
-                    SetInputFields(
-                        data.map(item =>
-                            Array(item.allHomework?.length || 0)
-                                .fill()
-                                .map(() => ({ file: "" })),
-                        ),
-                    );
+                    if (isMounted) {
+                        setCourseDetails(data);
+
+                        SetInputFields(
+                            data.map(item =>
+                                Array(item.allHomework?.length || 0)
+                                    .fill()
+                                    .map(() => ({ file: "" })),
+                            ),
+                        );
+                    }
                 });
         }
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [userID]);
 
     function getUploadedHomework(array1, array2) {
         return array1?.filter(object1 => {
@@ -92,19 +260,34 @@ export const StudentOpeningCourse = () => {
             allHomework[index],
         );
 
-        return uploadedHomework.map(homework => (
-            <Div1 key={homework.fileURL}>
-                <DivContent>{homework.title} </DivContent>
-                <DivContent>
-                    {new Date(
-                        homework.uploadDate.seconds * 1000,
-                    ).toLocaleDateString()}
-                </DivContent>
-                <a href={homework.fileURL} download>
-                    點我下載
-                </a>
-            </Div1>
-        ));
+        return (
+            <StudentUploadHomework>
+                {uploadedHomework.length === 0 ? (
+                    <NoDataTitle title="無" />
+                ) : (
+                    uploadedHomework.map(homework => (
+                        <UploadHomework key={homework.fileURL}>
+                            <HomeworkTitle>{homework.title} </HomeworkTitle>
+                            <HomeworkDate>
+                                {new Date(
+                                    homework.uploadDate.seconds * 1000,
+                                ).toLocaleDateString()}
+                            </HomeworkDate>
+                            <HomeworkDownload>
+                                <a
+                                    href={homework.fileURL}
+                                    download
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    下載
+                                </a>
+                            </HomeworkDownload>
+                        </UploadHomework>
+                    ))
+                )}
+            </StudentUploadHomework>
+        );
     };
 
     const renderNotUploadedHomework = index => {
@@ -115,31 +298,74 @@ export const StudentOpeningCourse = () => {
             myHomework[index],
         );
 
-        return notUploadedHomework.map((homework, i) => (
-            <Div1 key={homework.creatDate.seconds}>
-                <DivContent>{homework.title}</DivContent>
-                <Input
-                    type="file"
-                    onChange={e => handleFileChange(e, index, i)}
-                />
-
-                <button
-                    id={`${homework.title}`}
-                    onClick={e => handleUploadHomework(e, index, i)}
-                >
-                    點我上傳
-                </button>
-            </Div1>
-        ));
+        return (
+            <StudentUploadHomework>
+                {notUploadedHomework.length === 0 ? (
+                    <NoDataTitle title="無" />
+                ) : (
+                    notUploadedHomework.map((homework, i) => (
+                        <NotUploadHomework key={homework.creatDate.seconds}>
+                            <NotUploadHomeworkTitle>
+                                {homework.title}
+                            </NotUploadHomeworkTitle>
+                            <FileLabel
+                                htmlFor={`${homework.creatDate.seconds}`}
+                            >
+                                <FileInput
+                                    type="file"
+                                    id={`${homework.creatDate.seconds}`}
+                                    onChange={e =>
+                                        handleFileChange(e, index, i)
+                                    }
+                                />{" "}
+                                {inputFields[index]?.[i]["file"] ? (
+                                    `已選擇檔案`
+                                ) : (
+                                    <>
+                                        <FiUpload /> 選擇檔案
+                                    </>
+                                )}
+                                {/* <FiUpload /> 選擇檔案 */}
+                                {/* {e =>
+                                e.target.file ? (
+                                    `已選擇檔案，請輸入資料名稱後上傳`
+                                ) : (
+                                    <>
+                                選擇檔案 <FiUpload />
+                            </>
+                                )
+                            } */}
+                            </FileLabel>
+                            <ButtonArea>
+                                <MyButton
+                                    buttonWord="上傳"
+                                    buttonId={homework.title}
+                                    clickFunction={e =>
+                                        handleUploadHomework(e, index, i)
+                                    }
+                                />
+                            </ButtonArea>
+                        </NotUploadHomework>
+                    ))
+                )}
+            </StudentUploadHomework>
+        );
     };
 
     const handleFileChange = (e, indexOfAllCourse, indexOfAllHomework) => {
         let newInputFields = [...inputFields];
         newInputFields[indexOfAllCourse][indexOfAllHomework]["file"] = e.target;
+        console.log(newInputFields);
         SetInputFields(newInputFields);
     };
 
     const handleUploadHomework = (e, indexOfAllCourse, indexOfAllHomework) => {
+        if (
+            !inputFields?.[`${indexOfAllCourse}`]?.[`${indexOfAllHomework}`][
+                "file"
+            ]
+        )
+            return window.alert("請選擇檔案");
         console.log(
             inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
                 .files[0],
@@ -191,7 +417,7 @@ export const StudentOpeningCourse = () => {
                                 "courses",
                                 courseDetails[indexOfAllCourse].courseID,
                                 "students",
-                                studentID,
+                                userID,
                             ),
                             {
                                 homework: arrayUnion({
@@ -214,47 +440,65 @@ export const StudentOpeningCourse = () => {
 
     return (
         <Container>
-            {courseDetails &&
+            {!courseDetails ? (
+                "loading..."
+            ) : courseDetails.length === 0 ? (
+                <NoDataTitle title="目前沒有課程喔" />
+            ) : (
                 courseDetails.map((detail, indexOfAllCourse) => (
-                    <Div12 key={detail.courseID}>
-                        <DivCourse>{detail.title}</DivCourse>
-                        <DivTeacher>{detail.teacherName}</DivTeacher>
-                        <DivCourse>課程作業</DivCourse>
+                    <CourseCard key={detail.courseID}>
+                        <CourseTitle>
+                            {detail.title} <Name>{detail.teacherName}</Name>
+                        </CourseTitle>
+                        <Title>課程作業</Title>
                         {detail.allHomework.length === 0 ? (
-                            <div>無資料</div>
+                            <NoDataTitle title="尚無作業" />
                         ) : (
-                            <>
-                                <DivCourse>已完成</DivCourse>
+                            <AllHomeworkArea>
+                                <SubTitle>已完成</SubTitle>
                                 {renderUploadedHomework(indexOfAllCourse)}
-                                <DivCourse>未完成</DivCourse>
+                                <SubTitle>未完成</SubTitle>
                                 {renderNotUploadedHomework(indexOfAllCourse)}
-                            </>
-                        )}
-                        <DivCourse>課程資料</DivCourse>
-                        {detail.materials.length === 0 ? (
-                            <div>無資料</div>
-                        ) : (
-                            detail.materials.map(material => (
-                                <Div1 key={material.creatDate.seconds}>
-                                    <DivContent>{material.title}</DivContent>
+                            </AllHomeworkArea>
+                        )}{" "}
+                        <Title>課程資料</Title>
+                        <AllHomeworkArea>
+                            {detail.materials.length === 0 ? (
+                                <NoDataTitle title="無資料" />
+                            ) : (
+                                <StudentUploadHomework>
+                                    {detail.materials.map(material => (
+                                        <UploadHomework
+                                            key={material.creatDate.seconds}
+                                        >
+                                            <HomeworkTitle>
+                                                {material.title}
+                                            </HomeworkTitle>
 
-                                    <DivContent>
-                                        {new Date(
-                                            Math.floor(
-                                                material.creatDate.seconds *
-                                                    1000,
-                                            ),
-                                        ).toLocaleDateString()}
-                                    </DivContent>
+                                            <HomeworkDate>
+                                                {new Date(
+                                                    material.creatDate.seconds *
+                                                        1000,
+                                                ).toLocaleDateString()}
+                                            </HomeworkDate>
 
-                                    <DivContent>
-                                        <a href={material.fileURL}>點我下載</a>
-                                    </DivContent>
-                                </Div1>
-                            ))
-                        )}
-                    </Div12>
-                ))}
+                                            <HomeworkDownload>
+                                                <a
+                                                    href={material.fileURL}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                >
+                                                    下載
+                                                </a>
+                                            </HomeworkDownload>
+                                        </UploadHomework>
+                                    ))}
+                                </StudentUploadHomework>
+                            )}
+                        </AllHomeworkArea>
+                    </CourseCard>
+                ))
+            )}
         </Container>
     );
 };
