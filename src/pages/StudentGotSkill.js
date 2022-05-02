@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Skills } from "../Component/Skills";
+import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
 const Container = styled.div`
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    width: 500px;
+    width: 100%;
+    margin-top: 20px;
+
+    @media ${breakPoint.desktop} {
+        width: 35%;
+        justify-content: space-between;
+        margin: auto;
+        margin-left: 150px;
+        margin-top: -135px;
+    }
 `;
 
 const Div1 = styled.div`
@@ -23,12 +30,11 @@ const Div1 = styled.div`
     margin-bottom: 10px;
 `;
 
-export const StudentGotSkill = () => {
+export const StudentGotSkill = ({ userID }) => {
     const [gotSkills, SetGotSkill] = useState();
-    const studentID = "WBKPGMSAejc9AHYGqROpDZWWTz23";
 
     useEffect(() => {
-        firebaseInit.getStudentSkills(studentID).then(data => {
+        firebaseInit.getStudentSkills(userID).then(data => {
             console.log(data);
             const rankDecreasingByDate = data.sort(
                 (a, b) => a.getDate.seconds - b.getDate.seconds,
@@ -43,8 +49,7 @@ export const StudentGotSkill = () => {
     }, []);
     return (
         <Container>
-            {!gotSkills ? "loading..." : <Div1>獲得技能</Div1>}
-            {gotSkills && <Skills skills={gotSkills} />}
+            {!gotSkills ? "loading..." : <Skills skills={gotSkills} />}
         </Container>
     );
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
-import { ProfileContainer } from "../Component/ProfileContainer";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
@@ -17,6 +16,7 @@ const Container = styled.div`
     @media ${breakPoint.desktop} {
         width: 80%;
         margin: auto;
+        justify-content: flex-start;
         margin-left: 150px;
         margin-top: -150px;
     }
@@ -54,6 +54,11 @@ const Div1 = styled.div`
     justify-content: center;
     margin-top: 10px;
 `;
+const NoShow = styled.div`
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 700;
+`;
 
 const Div13 = styled(Div1)`
     border: 1px solid black;
@@ -66,22 +71,14 @@ const DivContent = styled.div`
     width: 100%;
 `;
 
-const DivContent1 = styled(DivContent)`
-    padding-right: 0px;
-`;
-
-const Div14 = styled(Div13)`
-    width: 100%;
-`;
-
 export const TeacherFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
-    const teacherID = "QptFGccbXGVyiTwmvxFG07JNbjp1";
+
     useEffect(() => {
         let isMounted = true;
 
         if (userID) {
-            firebaseInit.getTeachersStatusCourses(teacherID, 2).then(data => {
+            firebaseInit.getTeachersStatusCourses(userID, 2).then(data => {
                 const finishedCourses = data.sort(
                     (a, b) => b.closedDate.seconds - a.closedDate.seconds,
                 );
@@ -101,7 +98,9 @@ export const TeacherFinishedCourse = ({ userID }) => {
                 "loading..."
             ) : (
                 <CourseArea>
-                    {finishedCourses &&
+                    {finishedCourses.length === 0 ? (
+                        <NoShow>尚未有完成的課程喔</NoShow>
+                    ) : (
                         finishedCourses.map((course, index) => (
                             <CourseDiv key={course.courseID}>
                                 <CourseInfo
@@ -151,7 +150,8 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                 ))}{" "}
                             </DivContent> */}
                             </CourseDiv>
-                        ))}
+                        ))
+                    )}
                 </CourseArea>
             )}
         </Container>
