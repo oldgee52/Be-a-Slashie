@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import styled from "styled-components";
-import { updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { updateDoc, doc, arrayUnion, Timestamp } from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { MyButton } from "../Component/MyButton";
@@ -388,6 +388,11 @@ export const StudentOpeningCourse = ({ userID }) => {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref)
                     .then(async downloadURL => {
+                        const homeworkData = {
+                            title: e.target.id,
+                            fileURL: downloadURL,
+                            uploadDate: Timestamp.now(),
+                        };
                         await updateDoc(
                             doc(
                                 firebaseInit.db,
@@ -397,15 +402,17 @@ export const StudentOpeningCourse = ({ userID }) => {
                                 userID,
                             ),
                             {
-                                homework: arrayUnion({
-                                    title: e.target.id,
-                                    fileURL: downloadURL,
-                                    uploadDate: new Date(),
-                                }),
+                                homework: arrayUnion(homeworkData),
                             },
                         );
-                        window.alert("上傳成功");
-                        return window.location.reload();
+                        let data = [...courseDetails];
+                        data[indexOfAllCourse].myHomework = [
+                            ...data[indexOfAllCourse].myHomework,
+                            homeworkData,
+                        ];
+
+                        setCourseDetails(data);
+                        return window.alert("上傳成功");
                     })
                     .catch(error => {
                         console.log(error);
