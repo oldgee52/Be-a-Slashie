@@ -58,6 +58,18 @@ const LabelForDate = styled(Label)`
     }
 `;
 
+const SkillsDiv = styled.div`
+    display: flex;
+    width: 100%;
+    margin-bottom: 16px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+
+    @media ${breakPoint.desktop} {
+        flex-wrap: nowrap;
+    }
+`;
+
 const Title = styled.div`
     height: 40px;
     line-height: 40px;
@@ -148,6 +160,8 @@ const SkillsBox = styled.div`
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+
+    cursor: pointer;
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
@@ -448,7 +462,7 @@ export const TeacherUpload = ({ userID }) => {
                     {image && <PreviewImg src={image} alt="上傳圖片" />}
                 </Label>
 
-                <Label>
+                <SkillsDiv>
                     <Title>可得技能</Title>
                     <SkillsBox>
                         {allSkills &&
@@ -461,7 +475,7 @@ export const TeacherUpload = ({ userID }) => {
                                 />
                             ))}
                     </SkillsBox>
-                </Label>
+                </SkillsDiv>
                 <Button onClick={uploadCourse}>上架課程</Button>
             </FormArea>
         </Container>
