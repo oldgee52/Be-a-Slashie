@@ -56,20 +56,21 @@ export const StudentCollectionCourse = ({ userID }) => {
     const [usersInfo, setUsersInfo] = useState();
 
     useEffect(() => {
-        firebaseInit.getStudentCollectCourses(userID).then(data => {
-            const validCollectionCourses = data
-                .filter(
-                    course =>
-                        course.status === 0 &&
-                        course.registrationDeadline.seconds >=
-                            Math.floor(+new Date() / 1000),
-                )
-                .sort((a, b) => b.openingDate - a.openingDate);
+        if (userID)
+            firebaseInit.getStudentCollectCourses(userID).then(data => {
+                const validCollectionCourses = data
+                    .filter(
+                        course =>
+                            course.status === 0 &&
+                            course.registrationDeadline.seconds >=
+                                Math.floor(+new Date() / 1000),
+                    )
+                    .sort((a, b) => b.openingDate - a.openingDate);
 
-            console.log(validCollectionCourses);
+                console.log(validCollectionCourses);
 
-            SetCollectionCourses(validCollectionCourses);
-        });
+                SetCollectionCourses(validCollectionCourses);
+            });
     }, [userID]);
 
     useEffect(() => {

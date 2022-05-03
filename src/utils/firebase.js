@@ -175,7 +175,7 @@ const firebaseInit = {
         const studentDoc = doc(this.db, "users", studentID);
         const studentSnapShot = await getDoc(studentDoc);
 
-        const studentCourse = studentSnapShot.data().studentsCourses;
+        const studentCourse = studentSnapShot.data().studentsCourses || [];
 
         const courseDataPromise = studentCourse.map(async course => {
             const courseDoc = await getDoc(doc(this.db, "courses", course));
@@ -319,7 +319,9 @@ const firebaseInit = {
     async getStudentCollectCourses(studentID) {
         const studentData = await this.getCollectionData("users", studentID);
 
-        const coursesDataPromise = studentData.collectCourses.map(
+        const StudentCollectionCourses = studentData.collectCourses || [];
+        console.log(StudentCollectionCourses);
+        const coursesDataPromise = StudentCollectionCourses.map(
             async course => {
                 const courseData = await this.getCollectionData(
                     "courses",
@@ -329,7 +331,6 @@ const firebaseInit = {
             },
         );
         const coursesData = Promise.all(coursesDataPromise);
-
         return coursesData;
     },
 
