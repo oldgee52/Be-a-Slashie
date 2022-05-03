@@ -13,6 +13,7 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     display: flex;
@@ -161,8 +162,6 @@ const SkillsBox = styled.div`
     flex-wrap: wrap;
     align-items: center;
 
-    cursor: pointer;
-
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
     }
@@ -234,6 +233,7 @@ export const TeacherUpload = ({ userID }) => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
         (async function (db) {
@@ -317,8 +317,12 @@ export const TeacherUpload = ({ userID }) => {
             return window.alert("日期不得晚於今日");
         if (new Date(state.openingDate) < new Date(state.registrationDeadline))
             return window.alert("開課日不得早於報名截止日");
-        if (Object.values(state).some(value => !value))
+        if (
+            Object.values(state).some(value => !value) ||
+            state.getSkills.length === 0
+        )
             return window.alert("請輸入完整資料");
+
         const coursesRef = collection(firebaseInit.db, "courses");
         const docRef = doc(coursesRef);
         const coursesInfo = {
@@ -354,9 +358,10 @@ export const TeacherUpload = ({ userID }) => {
                 updateDoc(doc(firebaseInit.db, "users", userID), {
                     teachersCourses: arrayUnion(docRef.id),
                 }),
-            ]);
-            window.alert("上架成功");
-            return window.location.reload();
+            ]).then(() => {
+                window.alert("上架成功，來去看看上架課程吧！");
+                navigate(`/course?courseID=${docRef.id}`);
+            });
         } catch (error) {
             console.log(error);
             window.alert("發生錯誤，請重新試一次");
