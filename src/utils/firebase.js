@@ -269,7 +269,7 @@ const firebaseInit = {
         const studentDoc = doc(this.db, "users", studentID);
         const studentSnapShot = await getDoc(studentDoc);
 
-        const studentCourse = studentSnapShot.data().studentsCourses;
+        const studentCourse = studentSnapShot.data().studentsCourses || [];
 
         const courseDataPromise = studentCourse.map(async course => {
             const courseDoc = await getDoc(doc(this.db, "courses", course));

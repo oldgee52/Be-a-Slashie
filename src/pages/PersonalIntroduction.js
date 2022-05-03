@@ -63,6 +63,7 @@ const UserName = styled.div`
 const UserIntroduction = styled.div`
     padding-top: 10px;
     line-height: 1.5;
+    word-break: break-all;
 `;
 
 const UserSkills = styled.div`
@@ -194,7 +195,7 @@ export const PersonalIntroduction = () => {
                             <CourseBox>
                                 {userFinishCourses.length === 0
                                     ? "還沒有完成的課程QQ"
-                                    : userFinishCourses.map(course => (
+                                    : userFinishCourses?.map(course => (
                                           <CourseDiv key={course.courseID}>
                                               <CourseInfo
                                                   image={course.image}
