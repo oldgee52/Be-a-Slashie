@@ -21,12 +21,6 @@ const Container = styled.div`
     }
 `;
 
-const Background = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-`;
-
 const InfoArea = styled.div`
     display: flex;
     flex-direction: column;
@@ -163,58 +157,51 @@ export const PersonalIntroduction = () => {
     console.log(userFinishCourses);
 
     return (
-        <Background>
-            <Container>
-                {!userInfo || !userSkills || !userFinishCourses ? (
-                    "loading..."
-                ) : (
-                    <>
-                        <InfoArea>
-                            <UserPhoto
-                                src={userInfo.photo}
-                                alt={userInfo.name}
-                            />
-                            <UserName>
-                                {userInfo.name}{" "}
-                                <a href={`mailto: ${userInfo.email}`}>
-                                    <FiMail />
-                                </a>
-                            </UserName>{" "}
-                            <UserIntroduction>
-                                {userInfo.selfIntroduction}
-                            </UserIntroduction>
-                        </InfoArea>
-                        <UserSkills>
-                            <SkillTitle>獲得技能</SkillTitle>
-                            <SkillBox>
-                                <Skills skills={userSkills} />
-                            </SkillBox>
-                        </UserSkills>
-                        <UserSkills>
-                            <SkillTitle>完成課程</SkillTitle>
-                            <CourseBox>
-                                {userFinishCourses.length === 0
-                                    ? "還沒有完成的課程QQ"
-                                    : userFinishCourses?.map(course => (
-                                          <CourseDiv key={course.courseID}>
-                                              <CourseInfo
-                                                  image={course.image}
-                                                  title={course.title}
-                                                  teacherName={
-                                                      course.teacherName
-                                                  }
-                                                  closedDate={new Date(
-                                                      course?.courseClosedDate
-                                                          .seconds * 1000,
-                                                  ).toLocaleDateString()}
-                                              />
-                                          </CourseDiv>
-                                      ))}
-                            </CourseBox>
-                        </UserSkills>
-                    </>
-                )}
-            </Container>
-        </Background>
+        <Container>
+            {!userInfo || !userSkills || !userFinishCourses ? (
+                "loading..."
+            ) : (
+                <>
+                    <InfoArea>
+                        <UserPhoto src={userInfo.photo} alt={userInfo.name} />
+                        <UserName>
+                            {userInfo.name}{" "}
+                            <a href={`mailto: ${userInfo.email}`}>
+                                <FiMail />
+                            </a>
+                        </UserName>{" "}
+                        <UserIntroduction>
+                            {userInfo.selfIntroduction}
+                        </UserIntroduction>
+                    </InfoArea>
+                    <UserSkills>
+                        <SkillTitle>獲得技能</SkillTitle>
+                        <SkillBox>
+                            <Skills skills={userSkills} />
+                        </SkillBox>
+                    </UserSkills>
+                    <UserSkills>
+                        <SkillTitle>完成課程</SkillTitle>
+                        <CourseBox>
+                            {userFinishCourses.length === 0
+                                ? "還沒有完成的課程QQ"
+                                : userFinishCourses?.map(course => (
+                                      <CourseDiv key={course.courseID}>
+                                          <CourseInfo
+                                              image={course.image}
+                                              title={course.title}
+                                              teacherName={course.teacherName}
+                                              closedDate={new Date(
+                                                  course?.courseClosedDate
+                                                      .seconds * 1000,
+                                              ).toLocaleDateString()}
+                                          />
+                                      </CourseDiv>
+                                  ))}
+                        </CourseBox>
+                    </UserSkills>
+                </>
+            )}
+        </Container>
     );
 };

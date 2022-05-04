@@ -137,7 +137,7 @@ const Button = styled.button`
 
     color: #ffffff;
     font-size: 14px;
-    background-color: #ff6100;
+    background: linear-gradient(to left, #ff8f08 -10.47%, #ff6700 65.84%);
     border-radius: 5px;
     cursor: pointer;
 
@@ -154,6 +154,7 @@ const PreviewImg = styled.img`
     width: 200px;
     height: 130px;
     object-fit: contain;
+    margin-left: 20px;
 `;
 
 const SkillsBox = styled.div`
@@ -453,20 +454,6 @@ export const TeacherUpload = ({ userID }) => {
                         }
                     />
                 </LabelForDate>
-                <Label>
-                    <Title>
-                        <FiUpload />
-                        上傳封面照
-                    </Title>
-
-                    <FileInput
-                        type="file"
-                        accept="image/*"
-                        onChange={e => uploadImage(e)}
-                    />
-                    {image && <PreviewImg src={image} alt="上傳圖片" />}
-                </Label>
-
                 <SkillsDiv>
                     <Title>可得技能</Title>
                     <SkillsBox>
@@ -481,6 +468,19 @@ export const TeacherUpload = ({ userID }) => {
                             ))}
                     </SkillsBox>
                 </SkillsDiv>
+                <Label>
+                    <FiUpload />
+
+                    <span>上傳封面照 </span>
+
+                    <FileInput
+                        type="file"
+                        accept="image/*"
+                        onChange={e => uploadImage(e)}
+                    />
+                    {image && <PreviewImg src={image} alt="上傳圖片" />}
+                </Label>
+
                 <Button onClick={uploadCourse}>上架課程</Button>
             </FormArea>
         </Container>

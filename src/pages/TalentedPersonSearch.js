@@ -38,7 +38,7 @@ const SkillsBox = styled.div`
     align-items: center;
 
     margin: 10px 0 10px 10px;
-    color: #7f7f7f;
+    /* color: #7f7f7f; */
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
@@ -63,11 +63,13 @@ const Card = styled.div`
 
     margin-top: 10px;
 
+    border-radius: 5px;
+
     padding-bottom: 20px;
-    border-bottom: 3px solid rgb(0 190 164);
+    border-bottom: 3px solid #00e0b6;
     cursor: pointer;
 
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: whitesmoke;
 
     @media ${breakPoint.desktop} {
         width: calc(25% - 10px);
@@ -76,6 +78,7 @@ const Card = styled.div`
         margin-top: 30px;
         align-items: center;
         border-radius: 5px;
+        border-bottom: 5px solid #00e0b6;
     }
 `;
 const CardBox = styled.div`
@@ -136,14 +139,13 @@ const UserPhoto = styled.img`
     margin-top: 5px;
     margin-left: 5px;
     object-fit: cover;
-    border: 5px solid white;
+    border: 3px solid whitesmoke;
     @media ${breakPoint.desktop} {
         display: block;
         position: absolute;
         width: 70px;
         height: 70px;
         border-radius: 100%;
-        border: 3px solid whitesmoke;
         object-fit: cover;
         z-index: 2;
 

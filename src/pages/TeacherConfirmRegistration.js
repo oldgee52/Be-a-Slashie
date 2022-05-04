@@ -37,7 +37,7 @@ const CourseCard = styled.div`
 const CourseTitle = styled.h3`
     font-size: 16px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #505050;
     line-height: 1.2;
 
     word-break: break-all;

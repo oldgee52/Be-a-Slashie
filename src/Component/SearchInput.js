@@ -16,9 +16,9 @@ const InputArea = styled.input`
     width: 100%;
     height: 30px;
     background: whitesmoke;
-    border: 2px solid black;
+    border: 2px solid #505050;
     border-left: none;
-    color: rgba(0, 0, 0, 0.65);
+    color: #505050;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 
@@ -37,7 +37,7 @@ const Search = styled(FiSearch)`
     width: 30px;
     height: 30px;
 
-    border: 2px solid black;
+    border: 2px solid #505050;
     background-color: whitesmoke;
     border-right: none;
 

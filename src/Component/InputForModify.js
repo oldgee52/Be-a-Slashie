@@ -102,7 +102,11 @@ const ButtonConfirm = styled.button`
     width: 80px;
     height: 40px;
     color: white;
-    background-color: ${props => (props.confirm ? "#ff6100" : "#7f7f7f")};
+    cursor: pointer;
+    background: ${props =>
+        props.confirm
+            ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "#7f7f7f"};
 
     border-radius: 5px;
     margin-right: 10px;

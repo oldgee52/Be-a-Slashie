@@ -25,7 +25,7 @@ const TitleArea = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    color: #7f7f7f;
+    /* color: #7f7f7f; */
 
     @media ${breakPoint.desktop} {
         width: 10%;
@@ -47,19 +47,19 @@ const SubTitleArea = styled(TitleArea)`
 const Title = styled.div`
     text-align: center;
     padding-right: 15px;
-    color: ${prop => (prop.active ? "#ff6100" : "inherit")};
+    color: ${prop => (prop.active ? "#ff6100" : " #505050;")};
 
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
         margin-bottom: 30px;
         padding-bottom: 10px;
-        border-bottom: 1px solid black;
+        border-bottom: 1px solid #505050;
         padding-right: 0;
     }
 `;
 const SubTitle = styled(Title)`
-    border-left: 1px solid black;
+    border-left: 1px solid #505050;
     padding: 0 5px 0 5px;
 
     &:first-child {

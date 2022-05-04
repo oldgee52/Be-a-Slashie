@@ -29,8 +29,11 @@ const SignInDiv = styled.div`
     height: 40px;
     text-align: center;
     line-height: 40px;
-    background-color: ${props => (props.login ? "#ff6100" : "none")};
-    color: ${props => (props.login ? "white" : "black")};
+    background: ${props =>
+        props.login
+            ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "none"};
+    color: ${props => (props.login ? "white" : "inherit")};
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
     transition-duration: 0.5s;
@@ -42,8 +45,11 @@ const SingUpDiv = styled.div`
     height: 40px;
     text-align: center;
     line-height: 40px;
-    background-color: ${props => (!props.login ? "#ff6100" : "none")};
-    color: ${props => (!props.login ? "white" : "black")};
+    background: ${props =>
+        !props.login
+            ? "linear-gradient(to right,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "none"};
+    color: ${props => (!props.login ? "white" : "inherit")};
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
     transition-duration: 0.5s;

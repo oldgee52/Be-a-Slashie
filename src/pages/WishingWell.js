@@ -27,11 +27,16 @@ const Button = styled.button`
     line-height: 40px;
     text-align: center;
     border-radius: 5px;
+    letter-spacing: 1px;
 
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: #ff6100;
+    background: linear-gradient(
+        to left,
+        rgb(2, 170, 176) -10.47%,
+        rgb(0, 224, 182) 65.84%
+    );
 
     cursor: pointer;
 
@@ -73,8 +78,7 @@ const CourseCard = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
-    background-color: white;
-    border: 1px solid white;
+    background-color: whitesmoke;
     border-radius: 5px;
 
     padding-bottom: 20px;
@@ -114,7 +118,6 @@ const InfoArea = styled.div`
 `;
 
 const Info = styled.p`
-    color: #7f7f7f;
     font-size: 14px;
     margin-top: 22px;
     @media ${breakPoint.desktop} {

@@ -18,7 +18,7 @@ const SidebarContainer = styled.nav`
     justify-content: space-between;
     position: fixed;
     top: 0;
-    z-index: 5;
+    z-index: 6;
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
     }
@@ -34,8 +34,10 @@ const MobileItemContainer = styled.div`
     background-color: whitesmoke;
 
     position: fixed;
-    top: ${props => (props.show ? "50px" : "-50px")};
+    top: 50px;
+    right: ${props => (props.show ? "0" : "-1000px")};
     z-index: 5;
+    transition-duration: 0.5s;
 
     @media ${breakPoint.desktop} {
         display: flex;
@@ -55,7 +57,11 @@ const NavShowBackground = styled.div`
     position: fixed;
     top: 0;
     z-index: 4;
-    display: ${props => (props.show ? "block" : "none")};
+    right: ${props => (props.show ? "0" : "-1000px")};
+    /* z-index: ${props => (props.show ? "4" : "-10")}; */
+    /* display: ${props => (props.show ? "block" : "none")}; */
+    /* opacity: ${props => (props.show ? "1" : "0")}; */
+    transition-duration: 0.5s;
     @media ${breakPoint.desktop} {
         display: none;
     }
@@ -88,7 +94,7 @@ const ProfileImg = styled(MenuImg)`
 
 const SidebarContent = styled.div`
     font-size: 16px;
-    color: ${props => (props.active ? "#ff6100" : "#7f7f7f")};
+    color: ${props => (props.active ? "#ff6100" : "#505050")};
     padding: 10px;
 `;
 

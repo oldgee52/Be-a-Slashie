@@ -57,11 +57,13 @@ const Collection = styled.div`
     text-align: center;
     height: 50px;
     line-height: 50px;
-    border: 1px solid black;
     border-radius: 5px;
 
     color: ${props => (props.collected ? "white" : "black")};
-    background-color: ${props => (props.collected ? "#ff6100" : "white")};
+    background: ${props =>
+        props.collected
+            ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%);"
+            : "white"};
 
     cursor: pointer;
 
@@ -304,7 +306,7 @@ const SendButton = styled.button`
     width: 50px;
     height: 30px;
     line-height: 30px;
-    background-color: rgb(0, 190, 164);
+    background-color: #00e0b6;
     color: white;
     margin-left: auto;
     margin-top: 10px;

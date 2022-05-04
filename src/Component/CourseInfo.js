@@ -14,20 +14,22 @@ const CourseCard = styled.div`
     padding: 10px;
 
     padding-bottom: 20px;
-    border-bottom: 2px solid black;
+    border-bottom: 5px solid #ff6700;
 
     background-color: whitesmoke;
+
+    box-shadow: rgb(0 0 0 / 24%) 0px 4px 4px 0px;
+    border-radius: 5px;
 
     cursor: ${props => (props.isLink ? "pointer" : "default")};
 
     @media ${breakPoint.desktop} {
         flex-direction: column;
         align-items: center;
-        border: 2px solid black;
         padding: 0;
         padding-bottom: 20px;
-        border-radius: 5px;
-        border-bottom: 10px solid black;
+
+        border-bottom: 10px solid #ff6700;
     }
 `;
 
@@ -86,6 +88,9 @@ const View = styled.p`
     font-size: 12px;
     width: 50px;
     text-align: right;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
         font-size: 16px;
@@ -109,6 +114,10 @@ const TeacherPhoto = styled.img`
         top: -30px;
         left: 10px;
     }
+`;
+
+const ViewSpan = styled.span`
+    margin-left: 5px;
 `;
 
 // const Label = styled.div`
@@ -176,7 +185,8 @@ export const CourseInfo = ({
                 </CourseTitle>
                 {view && (
                     <View>
-                        <FiEye viewBox="0 -3 24 24 " /> {view}
+                        <FiEye viewBox="0 -3 24 24 " />
+                        <ViewSpan>{view}</ViewSpan>
                     </View>
                 )}
             </CourseCard>

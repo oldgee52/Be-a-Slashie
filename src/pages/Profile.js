@@ -34,7 +34,7 @@ const UserPhoto = styled.img`
     width: 100px;
     height: 100px;
     border-radius: 100%;
-    border: 1px solid black;
+    border: 1px solid #505050;
 `;
 
 const FileInput = styled.input`

@@ -18,12 +18,10 @@ const Image = styled.img`
 const SkillTitle = styled.div`
     font-size: 16px;
     font-weight: 700;
-    color: gray;
     letter-spacing: 2px;
 `;
 const SkillDate = styled.div`
     font-size: 14px;
-    color: gray;
     padding: 5px 0;
 `;
 
