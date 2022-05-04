@@ -34,7 +34,6 @@ const CourseCard = styled.div`
 const CourseImg = styled.img`
     width: 100px;
     height: 80px;
-    flex-shrink: 0;
     object-fit: cover;
     @media ${breakPoint.desktop} {
         width: 100%;
@@ -43,7 +42,7 @@ const CourseImg = styled.img`
     }
 `;
 const CourseTitle = styled.div`
-    flex: 1 0 auto;
+    width: calc(100% - 100px);
     padding-left: 10px;
     @media ${breakPoint.desktop} {
         width: 85%;
@@ -53,7 +52,7 @@ const CourseTitle = styled.div`
 `;
 
 const CourseName = styled.h4`
-    width: 60vw;
+    /* width: 60vw; */
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
@@ -84,8 +83,9 @@ const TeacherName = styled.p`
 `;
 
 const View = styled.p`
-    flex-shrink: 0;
     font-size: 12px;
+    width: 50px;
+    text-align: right;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
         font-size: 16px;

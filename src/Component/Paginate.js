@@ -57,7 +57,7 @@ const CourseArea = styled.div`
     flex-wrap: wrap;
     width: 100%;
     padding: 0 10px 0 10px;
-    margin-bottom: 100px;
+    /* margin-bottom: 100px; */
     @media ${breakPoint.desktop} {
         justify-content: space-between;
         align-items: flex-start;
