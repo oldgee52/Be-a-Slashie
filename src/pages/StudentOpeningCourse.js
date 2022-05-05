@@ -8,6 +8,8 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import { MyButton } from "../Component/MyButton";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModal } from "../Component/AlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -191,6 +193,8 @@ export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [isShow, setIsShow] = useState();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     useEffect(() => {
         let isMounted = true;
         if (userID) {
@@ -342,7 +346,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                 "file"
             ]
         )
-            return window.alert("請選擇檔案");
+            return handleAlertModal("請選擇檔案");
         console.log(
             inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
                 .files[0],
@@ -383,7 +387,7 @@ export const StudentOpeningCourse = ({ userID }) => {
             },
             error => {
                 console.log(error);
-                window.alert("上傳失敗");
+                handleAlertModal("上傳失敗");
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref)
@@ -412,11 +416,11 @@ export const StudentOpeningCourse = ({ userID }) => {
                         ];
 
                         setCourseDetails(data);
-                        return window.alert("上傳成功");
+                        return handleAlertModal("上傳成功");
                     })
                     .catch(error => {
                         console.log(error);
-                        window.alert("上傳失敗");
+                        handleAlertModal("上傳失敗");
                     });
             },
         );
@@ -430,76 +434,85 @@ export const StudentOpeningCourse = ({ userID }) => {
     };
 
     return (
-        <Container>
-            {!courseDetails ? (
-                "loading..."
-            ) : courseDetails.length === 0 ? (
-                <NoDataTitle title="目前沒有課程喔" />
-            ) : (
-                courseDetails.map((detail, indexOfAllCourse) => (
-                    <CourseCard
-                        key={detail.courseID}
-                        show={isShow?.[indexOfAllCourse]}
-                    >
-                        <CourseTitle
-                            onClick={() => handleIsShow(indexOfAllCourse)}
+        <>
+            <Container>
+                {!courseDetails ? (
+                    "loading..."
+                ) : courseDetails.length === 0 ? (
+                    <NoDataTitle title="目前沒有課程喔" />
+                ) : (
+                    courseDetails.map((detail, indexOfAllCourse) => (
+                        <CourseCard
+                            key={detail.courseID}
+                            show={isShow?.[indexOfAllCourse]}
                         >
-                            {isShow?.[indexOfAllCourse] ? (
-                                <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                            <CourseTitle
+                                onClick={() => handleIsShow(indexOfAllCourse)}
+                            >
+                                {isShow?.[indexOfAllCourse] ? (
+                                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                                ) : (
+                                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                                )}{" "}
+                                {detail.title} <Name>{detail.teacherName}</Name>
+                            </CourseTitle>
+                            <Title>課程作業</Title>
+                            {detail.allHomework.length === 0 ? (
+                                <NoDataTitle title="尚無作業" />
                             ) : (
-                                <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                                <AllHomeworkArea>
+                                    <SubTitle>已完成</SubTitle>
+                                    {renderUploadedHomework(indexOfAllCourse)}
+                                    <SubTitle>未完成</SubTitle>
+                                    {renderNotUploadedHomework(
+                                        indexOfAllCourse,
+                                    )}
+                                </AllHomeworkArea>
                             )}{" "}
-                            {detail.title} <Name>{detail.teacherName}</Name>
-                        </CourseTitle>
-                        <Title>課程作業</Title>
-                        {detail.allHomework.length === 0 ? (
-                            <NoDataTitle title="尚無作業" />
-                        ) : (
+                            <Title>課程資料</Title>
                             <AllHomeworkArea>
-                                <SubTitle>已完成</SubTitle>
-                                {renderUploadedHomework(indexOfAllCourse)}
-                                <SubTitle>未完成</SubTitle>
-                                {renderNotUploadedHomework(indexOfAllCourse)}
+                                {detail.materials.length === 0 ? (
+                                    <NoDataTitle title="無資料" />
+                                ) : (
+                                    <StudentUploadHomework>
+                                        {detail.materials.map(material => (
+                                            <UploadHomework
+                                                key={material.creatDate.seconds}
+                                            >
+                                                <HomeworkTitle>
+                                                    {material.title}
+                                                </HomeworkTitle>
+
+                                                <HomeworkDate>
+                                                    {new Date(
+                                                        material.creatDate
+                                                            .seconds * 1000,
+                                                    ).toLocaleDateString()}
+                                                </HomeworkDate>
+
+                                                <HomeworkDownload>
+                                                    <a
+                                                        href={material.fileURL}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                    >
+                                                        下載
+                                                    </a>
+                                                </HomeworkDownload>
+                                            </UploadHomework>
+                                        ))}
+                                    </StudentUploadHomework>
+                                )}
                             </AllHomeworkArea>
-                        )}{" "}
-                        <Title>課程資料</Title>
-                        <AllHomeworkArea>
-                            {detail.materials.length === 0 ? (
-                                <NoDataTitle title="無資料" />
-                            ) : (
-                                <StudentUploadHomework>
-                                    {detail.materials.map(material => (
-                                        <UploadHomework
-                                            key={material.creatDate.seconds}
-                                        >
-                                            <HomeworkTitle>
-                                                {material.title}
-                                            </HomeworkTitle>
-
-                                            <HomeworkDate>
-                                                {new Date(
-                                                    material.creatDate.seconds *
-                                                        1000,
-                                                ).toLocaleDateString()}
-                                            </HomeworkDate>
-
-                                            <HomeworkDownload>
-                                                <a
-                                                    href={material.fileURL}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                >
-                                                    下載
-                                                </a>
-                                            </HomeworkDownload>
-                                        </UploadHomework>
-                                    ))}
-                                </StudentUploadHomework>
-                            )}
-                        </AllHomeworkArea>
-                    </CourseCard>
-                ))
-            )}
-        </Container>
+                        </CourseCard>
+                    ))
+                )}
+            </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

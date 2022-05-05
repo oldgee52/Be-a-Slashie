@@ -7,6 +7,7 @@ import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
 import { AlertModal } from "../Component/AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -58,6 +59,8 @@ export const Profile = ({ userID }) => {
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
     const [inputFields, SetInputFields] = useState();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     useEffect(() => {
         if (userID)
             firebaseInit.getCollectionData("users", userID).then(data => {
@@ -70,7 +73,7 @@ export const Profile = ({ userID }) => {
     }, [userID]);
 
     const uploadImage = e => {
-        if (!e.target.value) return window.alert("請先選擇檔案");
+        if (!e.target.value) return handleAlertModal("請先選擇檔案");
         const mountainImagesRef = ref(
             firebaseInit.storage,
             `photo-${e.target.value}`,
@@ -98,7 +101,7 @@ export const Profile = ({ userID }) => {
             },
             error => {
                 console.log(error);
-                window.alert("上傳失敗");
+                handleAlertModal("上傳失敗");
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
@@ -113,7 +116,7 @@ export const Profile = ({ userID }) => {
                         }));
 
                         e.target.value = "";
-                        window.alert("上傳成功");
+                        handleAlertModal("上傳成功");
                     },
                 );
             },
@@ -121,53 +124,62 @@ export const Profile = ({ userID }) => {
     };
 
     return (
-        <Container>
-            {userInfo && (
-                <>
-                    <UserPhotoLabel htmlFor="photo">
-                        <UserPhoto src={userInfo.photo} alt={userInfo.name} />
-                        <FileInput
-                            type="file"
-                            accept="image/*"
-                            id="photo"
-                            onChange={e => {
-                                uploadImage(e);
-                            }}
-                        />
-                        <UploadIcon viewBox="-5 -1 30 30" />
-                    </UserPhotoLabel>
+        <>
+            <Container>
+                {userInfo && (
+                    <>
+                        <UserPhotoLabel htmlFor="photo">
+                            <UserPhoto
+                                src={userInfo.photo}
+                                alt={userInfo.name}
+                            />
+                            <FileInput
+                                type="file"
+                                accept="image/*"
+                                id="photo"
+                                onChange={e => {
+                                    uploadImage(e);
+                                }}
+                            />
+                            <UploadIcon viewBox="-5 -1 30 30" />
+                        </UserPhotoLabel>
 
-                    {inputFields && (
-                        <>
-                            <InputForModify
-                                inputFields={inputFields}
-                                SetInputFields={SetInputFields}
-                                userID={userID}
-                                userInfo={userInfo}
-                                setUserInfo={setUserInfo}
-                                handleDisable={modifyUserName}
-                                setHandleDisable={setModifyUserName}
-                                title="姓名"
-                                targetName="name"
-                                inputText
-                            />
-                            <InputForModify
-                                inputFields={inputFields}
-                                SetInputFields={SetInputFields}
-                                userID={userID}
-                                userInfo={userInfo}
-                                setUserInfo={setUserInfo}
-                                handleDisable={modifyUserIntroduction}
-                                setHandleDisable={setModifyUserIntroduction}
-                                title="自我介紹"
-                                targetName="selfIntroduction"
-                                inputText={false}
-                            />
-                        </>
-                    )}
-                </>
-            )}
-            <AlertModal />
-        </Container>
+                        {inputFields && (
+                            <>
+                                <InputForModify
+                                    inputFields={inputFields}
+                                    SetInputFields={SetInputFields}
+                                    userID={userID}
+                                    userInfo={userInfo}
+                                    setUserInfo={setUserInfo}
+                                    handleDisable={modifyUserName}
+                                    setHandleDisable={setModifyUserName}
+                                    title="姓名"
+                                    targetName="name"
+                                    inputText
+                                />
+                                <InputForModify
+                                    inputFields={inputFields}
+                                    SetInputFields={SetInputFields}
+                                    userID={userID}
+                                    userInfo={userInfo}
+                                    setUserInfo={setUserInfo}
+                                    handleDisable={modifyUserIntroduction}
+                                    setHandleDisable={setModifyUserIntroduction}
+                                    title="自我介紹"
+                                    targetName="selfIntroduction"
+                                    inputText={false}
+                                />
+                            </>
+                        )}
+                    </>
+                )}
+            </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

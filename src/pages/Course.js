@@ -19,6 +19,8 @@ import { FiMail } from "react-icons/fi";
 import { BsReply } from "react-icons/bs";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModal } from "../Component/AlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -398,6 +400,8 @@ export const Course = ({ userID }) => {
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
     const navigate = useNavigate();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
@@ -549,11 +553,11 @@ export const Course = ({ userID }) => {
             });
         } catch (error) {
             console.log(error);
-            window.alert("發生錯誤，請重新試一次");
+            handleAlertModal("發生錯誤，請重新試一次");
         }
     }
     async function handSendMessage() {
-        if (!message.trim()) return window.alert("請輸入訊息");
+        if (!message.trim()) return handleAlertModal("請輸入訊息");
 
         await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
             askedQuestions: arrayUnion({
@@ -565,7 +569,7 @@ export const Course = ({ userID }) => {
         });
         setMessage("");
 
-        return window.alert("留言已送出");
+        return handleAlertModal("留言已送出");
     }
 
     function renderMessages() {
@@ -659,7 +663,8 @@ export const Course = ({ userID }) => {
     };
 
     const handleSendReplyMessage = async index => {
-        if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
+        if (!inputFields[index].reply.trim())
+            return handleAlertModal("請輸入訊息");
         const stateCopy = JSON.parse(JSON.stringify(courseData));
 
         stateCopy.askedQuestions.forEach((question, i) => {
@@ -676,7 +681,7 @@ export const Course = ({ userID }) => {
             askedQuestions: stateCopy.askedQuestions,
         });
 
-        return window.alert("回覆已送出");
+        return handleAlertModal("回覆已送出");
     };
 
     return (
@@ -817,6 +822,11 @@ export const Course = ({ userID }) => {
                     </Button>
                 </RegisterArea>
             )}
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
         </>
     );
 };

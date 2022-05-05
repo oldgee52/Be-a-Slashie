@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "styled-react-modal";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
+import { useNavigate } from "react-router-dom";
 
 const StyledModal = Modal.styled`
   width: 80%;
@@ -41,28 +42,37 @@ const TextArea = styled.div`
     align-items: center;
     word-break: break-all;
     padding: 0 20px;
+    white-space: pre-line;
+    line-height: 1;
     /* padding-left: 50px;
     padding-top: 50px; */
 `;
 
-export const AlertModal = ({ content }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    function toggleModal(e) {
-        setIsOpen(!isOpen);
+export const AlertModal = ({
+    content,
+    alertIsOpen,
+    setAlertIsOpen,
+    courseID,
+}) => {
+    const navigate = useNavigate();
+    function toggleModal() {
+        setAlertIsOpen(false);
+        console.log(courseID);
+        if (courseID) {
+            navigate(`/course?courseID=${courseID}`);
+        }
     }
 
     return (
-        <div>
-            <button onClick={toggleModal}>Click me</button>
+        <>
             <StyledModal
-                isOpen={isOpen}
+                isOpen={alertIsOpen}
                 onBackgroundClick={toggleModal}
                 onEscapeKeydown={toggleModal}
             >
-                <TextArea>註冊成功，可以去個人修改大頭照跟自我介紹喔</TextArea>
+                <TextArea>{content}</TextArea>
                 <ModalButton onClick={toggleModal}>確定</ModalButton>
             </StyledModal>
-        </div>
+        </>
     );
 };

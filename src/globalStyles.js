@@ -7,7 +7,7 @@ const GlobalStyle = createGlobalStyle`
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: "Noto Sans TC", "Arial", sans-serif;
+  font-family: "Noto Sans TC", "微軟正黑體","Arial", sans-serif;
   letter-spacing: 1px;
   vertical-align: top;
   box-sizing: border-box;

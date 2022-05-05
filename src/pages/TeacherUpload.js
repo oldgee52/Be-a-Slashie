@@ -14,6 +14,9 @@ import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
 import { useNavigate } from "react-router-dom";
+import { AlertModal } from "../Component/AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModalForAfterCloseFunction } from "../Component/AlertModalForAfterCloseFunction";
 
 const Container = styled.div`
     display: flex;
@@ -234,7 +237,12 @@ export const TeacherUpload = ({ userID }) => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
+    const [courseID, setCourseID] = useState("");
     const navigate = useNavigate();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
+    const [isOpen, setIsOpen] = useState(false);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         (async function (db) {
@@ -309,20 +317,27 @@ export const TeacherUpload = ({ userID }) => {
         );
     };
 
+    // function handleAlertModal(message) {
+    //     setAlertIsOpe(true);
+    //     setAlertMessage(message);
+    // }
+
     const uploadCourse = async e => {
         e.preventDefault();
         if (
             new Date(state.openingDate) < new Date() ||
             new Date(state.registrationDeadline) < new Date()
         )
-            return window.alert("日期不得晚於今日");
+            return handleAlertModal("選擇日期不得晚於今日");
+
         if (new Date(state.openingDate) < new Date(state.registrationDeadline))
-            return window.alert("開課日不得早於報名截止日");
+            return handleAlertModal("開課日不得早於報名截止日");
+
         if (
             Object.values(state).some(value => !value) ||
             state.getSkills.length === 0
         )
-            return window.alert("請輸入完整資料");
+            return handleAlertModal("請輸入完整資料");
 
         const coursesRef = collection(firebaseInit.db, "courses");
         const docRef = doc(coursesRef);
@@ -360,129 +375,142 @@ export const TeacherUpload = ({ userID }) => {
                     teachersCourses: arrayUnion(docRef.id),
                 }),
             ]).then(() => {
-                window.alert("上架成功，來去看看上架課程吧！");
-                navigate(`/course?courseID=${docRef.id}`);
+                handleAlertModal("上架成功，來看看課程資訊吧！");
             });
         } catch (error) {
             console.log(error);
-            window.alert("發生錯誤，請重新試一次");
+            return handleAlertModal("請輸入完整資料");
         }
+        setCourseID(docRef.id);
     };
+    console.log(courseID);
 
     return (
-        <Container>
-            <FormArea>
-                <Label>
-                    <Title>課程名稱</Title>
-                    <Input
-                        type="text"
-                        value={state.title}
-                        onChange={e =>
-                            dispatch({
-                                type: "setTitle",
-                                payload: { title: e.target.value },
-                            })
-                        }
-                    />
-                </Label>
-                <Label>
-                    <TextAreaTitle>課程簡介</TextAreaTitle>
-                    <InputText
-                        value={state.courseIntroduction}
-                        onChange={e =>
-                            dispatch({
-                                type: "setCourseIntroduction",
-                                payload: { courseIntroduction: e.target.value },
-                            })
-                        }
-                    />
-                </Label>
-                <Label>
-                    <TextAreaTitle>老師簡介</TextAreaTitle>
-                    <InputText
-                        value={state.teacherIntroduction}
-                        onChange={e =>
-                            dispatch({
-                                type: "setTeacherIntroduction",
-                                payload: {
-                                    teacherIntroduction: e.target.value,
-                                },
-                            })
-                        }
-                    />
-                </Label>
-                <LabelForDate>
-                    <Title>開班人數</Title>
-                    <InputDate
-                        type="number"
-                        min={1}
-                        value={state.minOpeningNumber}
-                        onChange={e =>
-                            dispatch({
-                                type: "setMinOpeningNumber",
-                                payload: { minOpeningNumber: e.target.value },
-                            })
-                        }
-                    />
-                </LabelForDate>
-                <LabelForDate>
-                    <Title>開班日期</Title>
-                    <InputDate
-                        type="date"
-                        value={state.openingDate}
-                        onChange={e =>
-                            dispatch({
-                                type: "setOpeningDate",
-                                payload: { openingDate: e.target.value },
-                            })
-                        }
-                    />
-                </LabelForDate>
+        <>
+            <Container>
+                <FormArea>
+                    <Label>
+                        <Title>課程名稱</Title>
+                        <Input
+                            type="text"
+                            value={state.title}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setTitle",
+                                    payload: { title: e.target.value },
+                                })
+                            }
+                        />
+                    </Label>
+                    <Label>
+                        <TextAreaTitle>課程簡介</TextAreaTitle>
+                        <InputText
+                            value={state.courseIntroduction}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setCourseIntroduction",
+                                    payload: {
+                                        courseIntroduction: e.target.value,
+                                    },
+                                })
+                            }
+                        />
+                    </Label>
+                    <Label>
+                        <TextAreaTitle>老師簡介</TextAreaTitle>
+                        <InputText
+                            value={state.teacherIntroduction}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setTeacherIntroduction",
+                                    payload: {
+                                        teacherIntroduction: e.target.value,
+                                    },
+                                })
+                            }
+                        />
+                    </Label>
+                    <LabelForDate>
+                        <Title>開班人數</Title>
+                        <InputDate
+                            type="number"
+                            min={1}
+                            value={state.minOpeningNumber}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setMinOpeningNumber",
+                                    payload: {
+                                        minOpeningNumber: e.target.value,
+                                    },
+                                })
+                            }
+                        />
+                    </LabelForDate>
+                    <LabelForDate>
+                        <Title>開班日期</Title>
+                        <InputDate
+                            type="date"
+                            value={state.openingDate}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setOpeningDate",
+                                    payload: { openingDate: e.target.value },
+                                })
+                            }
+                        />
+                    </LabelForDate>
 
-                <LabelForDate>
-                    <Title>報名截止日</Title>
-                    <InputDate
-                        type="date"
-                        value={state.registrationDeadline}
-                        onChange={e =>
-                            dispatch({
-                                type: "setRegistrationDeadline",
-                                payload: {
-                                    registrationDeadline: e.target.value,
-                                },
-                            })
-                        }
-                    />
-                </LabelForDate>
-                <SkillsDiv>
-                    <Title>可得技能</Title>
-                    <SkillsBox>
-                        {allSkills &&
-                            allSkills.map(skill => (
-                                <CheckSkills
-                                    key={skill.skillID}
-                                    skillID={skill.skillID}
-                                    handleSkillChange={handleSkillChange}
-                                    title={skill.title}
-                                />
-                            ))}
-                    </SkillsBox>
-                </SkillsDiv>
-                <Label>
-                    <FiUpload />
+                    <LabelForDate>
+                        <Title>報名截止日</Title>
+                        <InputDate
+                            type="date"
+                            value={state.registrationDeadline}
+                            onChange={e =>
+                                dispatch({
+                                    type: "setRegistrationDeadline",
+                                    payload: {
+                                        registrationDeadline: e.target.value,
+                                    },
+                                })
+                            }
+                        />
+                    </LabelForDate>
+                    <SkillsDiv>
+                        <Title>可得技能</Title>
+                        <SkillsBox>
+                            {allSkills &&
+                                allSkills.map(skill => (
+                                    <CheckSkills
+                                        key={skill.skillID}
+                                        skillID={skill.skillID}
+                                        handleSkillChange={handleSkillChange}
+                                        title={skill.title}
+                                    />
+                                ))}
+                        </SkillsBox>
+                    </SkillsDiv>
+                    <Label>
+                        <FiUpload />
 
-                    <span>上傳封面照 </span>
+                        <span>上傳封面照 </span>
 
-                    <FileInput
-                        type="file"
-                        accept="image/*"
-                        onChange={e => uploadImage(e)}
-                    />
-                    {image && <PreviewImg src={image} alt="上傳圖片" />}
-                </Label>
+                        <FileInput
+                            type="file"
+                            accept="image/*"
+                            onChange={e => uploadImage(e)}
+                        />
+                        {image && <PreviewImg src={image} alt="上傳圖片" />}
+                    </Label>
 
-                <Button onClick={uploadCourse}>上架課程</Button>
-            </FormArea>
-        </Container>
+                    <Button onClick={uploadCourse}>上架課程</Button>
+                </FormArea>
+            </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+                courseID={courseID}
+            />
+        </>
     );
 };

@@ -5,6 +5,8 @@ import { collection, doc, setDoc, Timestamp } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModal } from "../Component/AlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -153,7 +155,8 @@ export const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
-
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     const lasWishSnapshotRef = useRef();
 
     useEffect(() => {
@@ -193,7 +196,7 @@ export const WishingWell = ({ userID }) => {
     }
 
     async function makeWish() {
-        if (!wishingContent.trim()) return window.alert("請輸入內容");
+        if (!wishingContent.trim()) return handleAlertModal("請輸入內容");
         try {
             const coursesRef = collection(firebaseInit.db, "wishingWells");
             const docRef = doc(coursesRef);
@@ -208,9 +211,9 @@ export const WishingWell = ({ userID }) => {
 
             setWishingContent("");
             setWishes([data, ...wishes]);
-            window.alert("許願成功");
+            handleAlertModal("許願成功");
         } catch (error) {
-            window.alert("許願失敗，請再試一次");
+            handleAlertModal("許願失敗，請再試一次");
             console.log("錯誤", error);
         }
     }
@@ -245,30 +248,37 @@ export const WishingWell = ({ userID }) => {
     console.log(lasWishSnapshotRef.current);
 
     return (
-        <Container>
-            {!usersInfo || !wishes ? (
-                "loading..."
-            ) : (
-                <>
-                    <InputArea>
-                        <TextInput
-                            value={wishingContent}
-                            handleChange={handleChange}
-                            name="content"
-                            placeholder={"請輸入你/妳的願望..."}
+        <>
+            <Container>
+                {!usersInfo || !wishes ? (
+                    "loading..."
+                ) : (
+                    <>
+                        <InputArea>
+                            <TextInput
+                                value={wishingContent}
+                                handleChange={handleChange}
+                                name="content"
+                                placeholder={"請輸入你/妳的願望..."}
+                            />
+                            <Button onClick={makeWish}>我要許願</Button>
+                        </InputArea>
+                        <Title>許願池</Title>
+                        {renderWishes()}
+                        {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
+                        <Waypoint
+                            onEnter={() =>
+                                loadingNextWishes(lasWishSnapshotRef.current)
+                            }
                         />
-                        <Button onClick={makeWish}>我要許願</Button>
-                    </InputArea>
-                    <Title>許願池</Title>
-                    {renderWishes()}
-                    {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
-                    <Waypoint
-                        onEnter={() =>
-                            loadingNextWishes(lasWishSnapshotRef.current)
-                        }
-                    />
-                </>
-            )}
-        </Container>
+                    </>
+                )}
+            </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

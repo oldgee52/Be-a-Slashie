@@ -5,6 +5,8 @@ import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModal } from "../Component/AlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -39,6 +41,8 @@ export const Search = () => {
 
     const [searchCourses, setSearchCourses] = useState();
     const navigate = useNavigate();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
 
     useEffect(() => {
         let isMounted = true;
@@ -71,7 +75,7 @@ export const Search = () => {
                     console.log(filteredCourses);
                     if (filteredCourses.length === 0) {
                         setSearchCourses();
-                        return window.alert("查無資料");
+                        return handleAlertModal("查無資料");
                     }
                     setSearchCourses(filteredCourses);
                 }
@@ -88,20 +92,32 @@ export const Search = () => {
     };
 
     return (
-        <Container>
-            <InputDiv>
-                <SearchInput
-                    searchField={searchField}
-                    changeValueCallback={e => setSearchField(e.target.value)}
-                    searchCallback={e => {
-                        handleChange(e);
-                    }}
-                    placeholderText="今天想要學習什麼呢..."
-                />
-            </InputDiv>
-            {searchCourses && (
-                <PaginatedItems itemsPerPage={6} searchData={searchCourses} />
-            )}
-        </Container>
+        <>
+            <Container>
+                <InputDiv>
+                    <SearchInput
+                        searchField={searchField}
+                        changeValueCallback={e =>
+                            setSearchField(e.target.value)
+                        }
+                        searchCallback={e => {
+                            handleChange(e);
+                        }}
+                        placeholderText="今天想要學習什麼呢..."
+                    />
+                </InputDiv>
+                {searchCourses && (
+                    <PaginatedItems
+                        itemsPerPage={6}
+                        searchData={searchCourses}
+                    />
+                )}
+            </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

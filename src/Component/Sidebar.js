@@ -9,6 +9,8 @@ import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import profile from "../images/profile.png";
 import { BiLogOut } from "react-icons/bi";
+import { AlertModal } from "./AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
 
 const SidebarContainer = styled.nav`
     width: 100%;
@@ -115,6 +117,8 @@ const NewBiLogOut = styled(BiLogOut)`
 function Sidebar({ userID }) {
     const [isShow, setIsShow] = useState(false);
     const navigate = useNavigate();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
 
     function handleMobileNavShow() {
         setIsShow(prev => !prev);
@@ -127,11 +131,11 @@ function Sidebar({ userID }) {
     function handleSignOut() {
         signOut(firebaseInit.auth)
             .then(() => {
-                window.alert("已登出成功");
+                handleAlertModal("已登出成功");
                 navigate("/");
             })
             .catch(error => {
-                window.alert(error);
+                handleAlertModal(error);
             });
     }
 
@@ -191,6 +195,11 @@ function Sidebar({ userID }) {
                     />
                 </RightArea>
             </SidebarContainer>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
         </>
     );
 }
