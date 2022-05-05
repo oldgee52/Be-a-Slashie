@@ -7520,7 +7520,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.0.0, prop-types@^15.6.1, prop-types@^15.8.1:
+prop-types@^15.0.0, prop-types@^15.6.1, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -8603,6 +8603,13 @@ styled-components@^5.3.5:
     hoist-non-react-statics "^3.0.0"
     shallowequal "^1.1.0"
     supports-color "^5.5.0"
+
+styled-react-modal@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/styled-react-modal/-/styled-react-modal-3.0.0.tgz#cbba979d0c425c6fa6274f8a3703e1a44738dc2d"
+  integrity sha512-Wj5dx2RuibwWLX7aMEY0EzfY6e37w9oQbg7OG9vJskhsY8CqTL3wG3jdEddXxwf5Nj0m/k50JvCGjXugTXx4wQ==
+  dependencies:
+    prop-types "^15.7.2"
 
 stylehacks@^5.1.0:
   version "5.1.0"

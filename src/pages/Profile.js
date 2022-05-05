@@ -6,6 +6,7 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
+import { AlertModal } from "../Component/AlertModal";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -166,6 +167,7 @@ export const Profile = ({ userID }) => {
                     )}
                 </>
             )}
+            <AlertModal />
         </Container>
     );
 };
