@@ -6,6 +6,7 @@ import { collection } from "firebase/firestore";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
+import { Loading } from "../Component/Loading";
 const Container = styled.div`
     display: flex;
     justify-content: center;
@@ -89,40 +90,42 @@ export const StudentCollectionCourse = ({ userID }) => {
     }
 
     return (
-        <Container>
+        <>
             {!collectionCourses || !usersInfo ? (
-                "loading..."
+                <Loading />
             ) : (
-                <CourseArea>
-                    {collectionCourses.length === 0 ? (
-                        <NoDataTitle title="還沒有收藏喔，快去逛逛！" />
-                    ) : (
-                        collectionCourses.map(course => (
-                            <CourseDiv key={course.courseID}>
-                                <CourseInfo
-                                    courseID={course.courseID}
-                                    teacherPhoto={findUserInfo(
-                                        course.teacherUserID,
-                                        "photo",
-                                    )}
-                                    image={course.image}
-                                    title={course.title}
-                                    teacherName={findUserInfo(
-                                        course.teacherUserID,
-                                        "name",
-                                    )}
-                                    creatDate={new Date(
-                                        course.creatTime.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                />
-                            </CourseDiv>
-                        ))
-                    )}
-                </CourseArea>
+                <Container>
+                    <CourseArea>
+                        {collectionCourses.length === 0 ? (
+                            <NoDataTitle title="還沒有收藏喔，快去逛逛！" />
+                        ) : (
+                            collectionCourses.map(course => (
+                                <CourseDiv key={course.courseID}>
+                                    <CourseInfo
+                                        courseID={course.courseID}
+                                        teacherPhoto={findUserInfo(
+                                            course.teacherUserID,
+                                            "photo",
+                                        )}
+                                        image={course.image}
+                                        title={course.title}
+                                        teacherName={findUserInfo(
+                                            course.teacherUserID,
+                                            "name",
+                                        )}
+                                        creatDate={new Date(
+                                            course.creatTime.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                        openingDate={new Date(
+                                            course.openingDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    />
+                                </CourseDiv>
+                            ))
+                        )}
+                    </CourseArea>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

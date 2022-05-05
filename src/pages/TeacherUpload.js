@@ -16,7 +16,6 @@ import { CheckSkills } from "../Component/CheckSkills";
 import { useNavigate } from "react-router-dom";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModalForAfterCloseFunction } from "../Component/AlertModalForAfterCloseFunction";
 
 const Container = styled.div`
     display: flex;

@@ -4,6 +4,7 @@ import { CourseInfo } from "../Component/CourseInfo";
 import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import firebaseInit from "../utils/firebase";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -70,28 +71,29 @@ export const TeacherFinishedCourse = ({ userID }) => {
         };
     }, [userID]);
     return (
-        <Container>
+        <>
             {!finishedCourses ? (
-                "loading..."
+                <Loading />
             ) : (
-                <CourseArea>
-                    {finishedCourses.length === 0 ? (
-                        <NoDataTitle title="尚未有完成的課程喔" />
-                    ) : (
-                        finishedCourses.map((course, index) => (
-                            <CourseDiv key={course.courseID}>
-                                <CourseInfo
-                                    image={course.image}
-                                    title={course.title}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    closedDate={new Date(
-                                        course?.closedDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                />
+                <Container>
+                    <CourseArea>
+                        {finishedCourses.length === 0 ? (
+                            <NoDataTitle title="尚未有完成的課程喔" />
+                        ) : (
+                            finishedCourses.map((course, index) => (
+                                <CourseDiv key={course.courseID}>
+                                    <CourseInfo
+                                        image={course.image}
+                                        title={course.title}
+                                        openingDate={new Date(
+                                            course.openingDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                        closedDate={new Date(
+                                            course?.closedDate.seconds * 1000,
+                                        ).toLocaleDateString()}
+                                    />
 
-                                {/*
+                                    {/*
                             <DivContent>
                                 學生:
                                 {course.students.map(student => (
@@ -105,11 +107,12 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                     </Div14>
                                 ))}{" "}
                             </DivContent> */}
-                            </CourseDiv>
-                        ))
-                    )}
-                </CourseArea>
+                                </CourseDiv>
+                            ))
+                        )}
+                    </CourseArea>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

@@ -8,6 +8,7 @@ import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -125,56 +126,53 @@ export const Profile = ({ userID }) => {
 
     return (
         <>
-            <Container>
-                {userInfo && (
-                    <>
-                        <UserPhotoLabel htmlFor="photo">
-                            <UserPhoto
-                                src={userInfo.photo}
-                                alt={userInfo.name}
-                            />
-                            <FileInput
-                                type="file"
-                                accept="image/*"
-                                id="photo"
-                                onChange={e => {
-                                    uploadImage(e);
-                                }}
-                            />
-                            <UploadIcon viewBox="-5 -1 30 30" />
-                        </UserPhotoLabel>
+            {!userInfo ? (
+                <Loading />
+            ) : (
+                <Container>
+                    <UserPhotoLabel htmlFor="photo">
+                        <UserPhoto src={userInfo.photo} alt={userInfo.name} />
+                        <FileInput
+                            type="file"
+                            accept="image/*"
+                            id="photo"
+                            onChange={e => {
+                                uploadImage(e);
+                            }}
+                        />
+                        <UploadIcon viewBox="-5 -1 30 30" />
+                    </UserPhotoLabel>
 
-                        {inputFields && (
-                            <>
-                                <InputForModify
-                                    inputFields={inputFields}
-                                    SetInputFields={SetInputFields}
-                                    userID={userID}
-                                    userInfo={userInfo}
-                                    setUserInfo={setUserInfo}
-                                    handleDisable={modifyUserName}
-                                    setHandleDisable={setModifyUserName}
-                                    title="姓名"
-                                    targetName="name"
-                                    inputText
-                                />
-                                <InputForModify
-                                    inputFields={inputFields}
-                                    SetInputFields={SetInputFields}
-                                    userID={userID}
-                                    userInfo={userInfo}
-                                    setUserInfo={setUserInfo}
-                                    handleDisable={modifyUserIntroduction}
-                                    setHandleDisable={setModifyUserIntroduction}
-                                    title="自我介紹"
-                                    targetName="selfIntroduction"
-                                    inputText={false}
-                                />
-                            </>
-                        )}
-                    </>
-                )}
-            </Container>
+                    {inputFields && (
+                        <>
+                            <InputForModify
+                                inputFields={inputFields}
+                                SetInputFields={SetInputFields}
+                                userID={userID}
+                                userInfo={userInfo}
+                                setUserInfo={setUserInfo}
+                                handleDisable={modifyUserName}
+                                setHandleDisable={setModifyUserName}
+                                title="姓名"
+                                targetName="name"
+                                inputText
+                            />
+                            <InputForModify
+                                inputFields={inputFields}
+                                SetInputFields={SetInputFields}
+                                userID={userID}
+                                userInfo={userInfo}
+                                setUserInfo={setUserInfo}
+                                handleDisable={modifyUserIntroduction}
+                                setHandleDisable={setModifyUserIntroduction}
+                                title="自我介紹"
+                                targetName="selfIntroduction"
+                                inputText={false}
+                            />
+                        </>
+                    )}
+                </Container>
+            )}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Loading } from "../Component/Loading";
 import { Skills } from "../Component/Skills";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
@@ -48,8 +49,14 @@ export const StudentGotSkill = ({ userID }) => {
         });
     }, []);
     return (
-        <Container>
-            {!gotSkills ? "loading..." : <Skills skills={gotSkills} />}
-        </Container>
+        <>
+            {!gotSkills ? (
+                <Loading />
+            ) : (
+                <Container>
+                    <Skills skills={gotSkills} />
+                </Container>
+            )}
+        </>
     );
 };

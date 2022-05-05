@@ -10,6 +10,7 @@ import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -435,13 +436,15 @@ export const StudentOpeningCourse = ({ userID }) => {
 
     return (
         <>
-            <Container>
-                {!courseDetails ? (
-                    "loading..."
-                ) : courseDetails.length === 0 ? (
+            {!courseDetails ? (
+                <Loading />
+            ) : courseDetails.length === 0 ? (
+                <Container>
                     <NoDataTitle title="目前沒有課程喔" />
-                ) : (
-                    courseDetails.map((detail, indexOfAllCourse) => (
+                </Container>
+            ) : (
+                <Container>
+                    {courseDetails.map((detail, indexOfAllCourse) => (
                         <CourseCard
                             key={detail.courseID}
                             show={isShow?.[indexOfAllCourse]}
@@ -505,9 +508,10 @@ export const StudentOpeningCourse = ({ userID }) => {
                                 )}
                             </AllHomeworkArea>
                         </CourseCard>
-                    ))
-                )}
-            </Container>
+                    ))}
+                </Container>
+            )}
+
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

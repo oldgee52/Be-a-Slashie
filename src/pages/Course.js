@@ -21,6 +21,7 @@ import { RiCloseCircleLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -61,7 +62,7 @@ const Collection = styled.div`
     line-height: 50px;
     border-radius: 5px;
 
-    color: ${props => (props.collected ? "white" : "black")};
+    color: ${props => (props.collected ? "white" : "inherit")};
     background: ${props =>
         props.collected
             ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%);"
@@ -686,147 +687,167 @@ export const Course = ({ userID }) => {
 
     return (
         <>
-            {courseData && usersInfo && (
-                <Container>
-                    <CourseTitle>{courseData.title}</CourseTitle>
-                    <CourseInfo>
-                        <InfoTitle>
-                            報名人數 {courseData.registrationNumber}
-                        </InfoTitle>
+            {!courseData || !usersInfo ? (
+                <Loading />
+            ) : (
+                <>
+                    <>
+                        <Container>
+                            <CourseTitle>{courseData.title}</CourseTitle>
+                            <CourseInfo>
+                                <InfoTitle>
+                                    報名人數 {courseData.registrationNumber}
+                                </InfoTitle>
 
-                        <InfoTitle>瀏覽人數 {courseData.view}</InfoTitle>
-                    </CourseInfo>
-                    <TeacherInfo>
-                        <TeacherImg
-                            src={findUserInfo(
-                                courseData.teacherUserID,
-                                "photo",
-                            )}
-                        />
-                        <a
-                            href={`mailto:${findUserInfo(
-                                courseData.teacherUserID,
-                                "email",
-                            )}`}
-                        >
-                            <NewFiMail />
-                        </a>
-                        <TeacherName>
-                            {findUserInfo(courseData.teacherUserID, "name")}
-                        </TeacherName>
-                        <TeacherIntroduction>
-                            {courseData.teacherIntroduction}
-                        </TeacherIntroduction>
-                    </TeacherInfo>
-                    <Collection
-                        onClick={handleCollection}
-                        collected={userCollection}
-                    >
-                        {userCollection ? "已收藏" : "加入收藏"}
-                    </Collection>
-                    <AboutCourse>
-                        <AboutTitle>關於課程</AboutTitle>
-                        <AboutContent>
-                            開班人數 {courseData.minOpeningNumber}
-                        </AboutContent>
-                        <AboutContent>
-                            報名截止{" "}
-                            {new Date(
-                                courseData.registrationDeadline.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </AboutContent>
-                        <AboutContent>
-                            開課時間{" "}
-                            {new Date(
-                                courseData.openingDate.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </AboutContent>
-                        <AboutContentsSkill>
-                            可獲技能{" "}
-                            <FlexDiv>
-                                {" "}
-                                {skillsInfo && <Skills skills={skillsInfo} />}
-                            </FlexDiv>
-                        </AboutContentsSkill>
-                        <AboutContent>
-                            課程詳情
-                            <CourseIntroduction>
-                                {courseData.courseIntroduction}
-                            </CourseIntroduction>
-                        </AboutContent>
-                    </AboutCourse>{" "}
-                    <MessageArea>
-                        <MessageContainer>
-                            <MessageHeader>上課前問問</MessageHeader>
-                            <MessageInputArea>
-                                <Input
-                                    value={message}
-                                    onChange={e => setMessage(e.target.value)}
+                                <InfoTitle>
+                                    瀏覽人數 {courseData.view}
+                                </InfoTitle>
+                            </CourseInfo>
+                            <TeacherInfo>
+                                <TeacherImg
+                                    src={findUserInfo(
+                                        courseData.teacherUserID,
+                                        "photo",
+                                    )}
                                 />
-                                <SendButton onClick={handSendMessage}>
-                                    送出
-                                </SendButton>
-                            </MessageInputArea>
-                            {renderMessages()}
-                        </MessageContainer>
-                    </MessageArea>
-                    <WebButton
-                        onClick={handleRegistration}
-                        disabled={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                        active={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                    >
-                        {courseData.teacherUserID === userID
-                            ? "您是老師喔"
-                            : findUserInfo(userID, "studentsCourses")?.some(
-                                  value => value === courseID,
-                              )
-                            ? "你已經報名囉"
-                            : "我要報名"}
-                    </WebButton>
-                </Container>
+                                <a
+                                    href={`mailto:${findUserInfo(
+                                        courseData.teacherUserID,
+                                        "email",
+                                    )}`}
+                                >
+                                    <NewFiMail />
+                                </a>
+                                <TeacherName>
+                                    {findUserInfo(
+                                        courseData.teacherUserID,
+                                        "name",
+                                    )}
+                                </TeacherName>
+                                <TeacherIntroduction>
+                                    {courseData.teacherIntroduction}
+                                </TeacherIntroduction>
+                            </TeacherInfo>
+                            <Collection
+                                onClick={handleCollection}
+                                collected={userCollection}
+                            >
+                                {userCollection ? "已收藏" : "加入收藏"}
+                            </Collection>
+                            <AboutCourse>
+                                <AboutTitle>關於課程</AboutTitle>
+                                <AboutContent>
+                                    開班人數 {courseData.minOpeningNumber}
+                                </AboutContent>
+                                <AboutContent>
+                                    報名截止{" "}
+                                    {new Date(
+                                        courseData.registrationDeadline
+                                            .seconds * 1000,
+                                    ).toLocaleDateString()}
+                                </AboutContent>
+                                <AboutContent>
+                                    開課時間{" "}
+                                    {new Date(
+                                        courseData.openingDate.seconds * 1000,
+                                    ).toLocaleDateString()}
+                                </AboutContent>
+                                <AboutContentsSkill>
+                                    可獲技能{" "}
+                                    <FlexDiv>
+                                        {" "}
+                                        {skillsInfo && (
+                                            <Skills skills={skillsInfo} />
+                                        )}
+                                    </FlexDiv>
+                                </AboutContentsSkill>
+                                <AboutContent>
+                                    課程詳情
+                                    <CourseIntroduction>
+                                        {courseData.courseIntroduction}
+                                    </CourseIntroduction>
+                                </AboutContent>
+                            </AboutCourse>{" "}
+                            <MessageArea>
+                                <MessageContainer>
+                                    <MessageHeader>上課前問問</MessageHeader>
+                                    <MessageInputArea>
+                                        <Input
+                                            value={message}
+                                            onChange={e =>
+                                                setMessage(e.target.value)
+                                            }
+                                        />
+                                        <SendButton onClick={handSendMessage}>
+                                            送出
+                                        </SendButton>
+                                    </MessageInputArea>
+                                    {renderMessages()}
+                                </MessageContainer>
+                            </MessageArea>
+                            <WebButton
+                                onClick={handleRegistration}
+                                disabled={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                                active={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                            >
+                                {courseData.teacherUserID === userID
+                                    ? "您是老師喔"
+                                    : findUserInfo(
+                                          userID,
+                                          "studentsCourses",
+                                      )?.some(value => value === courseID)
+                                    ? "你已經報名囉"
+                                    : "我要報名"}
+                            </WebButton>
+                        </Container>
+                        <RegisterArea>
+                            <Button
+                                onClick={handleRegistration}
+                                disabled={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                                active={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                            >
+                                {courseData.teacherUserID === userID
+                                    ? "您是老師喔"
+                                    : findUserInfo(
+                                          userID,
+                                          "studentsCourses",
+                                      )?.some(value => value === courseID)
+                                    ? "你已經報名囉"
+                                    : "我要報名"}
+                            </Button>
+                        </RegisterArea>
+                    </>
+                    <AlertModal
+                        content={alertMessage}
+                        alertIsOpen={alertIsOpen}
+                        setAlertIsOpen={setAlertIsOpen}
+                    />
+                </>
             )}
-            {courseData && usersInfo && (
-                <RegisterArea>
-                    <Button
-                        onClick={handleRegistration}
-                        disabled={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                        active={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                    >
-                        {courseData.teacherUserID === userID
-                            ? "您是老師喔"
-                            : findUserInfo(userID, "studentsCourses")?.some(
-                                  value => value === courseID,
-                              )
-                            ? "你已經報名囉"
-                            : "我要報名"}
-                    </Button>
-                </RegisterArea>
-            )}
-            <AlertModal
-                content={alertMessage}
-                alertIsOpen={alertIsOpen}
-                setAlertIsOpen={setAlertIsOpen}
-            />
         </>
     );
 };

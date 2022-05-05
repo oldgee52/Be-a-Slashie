@@ -18,6 +18,7 @@ import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -468,226 +469,247 @@ export const TeacherOpeningCourse = ({ userID }) => {
 
     return (
         <>
-            <Container>
-                {courses?.length === 0 ? (
-                    <NoDataTitle title="目前沒有課程喔" />
-                ) : (
-                    courses?.map((course, index) => (
-                        <CourseCard key={index} isShow={course.isShow}>
-                            <CourseTitle onClick={() => handleIsShow(index)}>
-                                {course.isShow ? (
-                                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                                ) : (
-                                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                                )}{" "}
-                                {course.title}
-                            </CourseTitle>
-                            {course.students.map((student, index) => (
-                                <StudentInfoBoc key={index}>
-                                    <Name>{student.name}</Name>
-                                    <StudentUploadHomework>
-                                        <Title>上傳作業</Title>
+            {!courses ? (
+                <Loading />
+            ) : (
+                <Container>
+                    {courses.length === 0 ? (
+                        <NoDataTitle title="目前沒有課程喔" />
+                    ) : (
+                        courses?.map((course, index) => (
+                            <CourseCard key={index} isShow={course.isShow}>
+                                <CourseTitle
+                                    onClick={() => handleIsShow(index)}
+                                >
+                                    {course.isShow ? (
+                                        <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                                    ) : (
+                                        <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                                    )}{" "}
+                                    {course.title}
+                                </CourseTitle>
+                                {course.students.map((student, index) => (
+                                    <StudentInfoBoc key={index}>
+                                        <Name>{student.name}</Name>
+                                        <StudentUploadHomework>
+                                            <Title>上傳作業</Title>
 
-                                        {student.studentsHomework.length ===
-                                        0 ? (
-                                            <div>尚未設定作業或尚未上傳</div>
+                                            {student.studentsHomework.length ===
+                                            0 ? (
+                                                <div>
+                                                    尚未設定作業或尚未上傳
+                                                </div>
+                                            ) : (
+                                                student.studentsHomework.map(
+                                                    homework => (
+                                                        <UploadHomework
+                                                            key={homework.title}
+                                                        >
+                                                            <HomeworkTitle>
+                                                                {homework.title}
+                                                            </HomeworkTitle>{" "}
+                                                            <HomeworkDate>
+                                                                {new Date(
+                                                                    homework
+                                                                        .uploadDate
+                                                                        .seconds *
+                                                                        1000,
+                                                                ).toLocaleDateString()}
+                                                            </HomeworkDate>
+                                                            <HomeworkDownload>
+                                                                <a
+                                                                    href={
+                                                                        homework.fileURL
+                                                                    }
+                                                                    download
+                                                                >
+                                                                    下載
+                                                                </a>
+                                                            </HomeworkDownload>
+                                                        </UploadHomework>
+                                                    ),
+                                                )
+                                            )}
+                                        </StudentUploadHomework>
+
+                                        <InputArea>
+                                            <InputLabel
+                                                htmlFor={`${course.courseID}_${student.studentID}_agree`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    id={`${course.courseID}_${student.studentID}_agree`}
+                                                    name={`${course.courseID}_${student.studentID}`}
+                                                    value={1}
+                                                    onChange={e =>
+                                                        handleSkillChange(e)
+                                                    }
+                                                />
+                                                <Agreement>
+                                                    同意給徽章
+                                                </Agreement>
+                                            </InputLabel>{" "}
+                                            <InputLabel
+                                                htmlFor={`${course.courseID}_${student.studentID}_disagree`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    id={`${course.courseID}_${student.studentID}_disagree`}
+                                                    name={`${course.courseID}_${student.studentID}`}
+                                                    value={2}
+                                                    onChange={e =>
+                                                        handleSkillChange(e)
+                                                    }
+                                                />
+                                                <Agreement>
+                                                    不同意給徽章
+                                                </Agreement>
+                                            </InputLabel>
+                                        </InputArea>
+                                    </StudentInfoBoc>
+                                ))}
+                                <TeacherBox>
+                                    <TeacherBoxTitle>課程資料</TeacherBoxTitle>
+                                    <Title>已上傳資料</Title>
+                                    <TeacherHomeworkBox>
+                                        {course.materials.length === 0
+                                            ? "尚未上傳"
+                                            : course.materials?.map(
+                                                  material => (
+                                                      <UploadHomework
+                                                          key={
+                                                              material.creatDate
+                                                                  .seconds
+                                                          }
+                                                      >
+                                                          <HomeworkTitle>
+                                                              {material.title}
+                                                          </HomeworkTitle>
+
+                                                          <HomeworkDate>
+                                                              {new Date(
+                                                                  Math.floor(
+                                                                      material
+                                                                          .creatDate
+                                                                          .seconds *
+                                                                          1000,
+                                                                  ),
+                                                              ).toLocaleDateString()}
+                                                          </HomeworkDate>
+                                                          <HomeworkDownload>
+                                                              <a
+                                                                  href={
+                                                                      material.fileURL
+                                                                  }
+                                                                  download
+                                                              >
+                                                                  下載
+                                                              </a>
+                                                          </HomeworkDownload>
+                                                      </UploadHomework>
+                                                  ),
+                                              )}
+                                    </TeacherHomeworkBox>
+
+                                    <Title>新增檔案</Title>
+                                    <FileLabel htmlFor={`${course.courseID}`}>
+                                        <FileInput
+                                            type="file"
+                                            ref={imageInputRef}
+                                            name="materialsFile"
+                                            id={`${course.courseID}`}
+                                            onChange={e =>
+                                                handleFileChange(index, e)
+                                            }
+                                        />
+                                        {course.materialsFile ? (
+                                            `已選擇檔案，請輸入資料名稱後上傳`
                                         ) : (
-                                            student.studentsHomework.map(
-                                                homework => (
-                                                    <UploadHomework
-                                                        key={homework.title}
-                                                    >
-                                                        <HomeworkTitle>
-                                                            {homework.title}
-                                                        </HomeworkTitle>{" "}
-                                                        <HomeworkDate>
-                                                            {new Date(
+                                            <>
+                                                選擇檔案 <FiUpload />
+                                            </>
+                                        )}
+                                    </FileLabel>
+                                    <TextInput
+                                        title="資料名稱"
+                                        value={course.materialsTitle}
+                                        name="materialsTitle"
+                                        handleChange={e =>
+                                            handleTitleChange(index, e)
+                                        }
+                                    />
+                                    <ButtonArea>
+                                        <MyButton
+                                            buttonWord="上傳"
+                                            buttonId={course.courseID}
+                                            clickFunction={e =>
+                                                handleAddMaterials(e, index)
+                                            }
+                                        />
+                                    </ButtonArea>
+                                </TeacherBox>
+                                <TeacherBox>
+                                    <TeacherBoxTitle>課程作業</TeacherBoxTitle>
+                                    <Title>已設定作業</Title>
+                                    <TeacherHomeworkBox>
+                                        {course.homework.length === 0 ? (
+                                            <div>無資料</div>
+                                        ) : (
+                                            course.homework.map(homework => (
+                                                <TeacherHomework
+                                                    key={
+                                                        homework.creatDate
+                                                            .seconds
+                                                    }
+                                                >
+                                                    <HomeworkTitle>
+                                                        {homework.title}
+                                                    </HomeworkTitle>
+                                                    <TeacherHomeworkDate>
+                                                        {new Date(
+                                                            Math.floor(
                                                                 homework
-                                                                    .uploadDate
+                                                                    .creatDate
                                                                     .seconds *
                                                                     1000,
-                                                            ).toLocaleDateString()}
-                                                        </HomeworkDate>
-                                                        <HomeworkDownload>
-                                                            <a
-                                                                href={
-                                                                    homework.fileURL
-                                                                }
-                                                                download
-                                                            >
-                                                                下載
-                                                            </a>
-                                                        </HomeworkDownload>
-                                                    </UploadHomework>
-                                                ),
-                                            )
+                                                            ),
+                                                        ).toLocaleDateString()}
+                                                    </TeacherHomeworkDate>
+                                                </TeacherHomework>
+                                            ))
                                         )}
-                                    </StudentUploadHomework>
-
-                                    <InputArea>
-                                        <InputLabel
-                                            htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                id={`${course.courseID}_${student.studentID}_agree`}
-                                                name={`${course.courseID}_${student.studentID}`}
-                                                value={1}
-                                                onChange={e =>
-                                                    handleSkillChange(e)
-                                                }
-                                            />
-                                            <Agreement>同意給徽章</Agreement>
-                                        </InputLabel>{" "}
-                                        <InputLabel
-                                            htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                id={`${course.courseID}_${student.studentID}_disagree`}
-                                                name={`${course.courseID}_${student.studentID}`}
-                                                value={2}
-                                                onChange={e =>
-                                                    handleSkillChange(e)
-                                                }
-                                            />
-                                            <Agreement>不同意給徽章</Agreement>
-                                        </InputLabel>
-                                    </InputArea>
-                                </StudentInfoBoc>
-                            ))}
-                            <TeacherBox>
-                                <TeacherBoxTitle>課程資料</TeacherBoxTitle>
-                                <Title>已上傳資料</Title>
-                                <TeacherHomeworkBox>
-                                    {course.materials.length === 0
-                                        ? "尚未上傳"
-                                        : course.materials?.map(material => (
-                                              <UploadHomework
-                                                  key={
-                                                      material.creatDate.seconds
-                                                  }
-                                              >
-                                                  <HomeworkTitle>
-                                                      {material.title}
-                                                  </HomeworkTitle>
-
-                                                  <HomeworkDate>
-                                                      {new Date(
-                                                          Math.floor(
-                                                              material.creatDate
-                                                                  .seconds *
-                                                                  1000,
-                                                          ),
-                                                      ).toLocaleDateString()}
-                                                  </HomeworkDate>
-                                                  <HomeworkDownload>
-                                                      <a
-                                                          href={
-                                                              material.fileURL
-                                                          }
-                                                          download
-                                                      >
-                                                          下載
-                                                      </a>
-                                                  </HomeworkDownload>
-                                              </UploadHomework>
-                                          ))}
-                                </TeacherHomeworkBox>
-
-                                <Title>新增檔案</Title>
-                                <FileLabel htmlFor={`${course.courseID}`}>
-                                    <FileInput
-                                        type="file"
-                                        ref={imageInputRef}
-                                        name="materialsFile"
-                                        id={`${course.courseID}`}
-                                        onChange={e =>
-                                            handleFileChange(index, e)
+                                    </TeacherHomeworkBox>
+                                    <Title>設定作業</Title>
+                                    <TextInput
+                                        title="作業名稱"
+                                        value={course.homeworkTitle}
+                                        name="homeworkTitle"
+                                        handleChange={e =>
+                                            handleTitleChange(index, e)
                                         }
                                     />
-                                    {course.materialsFile ? (
-                                        `已選擇檔案，請輸入資料名稱後上傳`
-                                    ) : (
-                                        <>
-                                            選擇檔案 <FiUpload />
-                                        </>
-                                    )}
-                                </FileLabel>
-                                <TextInput
-                                    title="資料名稱"
-                                    value={course.materialsTitle}
-                                    name="materialsTitle"
-                                    handleChange={e =>
-                                        handleTitleChange(index, e)
-                                    }
-                                />
-                                <ButtonArea>
+                                    <ButtonArea>
+                                        <MyButton
+                                            buttonWord="設定作業"
+                                            buttonId={course.courseID}
+                                            clickFunction={e =>
+                                                handleAddHomework(e, index)
+                                            }
+                                        />
+                                    </ButtonArea>
+                                </TeacherBox>
+                                <LastButtonArea>
                                     <MyButton
-                                        buttonWord="上傳"
+                                        buttonWord="結束課程"
                                         buttonId={course.courseID}
-                                        clickFunction={e =>
-                                            handleAddMaterials(e, index)
-                                        }
+                                        clickFunction={handleFinishCourse}
                                     />
-                                </ButtonArea>
-                            </TeacherBox>
-                            <TeacherBox>
-                                <TeacherBoxTitle>課程作業</TeacherBoxTitle>
-                                <Title>已設定作業</Title>
-                                <TeacherHomeworkBox>
-                                    {course.homework.length === 0 ? (
-                                        <div>無資料</div>
-                                    ) : (
-                                        course.homework.map(homework => (
-                                            <TeacherHomework
-                                                key={homework.creatDate.seconds}
-                                            >
-                                                <HomeworkTitle>
-                                                    {homework.title}
-                                                </HomeworkTitle>
-                                                <TeacherHomeworkDate>
-                                                    {new Date(
-                                                        Math.floor(
-                                                            homework.creatDate
-                                                                .seconds * 1000,
-                                                        ),
-                                                    ).toLocaleDateString()}
-                                                </TeacherHomeworkDate>
-                                            </TeacherHomework>
-                                        ))
-                                    )}
-                                </TeacherHomeworkBox>
-                                <Title>設定作業</Title>
-                                <TextInput
-                                    title="作業名稱"
-                                    value={course.homeworkTitle}
-                                    name="homeworkTitle"
-                                    handleChange={e =>
-                                        handleTitleChange(index, e)
-                                    }
-                                />
-                                <ButtonArea>
-                                    <MyButton
-                                        buttonWord="設定作業"
-                                        buttonId={course.courseID}
-                                        clickFunction={e =>
-                                            handleAddHomework(e, index)
-                                        }
-                                    />
-                                </ButtonArea>
-                            </TeacherBox>
-                            <LastButtonArea>
-                                <MyButton
-                                    buttonWord="結束課程"
-                                    buttonId={course.courseID}
-                                    clickFunction={handleFinishCourse}
-                                />
-                            </LastButtonArea>
-                        </CourseCard>
-                    ))
-                )}
-            </Container>
+                                </LastButtonArea>
+                            </CourseCard>
+                        ))
+                    )}
+                </Container>
+            )}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

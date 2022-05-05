@@ -5,6 +5,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { NoDataTitle } from "../Component/NoDataTitle";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -126,11 +127,11 @@ export const StudentRegisteredCourse = ({ userID }) => {
     }
 
     return (
-        <Container>
+        <>
             {!registeredCourse ? (
-                "loading..."
+                <Loading />
             ) : (
-                <>
+                <Container>
                     <CourseTitle onClick={() => handleIsShow(0)}>
                         {isShow[0] ? (
                             <MdKeyboardArrowDown viewBox="0 -4 24 24" />
@@ -160,8 +161,8 @@ export const StudentRegisteredCourse = ({ userID }) => {
                         未同意
                     </CourseTitle>
                     <CourseArea>{renderCourses(2)}</CourseArea>
-                </>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

@@ -7,6 +7,7 @@ import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -249,31 +250,30 @@ export const WishingWell = ({ userID }) => {
 
     return (
         <>
-            <Container>
-                {!usersInfo || !wishes ? (
-                    "loading..."
-                ) : (
-                    <>
-                        <InputArea>
-                            <TextInput
-                                value={wishingContent}
-                                handleChange={handleChange}
-                                name="content"
-                                placeholder={"請輸入你/妳的願望..."}
-                            />
-                            <Button onClick={makeWish}>我要許願</Button>
-                        </InputArea>
-                        <Title>許願池</Title>
-                        {renderWishes()}
-                        {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
-                        <Waypoint
-                            onEnter={() =>
-                                loadingNextWishes(lasWishSnapshotRef.current)
-                            }
+            {!usersInfo || !wishes ? (
+                <Loading />
+            ) : (
+                <Container>
+                    <InputArea>
+                        <TextInput
+                            value={wishingContent}
+                            handleChange={handleChange}
+                            name="content"
+                            placeholder={"請輸入你/妳的願望..."}
                         />
-                    </>
-                )}
-            </Container>
+                        <Button onClick={makeWish}>我要許願</Button>
+                    </InputArea>
+                    <Title>許願池</Title>
+                    {renderWishes()}
+                    {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
+                    <Waypoint
+                        onEnter={() =>
+                            loadingNextWishes(lasWishSnapshotRef.current)
+                        }
+                    />
+                </Container>
+            )}
+
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

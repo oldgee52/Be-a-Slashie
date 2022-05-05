@@ -5,6 +5,7 @@ import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -146,89 +147,105 @@ export const Home = () => {
 
     return (
         <>
-            <Banner>
-                <InputArea>
-                    <BannerTitle>今晚要來點什麼?</BannerTitle>
-                    <InputDiv>
-                        <SearchInput
-                            searchField={searchField}
-                            setSearchField={setSearchField}
-                            changeValueCallback={e => {
-                                e.preventDefault();
-                                setSearchField(e.target.value);
-                            }}
-                            searchCallback={e => {
-                                e.preventDefault();
-                                if (!searchField.trim()) return;
-                                navigate(`/search?q=${searchField.trim()}`);
-                            }}
-                            placeholderText="今天想要學習什麼呢..."
-                        />
-                    </InputDiv>
-                </InputArea>
-            </Banner>
-            <Container>
-                {!latestCourse || !popularCourse ? (
-                    "loading..."
-                ) : (
-                    <>
-                        <CourseArea>
-                            <Title>最新上架</Title>
-                            <SeeMore
-                                onClick={() => navigate(`/search?q=latest`)}
-                            >
-                                點我看更多
-                            </SeeMore>
+            {!latestCourse || !popularCourse ? (
+                <Loading />
+            ) : (
+                <>
+                    <Banner>
+                        <InputArea>
+                            <BannerTitle>今晚要來點什麼?</BannerTitle>
+                            <InputDiv>
+                                <SearchInput
+                                    searchField={searchField}
+                                    setSearchField={setSearchField}
+                                    changeValueCallback={e => {
+                                        e.preventDefault();
+                                        setSearchField(e.target.value);
+                                    }}
+                                    searchCallback={e => {
+                                        e.preventDefault();
+                                        if (!searchField.trim()) return;
+                                        navigate(
+                                            `/search?q=${searchField.trim()}`,
+                                        );
+                                    }}
+                                    placeholderText="今天想要學習什麼呢..."
+                                />
+                            </InputDiv>
+                        </InputArea>
+                    </Banner>
+                    <Container>
+                        <>
+                            <CourseArea>
+                                <Title>最新上架</Title>
+                                <SeeMore
+                                    onClick={() => navigate(`/search?q=latest`)}
+                                >
+                                    點我看更多
+                                </SeeMore>
 
-                            {latestCourse.map(course => (
-                                <CourseDiv key={course.courseID}>
-                                    <CourseInfo
-                                        teacherPhoto={course.teacherInfo.photo}
-                                        image={course.image}
-                                        courseID={course.courseID}
-                                        title={course.title}
-                                        teacherName={course.teacherInfo.name}
-                                        view={course.view}
-                                        creatDate={new Date(
-                                            course.creatTime.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                        openingDate={new Date(
-                                            course.openingDate.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                    />
-                                </CourseDiv>
-                            ))}
-                        </CourseArea>
-                        <CourseArea>
-                            <Title>熱門課程</Title>
-                            <SeeMore
-                                onClick={() => navigate(`/search?q=popular`)}
-                            >
-                                點我看更多
-                            </SeeMore>
+                                {latestCourse.map(course => (
+                                    <CourseDiv key={course.courseID}>
+                                        <CourseInfo
+                                            teacherPhoto={
+                                                course.teacherInfo.photo
+                                            }
+                                            image={course.image}
+                                            courseID={course.courseID}
+                                            title={course.title}
+                                            teacherName={
+                                                course.teacherInfo.name
+                                            }
+                                            view={course.view}
+                                            creatDate={new Date(
+                                                course.creatTime.seconds * 1000,
+                                            ).toLocaleDateString()}
+                                            openingDate={new Date(
+                                                course.openingDate.seconds *
+                                                    1000,
+                                            ).toLocaleDateString()}
+                                        />
+                                    </CourseDiv>
+                                ))}
+                            </CourseArea>
+                            <CourseArea>
+                                <Title>熱門課程</Title>
+                                <SeeMore
+                                    onClick={() =>
+                                        navigate(`/search?q=popular`)
+                                    }
+                                >
+                                    點我看更多
+                                </SeeMore>
 
-                            {popularCourse.map(course => (
-                                <CourseDiv key={course.courseID}>
-                                    <CourseInfo
-                                        teacherPhoto={course.teacherInfo.photo}
-                                        image={course.image}
-                                        courseID={course.courseID}
-                                        title={course.title}
-                                        teacherName={course.teacherInfo.name}
-                                        view={course.view}
-                                        creatDate={new Date(
-                                            course.creatTime.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                        openingDate={new Date(
-                                            course.openingDate.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                    />
-                                </CourseDiv>
-                            ))}
-                        </CourseArea>
-                    </>
-                )}
-            </Container>
+                                {popularCourse.map(course => (
+                                    <CourseDiv key={course.courseID}>
+                                        <CourseInfo
+                                            teacherPhoto={
+                                                course.teacherInfo.photo
+                                            }
+                                            image={course.image}
+                                            courseID={course.courseID}
+                                            title={course.title}
+                                            teacherName={
+                                                course.teacherInfo.name
+                                            }
+                                            view={course.view}
+                                            creatDate={new Date(
+                                                course.creatTime.seconds * 1000,
+                                            ).toLocaleDateString()}
+                                            openingDate={new Date(
+                                                course.openingDate.seconds *
+                                                    1000,
+                                            ).toLocaleDateString()}
+                                        />
+                                    </CourseDiv>
+                                ))}
+                            </CourseArea>
+                        </>
+                    </Container>
+                </>
+            )}
         </>
     );
 };

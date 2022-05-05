@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AlertModal } from "../Component/AlertModal";
 import { CheckSkills } from "../Component/CheckSkills";
+import { Loading } from "../Component/Loading";
 import PaginatedItems from "../Component/Paginate";
 import { SearchInput } from "../Component/SearchInput";
 import { useAlertModal } from "../customHooks/useAlertModal";
@@ -257,10 +258,10 @@ export const TalentedPersonSearch = () => {
 
     return (
         <>
-            <Container>
-                {!skills ? (
-                    "loading..."
-                ) : (
+            {!skills || !allUsers ? (
+                <Loading />
+            ) : (
+                <Container>
                     <SearchArea>
                         <SearchInputBox>
                             <SearchInput
@@ -326,8 +327,8 @@ export const TalentedPersonSearch = () => {
                                 ))}
                         </CardBox>
                     </SearchArea>
-                )}
-            </Container>
+                </Container>
+            )}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

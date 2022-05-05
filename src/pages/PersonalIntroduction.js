@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
 import { CourseInfo } from "../Component/CourseInfo";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -157,11 +158,11 @@ export const PersonalIntroduction = () => {
     console.log(userFinishCourses);
 
     return (
-        <Container>
+        <>
             {!userInfo || !userSkills || !userFinishCourses ? (
-                "loading..."
+                <Loading />
             ) : (
-                <>
+                <Container>
                     <InfoArea>
                         <UserPhoto src={userInfo.photo} alt={userInfo.name} />
                         <UserName>
@@ -200,8 +201,8 @@ export const PersonalIntroduction = () => {
                                   ))}
                         </CourseBox>
                     </UserSkills>
-                </>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

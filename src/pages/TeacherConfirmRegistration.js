@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     display: flex;
@@ -188,77 +189,83 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     };
     return (
         <>
-            <Container>
-                {courses?.length === 0 ? (
-                    <NoDataTitle title="目前沒有課程喔" />
-                ) : (
-                    courses &&
-                    courses.map(course => (
-                        <CourseCard key={course.courseID}>
-                            <CourseTitle>{course.title}</CourseTitle>
-                            {course.students.length === 0 ? (
-                                <NoShow>還沒有人報名喔!</NoShow>
-                            ) : (
-                                course.students.map((student, index) => (
-                                    <StudentInfoBoc key={index}>
-                                        <Name>
-                                            {student.name}{" "}
-                                            <a
-                                                href={`mailto: ${student.email}`}
-                                            >
-                                                <FiMail />
-                                            </a>{" "}
-                                            <NewFiInfo
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/personal-introduction?uid=${student.studentID}`,
-                                                    )
-                                                }
-                                            />
-                                        </Name>
-                                        <InputArea>
-                                            <InputLabel
-                                                htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    id={`${course.courseID}_${student.studentID}_agree`}
-                                                    name={`${course.courseID}_${student.studentID}`}
-                                                    value={1}
-                                                    onChange={handleChange}
+            {!courses ? (
+                <Loading />
+            ) : (
+                <Container>
+                    {courses?.length === 0 ? (
+                        <NoDataTitle title="目前沒有課程喔" />
+                    ) : (
+                        courses &&
+                        courses.map(course => (
+                            <CourseCard key={course.courseID}>
+                                <CourseTitle>{course.title}</CourseTitle>
+                                {course.students.length === 0 ? (
+                                    <NoShow>還沒有人報名喔!</NoShow>
+                                ) : (
+                                    course.students.map((student, index) => (
+                                        <StudentInfoBoc key={index}>
+                                            <Name>
+                                                {student.name}{" "}
+                                                <a
+                                                    href={`mailto: ${student.email}`}
+                                                >
+                                                    <FiMail />
+                                                </a>{" "}
+                                                <NewFiInfo
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/personal-introduction?uid=${student.studentID}`,
+                                                        )
+                                                    }
                                                 />
-                                                <Agreement>同意</Agreement>
-                                            </InputLabel>{" "}
-                                            <InputLabel
-                                                htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    id={`${course.courseID}_${student.studentID}_disagree`}
-                                                    name={`${course.courseID}_${student.studentID}`}
-                                                    value={2}
-                                                    onChange={handleChange}
-                                                />
+                                            </Name>
+                                            <InputArea>
+                                                <InputLabel
+                                                    htmlFor={`${course.courseID}_${student.studentID}_agree`}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        id={`${course.courseID}_${student.studentID}_agree`}
+                                                        name={`${course.courseID}_${student.studentID}`}
+                                                        value={1}
+                                                        onChange={handleChange}
+                                                    />
+                                                    <Agreement>同意</Agreement>
+                                                </InputLabel>{" "}
+                                                <InputLabel
+                                                    htmlFor={`${course.courseID}_${student.studentID}_disagree`}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        id={`${course.courseID}_${student.studentID}_disagree`}
+                                                        name={`${course.courseID}_${student.studentID}`}
+                                                        value={2}
+                                                        onChange={handleChange}
+                                                    />
 
-                                                <Agreement>不同意</Agreement>
-                                            </InputLabel>
-                                        </InputArea>
-                                    </StudentInfoBoc>
-                                ))
-                            )}
-                            {course.students.length === 0 || (
-                                <ButtonArea>
-                                    <MyButton
-                                        buttonWord="準備來開課"
-                                        buttonId={course.courseID}
-                                        clickFunction={confirmRegistration}
-                                    />
-                                </ButtonArea>
-                            )}
-                        </CourseCard>
-                    ))
-                )}
-            </Container>
+                                                    <Agreement>
+                                                        不同意
+                                                    </Agreement>
+                                                </InputLabel>
+                                            </InputArea>
+                                        </StudentInfoBoc>
+                                    ))
+                                )}
+                                {course.students.length === 0 || (
+                                    <ButtonArea>
+                                        <MyButton
+                                            buttonWord="準備來開課"
+                                            buttonId={course.courseID}
+                                            clickFunction={confirmRegistration}
+                                        />
+                                    </ButtonArea>
+                                )}
+                            </CourseCard>
+                        ))
+                    )}
+                </Container>
+            )}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
