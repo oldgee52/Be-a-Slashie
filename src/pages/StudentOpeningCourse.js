@@ -38,11 +38,12 @@ const CourseCard = styled.div`
     margin-bottom: 10px;
 
     border-radius: 5px;
-    height: ${props => (props.show ? "fit-content" : "70px")};
+    max-height: ${props => (props.show ? "1000px" : "70px")};
     overflow: hidden;
-
+    transition: ${props =>
+        props.show ? "max-height 1s ease-out" : "max-height 0.5s ease-in"};
     @media ${breakPoint.desktop} {
-        height: ${props => (props.show ? "fit-content" : "75px")};
+        max-height: ${props => (props.show ? "1000px" : "75px")};
     }
 `;
 
@@ -457,11 +458,14 @@ export const StudentOpeningCourse = ({ userID }) => {
                             <CourseTitle
                                 onClick={() => handleIsShow(indexOfAllCourse)}
                             >
-                                {isShow?.[indexOfAllCourse] ? (
-                                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                                ) : (
-                                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                                )}{" "}
+                                {" "}
+                                <span>
+                                    {isShow?.[indexOfAllCourse] ? (
+                                        <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                                    ) : (
+                                        <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                                    )}{" "}
+                                </span>
                                 {detail.title} <Name>{detail.teacherName}</Name>
                             </CourseTitle>
                             <Title>課程作業</Title>

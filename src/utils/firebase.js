@@ -7,8 +7,6 @@ import {
     where,
     collection,
     getDocs,
-    updateDoc,
-    increment,
     orderBy,
     limit,
     startAfter,

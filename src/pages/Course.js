@@ -633,7 +633,7 @@ export const Course = ({ userID }) => {
                         >
                             {inputFields[index]?.isShowReplyInput ? (
                                 <>
-                                    <RiCloseCircleLine />
+                                    <RiCloseCircleLine viewBox="0 -2 24 24" />{" "}
                                     取消
                                 </>
                             ) : (

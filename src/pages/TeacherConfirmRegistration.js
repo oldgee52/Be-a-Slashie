@@ -201,7 +201,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                             <CourseCard key={course.courseID}>
                                 <CourseTitle>{course.title}</CourseTitle>
                                 {course.students.length === 0 ? (
-                                    <NoShow>還沒有人報名喔!</NoShow>
+                                    <NoDataTitle title="還沒有人報名喔" />
                                 ) : (
                                     course.students.map((student, index) => (
                                         <StudentInfoBoc key={index}>

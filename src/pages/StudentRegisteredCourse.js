@@ -49,6 +49,10 @@ const CourseArea = styled.div`
     align-items: center;
     width: 100%;
     margin-bottom: 10px;
+    overflow: hidden;
+    max-height: ${props => (props.show ? "1500px" : "0")};
+    transition: ${props =>
+        props.show ? "max-height 1s ease-out" : "max-height 0.3s ease-in"};
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
@@ -62,7 +66,7 @@ const CourseArea = styled.div`
 
 const CourseDiv = styled.div`
     width: 100%;
-    display: ${props => (props.show ? "black" : "none")};
+    overflow: hidden;
 
     @media ${breakPoint.desktop} {
         width: calc(30% - 10px);
@@ -106,12 +110,12 @@ export const StudentRegisteredCourse = ({ userID }) => {
         console.log(showCourses);
 
         return showCourses.length === 0 ? (
-            <CourseDiv show={isShow[status]}>
+            <CourseDiv>
                 <NoDataTitle title="無" />
             </CourseDiv>
         ) : (
             showCourses?.map(course => (
-                <CourseDiv key={course.courseID} show={isShow[status]}>
+                <CourseDiv key={course.courseID}>
                     <CourseInfo
                         teacherPhoto={course.photo}
                         image={course.image}
@@ -140,7 +144,7 @@ export const StudentRegisteredCourse = ({ userID }) => {
                         )}{" "}
                         審核中
                     </CourseTitle>
-                    <CourseArea>{renderCourses(0)}</CourseArea>
+                    <CourseArea show={isShow[0]}>{renderCourses(0)}</CourseArea>
 
                     <CourseTitle onClick={() => handleIsShow(1)}>
                         {isShow[1] ? (
@@ -150,7 +154,7 @@ export const StudentRegisteredCourse = ({ userID }) => {
                         )}{" "}
                         已同意
                     </CourseTitle>
-                    <CourseArea>{renderCourses(1)}</CourseArea>
+                    <CourseArea show={isShow[1]}>{renderCourses(1)}</CourseArea>
 
                     <CourseTitle onClick={() => handleIsShow(2)}>
                         {isShow[2] ? (
@@ -160,7 +164,7 @@ export const StudentRegisteredCourse = ({ userID }) => {
                         )}{" "}
                         未同意
                     </CourseTitle>
-                    <CourseArea>{renderCourses(2)}</CourseArea>
+                    <CourseArea show={isShow[2]}>{renderCourses(2)}</CourseArea>
                 </Container>
             )}
         </>

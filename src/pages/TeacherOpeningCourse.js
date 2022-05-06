@@ -44,10 +44,11 @@ const CourseCard = styled.div`
     padding: 10px;
     background-color: whitesmoke;
     margin-bottom: 10px;
-
     border-radius: 5px;
-    height: ${props => (props.isShow ? "fit-content" : "50px")};
+    max-height: ${props => (props.show ? "2500px" : "50px")};
     overflow: hidden;
+    transition: ${props =>
+        props.show ? "max-height 1s ease-out" : "max-height 0.3s ease-in"};
 
     @media ${breakPoint.desktop} {
     }
@@ -485,7 +486,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                         <NoDataTitle title="目前沒有課程喔" />
                     ) : (
                         courses?.map((course, index) => (
-                            <CourseCard key={index} isShow={course.isShow}>
+                            <CourseCard key={index} show={course.isShow}>
                                 <CourseTitle
                                     onClick={() => handleIsShow(index)}
                                 >
