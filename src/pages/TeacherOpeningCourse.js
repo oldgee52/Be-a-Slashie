@@ -19,6 +19,7 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
+import { LoadingForPost } from "../Component/LoadingForPost";
 
 const Container = styled.div`
     display: flex;
@@ -242,6 +243,7 @@ const LastButtonArea = styled(ButtonArea)`
 
 export const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
@@ -326,6 +328,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                         break;
                     case "running":
                         console.log("Upload is running");
+                        setIsLoading(true);
                         break;
                     default:
                         console.log("default");
@@ -365,8 +368,10 @@ export const TeacherOpeningCourse = ({ userID }) => {
                             data[index].materialsFile = "";
 
                             setCourses(data);
-                            return handleAlertModal("上傳教材成功囉!!!");
+                            setIsLoading(false);
+                            return handleAlertModal("上傳教材成功囉");
                         } catch (error) {
+                            setIsLoading(false);
                             handleAlertModal("上傳教材失敗");
                             console.log(error);
                         }
@@ -390,6 +395,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
         請確認所有學生獲得徽章狀態`);
 
         try {
+            setIsLoading(true);
             await Promise.all([
                 updateDoc(doc(firebaseInit.db, "courses", courseID), {
                     status: 2,
@@ -421,10 +427,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     item => item.courseID !== courseID,
                 );
                 setCourses(NewCourses);
+                setIsLoading(false);
             });
 
             return handleAlertModal("結束上課囉!!!");
         } catch (error) {
+            setIsLoading(false);
             handleAlertModal("結束上課失敗");
             console.log(error);
         }
@@ -710,6 +718,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     )}
                 </Container>
             )}
+            {isLoading ? <LoadingForPost /> : ""}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

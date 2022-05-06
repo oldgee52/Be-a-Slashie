@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
+import { LoadingForPost } from "../Component/LoadingForPost";
 
 const Container = styled.div`
     display: flex;
@@ -400,6 +401,7 @@ export const Course = ({ userID }) => {
     const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
@@ -408,16 +410,20 @@ export const Course = ({ userID }) => {
     );
 
     useEffect(() => {
+        if (!courseID) navigate("/");
+    }, [courseID]);
+
+    useEffect(() => {
         async function addView() {
             await updateDoc(doc(firebaseInit.db, "courses", courseID), {
                 view: increment(1),
             });
         }
-        addView();
+        if (courseID) addView();
     }, [courseID]);
 
     useEffect(() => {
-        if (userID)
+        if (userID && courseID)
             firebaseInit.getCollectionData("users", userID).then(data => {
                 const isCollect = data.collectCourses?.some(
                     collectCourse => collectCourse === courseID,
@@ -427,37 +433,49 @@ export const Course = ({ userID }) => {
     }, [courseID, userID]);
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(
-            doc(firebaseInit.db, "courses", courseID),
-            snapshot => {
-                const courseDate = snapshot.data();
-                console.log(courseDate);
-                setCourseData(courseDate);
-                setInputFields(
-                    Array(courseDate.askedQuestions?.length || 0)
-                        .fill()
-                        .map(() => ({ reply: "", isShowReplyInput: false })),
-                );
+        let unsubscribe;
+        if (courseID)
+            unsubscribe = onSnapshot(
+                doc(firebaseInit.db, "courses", courseID),
+                snapshot => {
+                    const courseDate = snapshot.data();
+                    console.log(courseDate);
+                    setCourseData(courseDate);
+                    setInputFields(
+                        Array(courseDate.askedQuestions?.length || 0)
+                            .fill()
+                            .map(() => ({
+                                reply: "",
+                                isShowReplyInput: false,
+                            })),
+                    );
 
-                const SkillsPromise = courseDate.getSkills.map(skill =>
-                    firebaseInit.getCollectionData("skills", skill),
-                );
+                    const SkillsPromise = courseDate.getSkills.map(skill =>
+                        firebaseInit.getCollectionData("skills", skill),
+                    );
 
-                Promise.all(SkillsPromise).then(data => setSkillsInfo(data));
-            },
-        );
+                    Promise.all(SkillsPromise).then(data =>
+                        setSkillsInfo(data),
+                    );
+                },
+            );
 
         return () => {
-            unsubscribe();
+            if (courseID) unsubscribe();
         };
     }, [courseID]);
     useEffect(() => {
+        let isMounted = true;
         firebaseInit
             .getCollection(collection(firebaseInit.db, "users"))
             .then(data => {
                 console.log(data);
-                setUsersInfo(data);
+                if (isMounted) setUsersInfo(data);
             });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     function findUserInfo(userID, info) {
@@ -482,7 +500,7 @@ export const Course = ({ userID }) => {
     }
     async function handleRegistration(e) {
         e.preventDefault();
-
+        setIsLoading(true);
         const studentName = findUserInfo(userID, "name");
         const studentEmail = findUserInfo(userID, "email");
         const teacherName = findUserInfo(courseData.teacherUserID, "name");
@@ -543,16 +561,19 @@ export const Course = ({ userID }) => {
                 email.sendEmail(studentEmailContent),
                 email.sendEmail(teacherEmailContent),
             ]).then(() => {
-                const confirmMessage = window.confirm(
-                    "報名成功\n點選「確定」，查看報名狀態。\n點選「取消」，回到首頁。",
-                );
-                if (confirmMessage) {
-                    navigate("/personal/student-registered-course");
-                } else {
-                    navigate("/");
-                }
+                setIsLoading(false);
+                handleAlertModal("ok");
+                // const confirmMessage = window.confirm(
+                //     "報名成功\n點選「確定」，查看報名狀態。\n點選「取消」，回到首頁。",
+                // );
+                // if (confirmMessage) {
+                //     navigate("/personal/student-registered-course");
+                // } else {
+                //     navigate("/");
+                // }
             });
         } catch (error) {
+            setIsLoading(false);
             console.log(error);
             handleAlertModal("發生錯誤，請重新試一次");
         }
@@ -841,6 +862,7 @@ export const Course = ({ userID }) => {
                             </Button>
                         </RegisterArea>
                     </>
+                    {isLoading ? <LoadingForPost /> : ""}
                     <AlertModal
                         content={alertMessage}
                         alertIsOpen={alertIsOpen}

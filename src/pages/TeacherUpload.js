@@ -16,6 +16,7 @@ import { CheckSkills } from "../Component/CheckSkills";
 import { useNavigate } from "react-router-dom";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { LoadingForPost } from "../Component/LoadingForPost";
 
 const Container = styled.div`
     display: flex;
@@ -237,6 +238,7 @@ export const TeacherUpload = ({ userID }) => {
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
     const [courseID, setCourseID] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
@@ -296,13 +298,16 @@ export const TeacherUpload = ({ userID }) => {
                         break;
                     case "running":
                         console.log("Upload is running");
+                        setIsLoading(true);
                         break;
                     default:
                         console.log("default");
                 }
             },
             error => {
+                setIsLoading(false);
                 console.log(error);
+                handleAlertModal("發生錯誤，請再試一次");
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
@@ -310,6 +315,7 @@ export const TeacherUpload = ({ userID }) => {
                         type: "setImageURL",
                         payload: { image: downloadURL },
                     });
+                    setIsLoading(false);
                     setImage(downloadURL);
                 });
             },
@@ -337,6 +343,8 @@ export const TeacherUpload = ({ userID }) => {
             state.getSkills.length === 0
         )
             return handleAlertModal("請輸入完整資料");
+
+        setIsLoading(true);
 
         const coursesRef = collection(firebaseInit.db, "courses");
         const docRef = doc(coursesRef);
@@ -374,11 +382,13 @@ export const TeacherUpload = ({ userID }) => {
                     teachersCourses: arrayUnion(docRef.id),
                 }),
             ]).then(() => {
+                setIsLoading(false);
                 handleAlertModal("上架成功，來看看課程資訊吧！");
             });
         } catch (error) {
             console.log(error);
-            return handleAlertModal("請輸入完整資料");
+            setIsLoading(false);
+            return handleAlertModal("發送錯誤，請再試一次");
         }
         setCourseID(docRef.id);
     };
@@ -510,6 +520,7 @@ export const TeacherUpload = ({ userID }) => {
                 setAlertIsOpen={setAlertIsOpen}
                 courseID={courseID}
             />
+            {isLoading ? <LoadingForPost /> : ""}
         </>
     );
 };

@@ -11,6 +11,7 @@ import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
+import { LoadingForPost } from "../Component/LoadingForPost";
 
 const Container = styled.div`
     display: flex;
@@ -194,6 +195,7 @@ export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [isShow, setIsShow] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     useEffect(() => {
@@ -381,6 +383,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                         break;
                     case "running":
                         console.log("Upload is running");
+                        setIsLoading(true);
                         break;
                     default:
                         console.log("default");
@@ -417,9 +420,11 @@ export const StudentOpeningCourse = ({ userID }) => {
                         ];
 
                         setCourseDetails(data);
+                        setIsLoading(false);
                         return handleAlertModal("上傳成功");
                     })
                     .catch(error => {
+                        setIsLoading(false);
                         console.log(error);
                         handleAlertModal("上傳失敗");
                     });
@@ -511,7 +516,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                     ))}
                 </Container>
             )}
-
+            {isLoading ? <LoadingForPost /> : ""}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
