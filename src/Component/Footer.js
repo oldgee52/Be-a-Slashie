@@ -13,7 +13,7 @@ const FooterContainer = styled.footer`
     font-size: 12px;
     color: whitesmoke;
     flex-direction: column;
-    margin-top: 50px;
+    /* margin-top: 50px; */
     @media ${breakPoint.desktop} {
         flex-direction: row;
         justify-content: center;

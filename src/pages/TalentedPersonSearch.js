@@ -22,7 +22,7 @@ const Container = styled.div`
     align-content: flex-start;
 
     padding: 80px 10px;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - 100px);
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;

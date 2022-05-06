@@ -63,12 +63,13 @@ const Collection = styled.div`
     height: 50px;
     line-height: 50px;
     border-radius: 5px;
+    border: ${props => (props.collected ? "none" : "1px solid #505050")};
 
-    color: ${props => (props.collected ? "white" : "inherit")};
+    color: ${props => (props.collected ? "whitesmoke" : "  #505050")};
     background: ${props =>
         props.collected
             ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%);"
-            : "white"};
+            : "whitesmoke"};
 
     cursor: pointer;
 
@@ -108,11 +109,12 @@ const TeacherInfo = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
     border-radius: 5px;
     margin-top: 20px;
     width: 300px;
-    background-color: white;
+    background-color: whitesmoke;
+    min-height: 250px;
+    color: #505050;
 
     @media ${breakPoint.desktop} {
         align-self: stretch;
@@ -218,6 +220,7 @@ const RegisterArea = styled.div`
     width: 100vw;
     background-color: whitesmoke;
     height: 50px;
+    /* margin-top: 50px; */
 
     @media ${breakPoint.desktop} {
         display: none;
@@ -393,6 +396,27 @@ const IsShowReply = styled.div`
 
 const ReplyInput = styled(Input)`
     margin-top: 20px;
+`;
+
+const BlurImage = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    color: whitesmoke;
+
+    &::before {
+        content: "";
+        top: -50px;
+        left: -20px;
+        width: 120%;
+        height: 98%;
+        position: absolute;
+        background-image: url(${props => props.img});
+        background-size: cover;
+        background-repeat: no-repeat;
+        filter: blur(5px) brightness(60%);
+    }
 `;
 
 export const Course = ({ userID }) => {
@@ -701,53 +725,55 @@ export const Course = ({ userID }) => {
 
     return (
         <>
-            {!courseData || !usersInfo ? (
+            {!courseData || !usersInfo || !skillsInfo ? (
                 <Loading />
             ) : (
                 <>
                     <>
                         <Container>
-                            <CourseTitle>{courseData.title}</CourseTitle>
-                            <CourseInfo>
-                                <InfoTitle>
-                                    報名人數 {courseData.registrationNumber}
-                                </InfoTitle>
+                            <BlurImage img={courseData.image}>
+                                <CourseTitle>{courseData.title}</CourseTitle>
+                                <CourseInfo>
+                                    <InfoTitle>
+                                        報名人數 {courseData.registrationNumber}
+                                    </InfoTitle>
 
-                                <InfoTitle>
-                                    瀏覽人數 {courseData.view}
-                                </InfoTitle>
-                            </CourseInfo>
-                            <TeacherInfo>
-                                <TeacherImg
-                                    src={findUserInfo(
-                                        courseData.teacherUserID,
-                                        "photo",
-                                    )}
-                                />
-                                <a
-                                    href={`mailto:${findUserInfo(
-                                        courseData.teacherUserID,
-                                        "email",
-                                    )}`}
+                                    <InfoTitle>
+                                        瀏覽人數 {courseData.view}
+                                    </InfoTitle>
+                                </CourseInfo>
+                                <TeacherInfo>
+                                    <TeacherImg
+                                        src={findUserInfo(
+                                            courseData.teacherUserID,
+                                            "photo",
+                                        )}
+                                    />
+                                    <a
+                                        href={`mailto:${findUserInfo(
+                                            courseData.teacherUserID,
+                                            "email",
+                                        )}`}
+                                    >
+                                        <NewFiMail />
+                                    </a>
+                                    <TeacherName>
+                                        {findUserInfo(
+                                            courseData.teacherUserID,
+                                            "name",
+                                        )}
+                                    </TeacherName>
+                                    <TeacherIntroduction>
+                                        {courseData.teacherIntroduction}
+                                    </TeacherIntroduction>
+                                </TeacherInfo>
+                                <Collection
+                                    onClick={handleCollection}
+                                    collected={userCollection}
                                 >
-                                    <NewFiMail />
-                                </a>
-                                <TeacherName>
-                                    {findUserInfo(
-                                        courseData.teacherUserID,
-                                        "name",
-                                    )}
-                                </TeacherName>
-                                <TeacherIntroduction>
-                                    {courseData.teacherIntroduction}
-                                </TeacherIntroduction>
-                            </TeacherInfo>
-                            <Collection
-                                onClick={handleCollection}
-                                collected={userCollection}
-                            >
-                                {userCollection ? "已收藏" : "加入收藏"}
-                            </Collection>
+                                    {userCollection ? "已收藏" : "加入收藏"}
+                                </Collection>{" "}
+                            </BlurImage>
                             <AboutCourse>
                                 <AboutTitle>關於課程</AboutTitle>
                                 <AboutContent>
@@ -769,10 +795,7 @@ export const Course = ({ userID }) => {
                                 <AboutContentsSkill>
                                     可獲技能{" "}
                                     <FlexDiv>
-                                        {" "}
-                                        {skillsInfo && (
-                                            <Skills skills={skillsInfo} />
-                                        )}
+                                        <Skills skills={skillsInfo} />
                                     </FlexDiv>
                                 </AboutContentsSkill>
                                 <AboutContent>

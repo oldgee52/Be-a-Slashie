@@ -17,6 +17,7 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin-bottom: 20px;
 
     @media ${breakPoint.desktop} {
         width: 70%;

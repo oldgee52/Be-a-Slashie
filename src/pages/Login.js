@@ -15,7 +15,7 @@ import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
 
 const Box = styled.div`
-    min-height: calc(100vh - 200px);
+    min-height: calc(100vh - 150px);
     margin: 100px auto 0 auto;
     display: flex;
     align-items: center;

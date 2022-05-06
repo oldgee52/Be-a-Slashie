@@ -13,7 +13,7 @@ const Container = styled.div`
     flex-wrap: wrap;
     padding: 0 10px;
     align-content: flex-start;
-    min-height: calc(100vh - 230px);
+    min-height: calc(100vh - 180px);
 
     @media ${breakPoint.desktop} {
         max-width: 1200px;

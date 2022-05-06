@@ -18,7 +18,7 @@ const Container = styled.div`
     width: 100%;
     margin: auto;
     align-content: flex-start;
-    min-height: calc(100vh - 150px);
+    min-height: calc(100vh - 100px);
 
     padding: 80px 10px 0 10px;
 
