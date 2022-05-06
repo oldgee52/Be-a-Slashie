@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
+import { Footer } from "./Footer";
 
 const Container = styled.div`
     margin: auto;
@@ -11,12 +12,15 @@ const Container = styled.div`
     align-items: center;
     flex-wrap: wrap;
     padding: 0 10px;
+    align-content: flex-start;
+    min-height: calc(100vh - 230px);
 
     @media ${breakPoint.desktop} {
         max-width: 1200px;
         justify-content: flex-start;
         align-items: flex-start;
         padding: 0 20px 0 20px;
+        min-height: calc(100vh - 135px);
     }
 `;
 
@@ -102,58 +106,67 @@ export const Personal = () => {
     ];
 
     return (
-        <Container>
-            <TitleArea>
-                <NavLink
-                    to="profile"
-                    onClick={() => handleRoleChange("profile")}
-                >
-                    <Title active={isActiveArea === "profile"}>基本資料</Title>
-                </NavLink>
-                <NavLink
-                    to="student-got-skill"
-                    onClick={() => handleRoleChange("student")}
-                >
-                    <Title active={isActiveArea === "student"}>我是學生</Title>
-                </NavLink>
-                <NavLink
-                    to="teacher-upload-course"
-                    onClick={() => handleRoleChange("teacher")}
-                >
-                    <Title active={isActiveArea === "teacher"}>我是老師</Title>
-                </NavLink>
-            </TitleArea>
-            {isActiveArea === "student" ? (
-                <SubTitleArea>
-                    {studentRouter.map(router => (
-                        <NavLink to={router.link} key={router.link}>
-                            {({ isActive }) => (
-                                <SubTitle active={isActive}>
-                                    {router.title}
-                                </SubTitle>
-                            )}
-                        </NavLink>
-                    ))}
-                </SubTitleArea>
-            ) : (
-                ""
-            )}
-            {isActiveArea === "teacher" ? (
-                <SubTitleArea>
-                    {teacherRouter.map(router => (
-                        <NavLink to={router.link} key={router.link}>
-                            {({ isActive }) => (
-                                <SubTitle active={isActive}>
-                                    {router.title}
-                                </SubTitle>
-                            )}
-                        </NavLink>
-                    ))}
-                </SubTitleArea>
-            ) : (
-                ""
-            )}
-            <Outlet />
-        </Container>
+        <>
+            <Container>
+                <TitleArea>
+                    <NavLink
+                        to="profile"
+                        onClick={() => handleRoleChange("profile")}
+                    >
+                        <Title active={isActiveArea === "profile"}>
+                            基本資料
+                        </Title>
+                    </NavLink>
+                    <NavLink
+                        to="student-got-skill"
+                        onClick={() => handleRoleChange("student")}
+                    >
+                        <Title active={isActiveArea === "student"}>
+                            我是學生
+                        </Title>
+                    </NavLink>
+                    <NavLink
+                        to="teacher-upload-course"
+                        onClick={() => handleRoleChange("teacher")}
+                    >
+                        <Title active={isActiveArea === "teacher"}>
+                            我是老師
+                        </Title>
+                    </NavLink>
+                </TitleArea>
+                {isActiveArea === "student" ? (
+                    <SubTitleArea>
+                        {studentRouter.map(router => (
+                            <NavLink to={router.link} key={router.link}>
+                                {({ isActive }) => (
+                                    <SubTitle active={isActive}>
+                                        {router.title}
+                                    </SubTitle>
+                                )}
+                            </NavLink>
+                        ))}
+                    </SubTitleArea>
+                ) : (
+                    ""
+                )}
+                {isActiveArea === "teacher" ? (
+                    <SubTitleArea>
+                        {teacherRouter.map(router => (
+                            <NavLink to={router.link} key={router.link}>
+                                {({ isActive }) => (
+                                    <SubTitle active={isActive}>
+                                        {router.title}
+                                    </SubTitle>
+                                )}
+                            </NavLink>
+                        ))}
+                    </SubTitleArea>
+                ) : (
+                    ""
+                )}
+                <Outlet />
+            </Container>
+            <Footer />
+        </>
     );
 };

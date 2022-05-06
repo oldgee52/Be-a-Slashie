@@ -11,9 +11,21 @@ import {
 import { MyButton } from "../Component/MyButton";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { Footer } from "../Component/Footer";
+import { breakPoint } from "../utils/breakPoint";
+
+const Box = styled.div`
+    min-height: calc(100vh - 200px);
+    margin: 100px auto 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media ${breakPoint.desktop} {
+        min-height: calc(100vh - 155px);
+    }
+`;
 
 const Container = styled.div`
-    margin: 180px auto 0 auto;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -168,91 +180,95 @@ export const Login = ({ userLogin }) => {
 
     return (
         <>
-            <Container>
-                {userLogin === "check" ? (
-                    "身分驗證中"
-                ) : (
-                    <>
-                        <SignInDiv
-                            onClick={() => {
-                                setIsLogin(true);
-                                setInfo({
-                                    email: "",
-                                    password: "",
-                                    name: "",
-                                });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
-                            }}
-                            login={isLogin}
-                        >
-                            登入
-                        </SignInDiv>
-                        <SingUpDiv
-                            onClick={() => {
-                                setIsLogin(false);
-                                setInfo({
-                                    email: "",
-                                    password: "",
-                                    name: "",
-                                });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
-                            }}
-                            login={isLogin}
-                        >
-                            註冊
-                        </SingUpDiv>
+            <Box>
+                <Container>
+                    {userLogin === "check" ? (
+                        "身分驗證中"
+                    ) : (
+                        <>
+                            <SignInDiv
+                                onClick={() => {
+                                    setIsLogin(true);
+                                    setInfo({
+                                        email: "",
+                                        password: "",
+                                        name: "",
+                                    });
+                                    // setEmailErrorMessage("");
+                                    // setPasswordErrorMessage("");
+                                }}
+                                login={isLogin}
+                            >
+                                登入
+                            </SignInDiv>
+                            <SingUpDiv
+                                onClick={() => {
+                                    setIsLogin(false);
+                                    setInfo({
+                                        email: "",
+                                        password: "",
+                                        name: "",
+                                    });
+                                    // setEmailErrorMessage("");
+                                    // setPasswordErrorMessage("");
+                                }}
+                                login={isLogin}
+                            >
+                                註冊
+                            </SingUpDiv>
 
-                        <TextInput
-                            value={info.email}
-                            handleChange={handleChange}
-                            name="email"
-                            placeholder="請輸入信箱"
-                        />
-                        {/* <ErrorMessage>{emailErrorMessage}</ErrorMessage> */}
-                        <TextInput
-                            value={info.password}
-                            handleChange={handleChange}
-                            name="password"
-                            type="password"
-                            placeholder="請輸入密碼"
-                        />
-                        {/* <ErrorMessage>{passwordErrorMessage}</ErrorMessage> */}
-                        {!isLogin && (
                             <TextInput
-                                value={info.name}
+                                value={info.email}
                                 handleChange={handleChange}
-                                name="name"
-                                placeholder="請輸入姓名"
+                                name="email"
+                                placeholder="請輸入信箱"
                             />
-                        )}
-                        {isLogin && (
-                            <MyButton
-                                clickFunction={signIn}
-                                buttonWord="登入"
-                                isDisabled={!info.password || !info.email}
-                                width="100%"
+                            {/* <ErrorMessage>{emailErrorMessage}</ErrorMessage> */}
+                            <TextInput
+                                value={info.password}
+                                handleChange={handleChange}
+                                name="password"
+                                type="password"
+                                placeholder="請輸入密碼"
                             />
-                        )}
-                        {!isLogin && (
-                            <MyButton
-                                clickFunction={singUp}
-                                buttonWord="註冊"
-                                isDisabled={Object.values(info).some(
-                                    value => !value,
-                                )}
-                                width="100%"
-                            />
-                        )}
-                    </>
-                )}
-            </Container>
+                            {/* <ErrorMessage>{passwordErrorMessage}</ErrorMessage> */}
+                            {!isLogin && (
+                                <TextInput
+                                    value={info.name}
+                                    handleChange={handleChange}
+                                    name="name"
+                                    placeholder="請輸入姓名"
+                                />
+                            )}
+                            {isLogin && (
+                                <MyButton
+                                    clickFunction={signIn}
+                                    buttonWord="登入"
+                                    isDisabled={!info.password || !info.email}
+                                    width="100%"
+                                />
+                            )}
+                            {!isLogin && (
+                                <MyButton
+                                    clickFunction={singUp}
+                                    buttonWord="註冊"
+                                    isDisabled={Object.values(info).some(
+                                        value => !value,
+                                    )}
+                                    width="100%"
+                                />
+                            )}
+                        </>
+                    )}
+                </Container>
+            </Box>
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
                 setAlertIsOpen={setAlertIsOpen}
             />
+
+            <Footer />
         </>
     );
 };

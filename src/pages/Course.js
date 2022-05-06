@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import {
     doc,
@@ -23,6 +23,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
+import { Footer } from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -210,7 +211,7 @@ const CourseIntroduction = styled.p`
 
 const RegisterArea = styled.div`
     display: flex;
-    position: fixed;
+    position: sticky;
     justify-content: center;
     align-items: center;
     bottom: 0;
@@ -853,6 +854,7 @@ export const Course = ({ userID }) => {
                                     : "我要報名"}
                             </Button>
                         </RegisterArea>
+                        <Footer />
                     </>
                     {isLoading ? <LoadingForPost /> : ""}
                     <AlertModal

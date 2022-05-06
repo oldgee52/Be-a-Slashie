@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
+import { Footer } from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -244,6 +245,7 @@ export const Home = () => {
                             </CourseArea>
                         </>
                     </Container>
+                    <Footer />
                 </>
             )}
         </>

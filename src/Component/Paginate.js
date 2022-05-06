@@ -47,7 +47,7 @@ const MyPaginate = styled(ReactPaginate).attrs({
 
 const PaginateArea = styled.div`
     margin: auto;
-    margin-top: 130px;
+    margin-top: 80px;
     opacity: ${props => (props.active ? 0 : 1)};
     z-index: ${props => (props.active ? -1 : 0)};
 `;

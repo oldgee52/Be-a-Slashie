@@ -6,6 +6,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
+import { Footer } from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -162,46 +163,54 @@ export const PersonalIntroduction = () => {
             {!userInfo || !userSkills || !userFinishCourses ? (
                 <Loading />
             ) : (
-                <Container>
-                    <InfoArea>
-                        <UserPhoto src={userInfo.photo} alt={userInfo.name} />
-                        <UserName>
-                            {userInfo.name}{" "}
-                            <a href={`mailto: ${userInfo.email}`}>
-                                <FiMail />
-                            </a>
-                        </UserName>{" "}
-                        <UserIntroduction>
-                            {userInfo.selfIntroduction}
-                        </UserIntroduction>
-                    </InfoArea>
-                    <UserSkills>
-                        <SkillTitle>獲得技能</SkillTitle>
-                        <SkillBox>
-                            <Skills skills={userSkills} />
-                        </SkillBox>
-                    </UserSkills>
-                    <UserSkills>
-                        <SkillTitle>完成課程</SkillTitle>
-                        <CourseBox>
-                            {userFinishCourses.length === 0
-                                ? "還沒有完成的課程QQ"
-                                : userFinishCourses?.map(course => (
-                                      <CourseDiv key={course.courseID}>
-                                          <CourseInfo
-                                              image={course.image}
-                                              title={course.title}
-                                              teacherName={course.teacherName}
-                                              closedDate={new Date(
-                                                  course?.courseClosedDate
-                                                      .seconds * 1000,
-                                              ).toLocaleDateString()}
-                                          />
-                                      </CourseDiv>
-                                  ))}
-                        </CourseBox>
-                    </UserSkills>
-                </Container>
+                <>
+                    <Container>
+                        <InfoArea>
+                            <UserPhoto
+                                src={userInfo.photo}
+                                alt={userInfo.name}
+                            />
+                            <UserName>
+                                {userInfo.name}{" "}
+                                <a href={`mailto: ${userInfo.email}`}>
+                                    <FiMail />
+                                </a>
+                            </UserName>{" "}
+                            <UserIntroduction>
+                                {userInfo.selfIntroduction}
+                            </UserIntroduction>
+                        </InfoArea>
+                        <UserSkills>
+                            <SkillTitle>獲得技能</SkillTitle>
+                            <SkillBox>
+                                <Skills skills={userSkills} />
+                            </SkillBox>
+                        </UserSkills>
+                        <UserSkills>
+                            <SkillTitle>完成課程</SkillTitle>
+                            <CourseBox>
+                                {userFinishCourses.length === 0
+                                    ? "還沒有完成的課程QQ"
+                                    : userFinishCourses?.map(course => (
+                                          <CourseDiv key={course.courseID}>
+                                              <CourseInfo
+                                                  image={course.image}
+                                                  title={course.title}
+                                                  teacherName={
+                                                      course.teacherName
+                                                  }
+                                                  closedDate={new Date(
+                                                      course?.courseClosedDate
+                                                          .seconds * 1000,
+                                                  ).toLocaleDateString()}
+                                              />
+                                          </CourseDiv>
+                                      ))}
+                            </CourseBox>
+                        </UserSkills>
+                    </Container>
+                    <Footer />
+                </>
             )}
         </>
     );

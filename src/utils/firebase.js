@@ -366,7 +366,7 @@ const firebaseInit = {
         const q = query(
             collection(this.db, "wishingWells"),
             orderBy("creatDate", "desc"),
-            limit(6),
+            limit(14),
         );
         const firstWishesSnapshot = await getDocs(q);
         const wishes = firstWishesSnapshot.docs.map(wish => {

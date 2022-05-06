@@ -41,7 +41,7 @@ const CourseCard = styled.div`
     max-height: ${props => (props.show ? "1000px" : "70px")};
     overflow: hidden;
     transition: ${props =>
-        props.show ? "max-height 1s ease-out" : "max-height 0.5s ease-in"};
+        props.show ? "max-height 1s ease-out" : "max-height 0.3s ease-in"};
     @media ${breakPoint.desktop} {
         max-height: ${props => (props.show ? "1000px" : "75px")};
     }

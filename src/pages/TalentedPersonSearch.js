@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { AlertModal } from "../Component/AlertModal";
 import { CheckSkills } from "../Component/CheckSkills";
+import { Footer } from "../Component/Footer";
 import { Loading } from "../Component/Loading";
 import PaginatedItems from "../Component/Paginate";
 import { SearchInput } from "../Component/SearchInput";
@@ -18,12 +19,15 @@ const Container = styled.div`
     flex-wrap: wrap;
     width: 100%;
     margin: auto;
+    align-content: flex-start;
 
     padding: 80px 10px;
+    min-height: calc(100vh - 150px);
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
     }
 `;
 
@@ -261,73 +265,84 @@ export const TalentedPersonSearch = () => {
             {!skills || !allUsers ? (
                 <Loading />
             ) : (
-                <Container>
-                    <SearchArea>
-                        <SearchInputBox>
-                            <SearchInput
-                                value={searchField}
-                                changeValueCallback={e => {
-                                    setSearchField(e.target.value);
-                                }}
-                                searchCallback={e => searchUsersByKeyword(e)}
-                                placeholderText="找找你/妳想要的人才..."
-                            />
-                        </SearchInputBox>
-                        <SkillsBox>
-                            <SkillFilter>技能篩選</SkillFilter>
-                            {skills &&
-                                skills.map(skill => (
-                                    <CheckSkills
-                                        key={skill.skillID}
-                                        skillID={skill.skillID}
-                                        handleSkillChange={handleSkillChange}
-                                        title={skill.title}
-                                    />
-                                ))}
-                        </SkillsBox>
-                        <CardBox>
-                            {searchUsers &&
-                                searchUsers.map(user => (
-                                    <Card
-                                        onClick={() => {
-                                            navigate(
-                                                `/personal-introduction?uid=${user.uid}`,
-                                            );
-                                        }}
-                                    >
-                                        <UserPhoto
-                                            src={user.photo}
-                                            alt={user.name}
-                                        ></UserPhoto>
+                <>
+                    <Container>
+                        <SearchArea>
+                            <SearchInputBox>
+                                <SearchInput
+                                    value={searchField}
+                                    changeValueCallback={e => {
+                                        setSearchField(e.target.value);
+                                    }}
+                                    searchCallback={e =>
+                                        searchUsersByKeyword(e)
+                                    }
+                                    placeholderText="找找你/妳想要的人才..."
+                                />
+                            </SearchInputBox>
+                            <SkillsBox>
+                                <SkillFilter>技能篩選</SkillFilter>
+                                {skills &&
+                                    skills.map(skill => (
+                                        <CheckSkills
+                                            key={skill.skillID}
+                                            skillID={skill.skillID}
+                                            handleSkillChange={
+                                                handleSkillChange
+                                            }
+                                            title={skill.title}
+                                        />
+                                    ))}
+                            </SkillsBox>
+                            <CardBox>
+                                {searchUsers &&
+                                    searchUsers.map(user => (
+                                        <Card
+                                            onClick={() => {
+                                                navigate(
+                                                    `/personal-introduction?uid=${user.uid}`,
+                                                );
+                                            }}
+                                        >
+                                            <UserPhoto
+                                                src={user.photo}
+                                                alt={user.name}
+                                            ></UserPhoto>
 
-                                        <UserInfo>
-                                            <CourseName>{user.name}</CourseName>
-                                            <SelfIntroduction>
-                                                {user.selfIntroduction.length >
-                                                35
-                                                    ? `${user.selfIntroduction.substring(
-                                                          0,
-                                                          35,
-                                                      )}...`
-                                                    : user.selfIntroduction}
-                                            </SelfIntroduction>
-                                        </UserInfo>
-                                        <UserSkillBox>
-                                            {user.skills.length === 0
-                                                ? ""
-                                                : user.skills.map(skill => (
-                                                      <UserSkillName
-                                                          key={skill.skillID}
-                                                      >
-                                                          #{skill.title}
-                                                      </UserSkillName>
-                                                  ))}
-                                        </UserSkillBox>
-                                    </Card>
-                                ))}
-                        </CardBox>
-                    </SearchArea>
-                </Container>
+                                            <UserInfo>
+                                                <CourseName>
+                                                    {user.name}
+                                                </CourseName>
+                                                <SelfIntroduction>
+                                                    {user.selfIntroduction
+                                                        .length > 35
+                                                        ? `${user.selfIntroduction.substring(
+                                                              0,
+                                                              35,
+                                                          )}...`
+                                                        : user.selfIntroduction}
+                                                </SelfIntroduction>
+                                            </UserInfo>
+                                            <UserSkillBox>
+                                                {user.skills.length === 0
+                                                    ? ""
+                                                    : user.skills.map(skill => (
+                                                          <UserSkillName
+                                                              key={
+                                                                  skill.skillID
+                                                              }
+                                                          >
+                                                              #{skill.title}
+                                                          </UserSkillName>
+                                                      ))}
+                                            </UserSkillBox>
+                                        </Card>
+                                    ))}
+                            </CardBox>
+                        </SearchArea>
+                    </Container>
+                    <Footer />
+                </>
             )}
             <AlertModal
                 content={alertMessage}

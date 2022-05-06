@@ -6,7 +6,7 @@ import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
-import Sidebar from "./Component/Sidebar";
+import Header from "./Component/Header";
 import { Profile } from "./pages/Profile";
 import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
 import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
@@ -25,6 +25,7 @@ import { Personal } from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
 import { ModalProvider } from "styled-react-modal";
 import { FinishedRegisteredCourse } from "./pages/FinishedRegisteredCourse";
+import { Footer } from "./Component/Footer";
 
 function App() {
     const [userID, setUserID] = useState("");
@@ -49,7 +50,7 @@ function App() {
             <GlobalStyle />
             <ModalProvider>
                 <BrowserRouter>
-                    <Sidebar userID={userID} />
+                    <Header userID={userID} />
 
                     <Routes>
                         <Route

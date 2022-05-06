@@ -8,6 +8,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
+import { Footer } from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -16,12 +17,15 @@ const Container = styled.div`
     flex-wrap: wrap;
     width: 100%;
     margin: auto;
+    align-content: flex-start;
+    min-height: calc(100vh - 150px);
 
     padding: 80px 10px 0 10px;
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
     }
 `;
 
@@ -125,13 +129,14 @@ export const Search = () => {
                             searchData={searchCourses}
                         />
                     )
-                )}
+                )}{" "}
             </Container>
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
                 setAlertIsOpen={setAlertIsOpen}
             />
+            <Footer />
         </>
     );
 };

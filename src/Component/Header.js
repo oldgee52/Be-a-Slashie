@@ -12,7 +12,7 @@ import { BiLogOut } from "react-icons/bi";
 import { AlertModal } from "./AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 
-const SidebarContainer = styled.nav`
+const HeaderContainer = styled.nav`
     width: 100%;
     height: 50px;
     background-color: whitesmoke;
@@ -94,7 +94,7 @@ const ProfileImg = styled(MenuImg)`
     }
 `;
 
-const SidebarContent = styled.div`
+const HeaderContent = styled.div`
     font-size: 16px;
     color: ${props => (props.active ? "#ff6100" : "#505050")};
     padding: 10px;
@@ -114,7 +114,7 @@ const NewBiLogOut = styled(BiLogOut)`
     height: 25px;
 `;
 
-function Sidebar({ userID }) {
+function Header({ userID }) {
     const [isShow, setIsShow] = useState(false);
     const navigate = useNavigate();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -147,7 +147,7 @@ function Sidebar({ userID }) {
     return (
         <>
             <NavShowBackground show={isShow} onClick={handleMobileNavShow} />
-            <SidebarContainer>
+            <HeaderContainer>
                 <NavLink to="/">
                     <LogoImg
                         src={logo}
@@ -160,12 +160,12 @@ function Sidebar({ userID }) {
                     {narbarRouter.map(router => (
                         <NavLink to={router.link} key={router.link}>
                             {({ isActive }) => (
-                                <SidebarContent
+                                <HeaderContent
                                     active={isActive}
                                     onClick={handleLinkToOtherRouterNavShow}
                                 >
                                     {router.title}
-                                </SidebarContent>
+                                </HeaderContent>
                             )}
                         </NavLink>
                     ))}
@@ -194,7 +194,7 @@ function Sidebar({ userID }) {
                         alt="menu"
                     />
                 </RightArea>
-            </SidebarContainer>
+            </HeaderContainer>
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
@@ -204,4 +204,4 @@ function Sidebar({ userID }) {
     );
 }
 
-export default Sidebar;
+export default Header;
