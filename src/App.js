@@ -24,6 +24,7 @@ import { Login } from "./pages/Login";
 import { Personal } from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
 import { ModalProvider } from "styled-react-modal";
+import { FinishedRegisteredCourse } from "./pages/FinishedRegisteredCourse";
 
 function App() {
     const [userID, setUserID] = useState("");
@@ -149,6 +150,10 @@ function App() {
                         <Route
                             path="personal-introduction"
                             element={<PersonalIntroduction />}
+                        />
+                        <Route
+                            path="finished-registered-course/:courseID"
+                            element={<FinishedRegisteredCourse />}
                         />
 
                         {/* <Route path="course" element={<Course />} /> */}

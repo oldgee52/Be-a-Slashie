@@ -235,22 +235,8 @@ const firebaseInit = {
             "users",
             courseData.teacherUserID,
         );
-        const skillsDataPromise = courseData.getSkills.map(async skill => {
-            console.log(skill);
-
-            const skills = await this.getCollectionData("skills", skill);
-            return skills;
-        });
-
-        const skillsData = await Promise.all(skillsDataPromise);
-
-        await updateDoc(doc(this.db, "courses", courseID), {
-            view: increment(1),
-        });
-
         return {
             ...courseData,
-            skillsData,
             teacherData,
         };
     },

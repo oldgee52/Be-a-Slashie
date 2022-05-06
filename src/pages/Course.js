@@ -562,15 +562,7 @@ export const Course = ({ userID }) => {
                 email.sendEmail(teacherEmailContent),
             ]).then(() => {
                 setIsLoading(false);
-                handleAlertModal("ok");
-                // const confirmMessage = window.confirm(
-                //     "報名成功\n點選「確定」，查看報名狀態。\n點選「取消」，回到首頁。",
-                // );
-                // if (confirmMessage) {
-                //     navigate("/personal/student-registered-course");
-                // } else {
-                //     navigate("/");
-                // }
+                navigate(`/finished-Registered-Course/${courseData.courseID}`);
             });
         } catch (error) {
             setIsLoading(false);
