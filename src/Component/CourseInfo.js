@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FiEye } from "react-icons/fi";
@@ -32,15 +32,29 @@ const CourseCard = styled.div`
         border-bottom: 10px solid #ff6700;
     }
 `;
+const ImgBox = styled.div`
+    width: 100px;
+    height: 80px;
+    @media ${breakPoint.desktop} {
+        width: 100%;
+        height: 200px;
+
+        overflow: hidden;
+    }
+`;
 
 const CourseImg = styled.img`
     width: 100px;
     height: 80px;
     object-fit: cover;
+
     @media ${breakPoint.desktop} {
         width: 100%;
         height: 200px;
         object-fit: cover;
+        overflow: hidden;
+        transform: ${props => (props.mouseEnter ? "scale(1.2)" : "scale(1)")};
+        transition: transform 0.28s ease-in-out;
     }
 `;
 const CourseTitle = styled.div`
@@ -120,26 +134,28 @@ const ViewSpan = styled.span`
     margin-left: 5px;
 `;
 
-// const Label = styled.div`
-//     display: none;
-//     @media ${breakPoint.desktop} {
-//         display: block;
-//         position: absolute;
-//         width: 120px;
-//         height: 30px;
-//         line-height: 30px;
+const Label = styled.div`
+    display: none;
+    @media ${breakPoint.desktop} {
+        display: block;
+        position: absolute;
+        width: 120px;
+        height: 30px;
+        line-height: 30px;
 
-//         text-align: center;
+        text-align: center;
 
-//         z-index: 2;
-//         background-color: black;
-//         color: white;
-//         right: -30px;
-//         top: 12px;
+        z-index: 2;
+        background-color: #ff6100;
+        color: whitesmoke;
+        letter-spacing: 5px;
+        right: -30px;
+        top: 12px;
+        font-size: 14px;
 
-//         transform: rotate(45deg);
-//     }
-// `;
+        transform: rotate(45deg);
+    }
+`;
 
 export const CourseInfo = ({
     courseID,
@@ -151,25 +167,38 @@ export const CourseInfo = ({
     image,
     teacherPhoto,
     closedDate,
+    label,
 }) => {
+    const [isMouseEnter, setIsMouseEnter] = useState(false);
     const navigate = useNavigate();
     return (
         <>
-            {/* <TeacherPhoto src={image} alt={title}></TeacherPhoto> */}
             <CourseCard
                 onClick={() => {
                     if (courseID) navigate(`/course?courseID=${courseID}`);
                 }}
                 isLink={courseID}
+                onMouseEnter={() => {
+                    setIsMouseEnter(true);
+                }}
+                onMouseLeave={() => {
+                    setIsMouseEnter(false);
+                }}
             >
-                {/* <Label>New</Label> */}
                 {teacherPhoto && (
                     <TeacherPhoto
                         src={teacherPhoto}
                         alt={teacherName}
                     ></TeacherPhoto>
                 )}
-                <CourseImg src={image} alt={title} />
+                <ImgBox>
+                    {label && <Label>{label}</Label>}
+                    <CourseImg
+                        alt={title}
+                        src={image}
+                        mouseEnter={isMouseEnter}
+                    />
+                </ImgBox>
                 <CourseTitle>
                     <CourseName>{title}</CourseName>
                     <TeacherName>{teacherName}</TeacherName>

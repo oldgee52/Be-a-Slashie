@@ -7,6 +7,7 @@ import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
+import banner from "../images/banner.png";
 
 const Container = styled.div`
     display: flex;
@@ -24,11 +25,20 @@ const Container = styled.div`
 const Banner = styled.div`
     width: 100%;
     height: 500px;
-    background-color: #ff6100;
+
+    /* background-color: #ff6100; */
+    background-image: url(${banner});
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    @media ${breakPoint.desktop} {
+        background-position: initial;
+    }
 `;
 
 const Title = styled.h2`
@@ -66,15 +76,15 @@ const InputArea = styled.div`
     flex-wrap: wrap;
 
     @media ${breakPoint.desktop} {
-        top: 200px;
+        top: 250px;
+
         max-width: 1200px;
         justify-content: flex-start;
     }
 `;
 const BannerTitle = styled.div`
     font-size: 20px;
-    color: black;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
     width: 100%;
     margin-bottom: 20px;
@@ -157,7 +167,9 @@ export const Home = () => {
                 <>
                     <Banner>
                         <InputArea>
-                            <BannerTitle>今晚要來點什麼?</BannerTitle>
+                            <BannerTitle>
+                                夢想，不是浮躁，而是沈澱和累積
+                            </BannerTitle>
                             <InputDiv>
                                 <SearchInput
                                     searchField={searchField}
@@ -201,6 +213,7 @@ export const Home = () => {
                                                 course.teacherInfo.name
                                             }
                                             view={course.view}
+                                            label={"最新"}
                                             creatDate={new Date(
                                                 course.creatTime.seconds * 1000,
                                             ).toLocaleDateString()}
@@ -235,6 +248,7 @@ export const Home = () => {
                                                 course.teacherInfo.name
                                             }
                                             view={course.view}
+                                            label={"熱門"}
                                             creatDate={new Date(
                                                 course.creatTime.seconds * 1000,
                                             ).toLocaleDateString()}

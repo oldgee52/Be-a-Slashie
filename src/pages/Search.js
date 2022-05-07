@@ -69,6 +69,7 @@ export const Search = () => {
                 console.log("排序次數", orderByView);
 
                 if (isMounted) {
+                    window.scrollTo({ top: 0 });
                     if (q === "latest")
                         return setSearchCourses(orderByCreatTime);
                     if (q === "popular") return setSearchCourses(orderByView);
