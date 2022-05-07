@@ -35,8 +35,9 @@ const Title = styled.h2`
     margin-top: 20px;
     margin-bottom: 20px;
     width: 70%;
+    font-size: 20px;
     @media ${breakPoint.desktop} {
-        font-size: 32px;
+        font-size: 28px;
         margin-bottom: 40px;
     }
 `;
@@ -45,11 +46,12 @@ const SeeMore = styled.div`
     margin-bottom: 20px;
     width: 30%;
     text-align: right;
+    font-size: 12px;
 
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
-        font-size: 24px;
+        font-size: 14px;
         padding-top: 10px;
         margin-bottom: 40px;
     }
@@ -89,6 +91,7 @@ const CourseArea = styled.div`
     width: 100%;
     padding: 0 10px 0 10px;
     margin-bottom: 100px;
+    align-self: flex-end;
 
     @media ${breakPoint.desktop} {
         justify-content: space-between;

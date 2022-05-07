@@ -17,7 +17,6 @@ const Image = styled.img`
 
 const SkillTitle = styled.div`
     font-size: 16px;
-    font-weight: 700;
     letter-spacing: 2px;
 `;
 const SkillDate = styled.div`
