@@ -13,6 +13,7 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
+import { MyButton } from "../Component/MyButton";
 import { useNavigate } from "react-router-dom";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
@@ -30,17 +31,25 @@ const Container = styled.div`
         width: 80%;
         margin: auto;
         margin-top: -150px;
+        align-items: flex-start;
+        padding-left: 30px;
     }
 `;
 
 const FormArea = styled.form`
-    width: 90%;
+    width: 100%;
+    background-color: whitesmoke;
+    margin-top: 10px;
+    padding: 10px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
     @media ${breakPoint.desktop} {
+        width: 70%;
+        padding-left: 10px;
         display: flex;
         flex-wrap: wrap;
     }
-
-    /* margin-top: 10px; */
 `;
 
 const Label = styled.label`
@@ -49,17 +58,22 @@ const Label = styled.label`
     margin-bottom: 16px;
     margin-top: 10px;
     flex-wrap: wrap;
-
     @media ${breakPoint.desktop} {
         flex-wrap: nowrap;
+        justify-content: space-between;
     }
 `;
 
 const LabelForDate = styled(Label)`
     @media ${breakPoint.desktop} {
-        flex-wrap: nowrap;
-        width: 45%;
+        width: 50%;
     }
+`;
+
+const LabeLForUpload = styled(Label)`
+    flex-direction: column;
+    width: fit-content;
+    cursor: pointer;
 `;
 
 const SkillsDiv = styled.div`
@@ -71,6 +85,7 @@ const SkillsDiv = styled.div`
 
     @media ${breakPoint.desktop} {
         flex-wrap: nowrap;
+        justify-content: space-between;
     }
 `;
 
@@ -80,7 +95,7 @@ const Title = styled.div`
     @media ${breakPoint.desktop} {
         display: flex;
         align-items: center;
-        width: 100px;
+        padding-left: ${props => (props.paddingLeft ? "10px" : "none")};
     }
 `;
 
@@ -103,14 +118,14 @@ const Input = styled.input`
     }
 
     @media ${breakPoint.desktop} {
-        width: 70%;
-        height: 40px;
+        width: 80%;
     }
 `;
 
 const InputDate = styled(Input)`
+    padding-right: 10px;
     @media ${breakPoint.desktop} {
-        width: 55%;
+        width: 60%;
     }
 `;
 
@@ -118,6 +133,7 @@ const InputText = styled.textarea`
     width: 100%;
     height: 60px;
     padding-left: 10px;
+    padding-top: 5px;
     border-radius: 5px;
 
     border: 1px solid #ff6100;
@@ -125,7 +141,7 @@ const InputText = styled.textarea`
         outline: none;
     }
     @media ${breakPoint.desktop} {
-        width: 70%;
+        width: 80%;
     }
 `;
 
@@ -133,31 +149,29 @@ const FileInput = styled.input`
     display: none;
 `;
 
-const Button = styled.button`
+const Button = styled.div`
     width: 100%;
-    height: 48px;
-    text-align: center;
-
-    color: #ffffff;
-    font-size: 14px;
-    background: linear-gradient(to left, #ff8f08 -10.47%, #ff6700 65.84%);
-    border-radius: 5px;
-    cursor: pointer;
-
     margin: 20px 0;
 
     @media ${breakPoint.desktop} {
-        width: 200px;
         margin: auto;
         margin-top: 10px;
         margin-bottom: 10px;
+        text-align: center;
     }
 `;
-const PreviewImg = styled.img`
+const PreviewImg = styled.div`
     width: 200px;
     height: 130px;
-    object-fit: contain;
-    margin-left: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-top: 10px;
+    background-color: white;
+    background-image: url(${props => props.img});
+    border: 1px solid #ff6100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 const SkillsBox = styled.div`
@@ -167,6 +181,7 @@ const SkillsBox = styled.div`
     align-items: center;
 
     @media ${breakPoint.desktop} {
+        width: 80%;
         margin-bottom: 0;
     }
 `;
@@ -322,13 +337,11 @@ export const TeacherUpload = ({ userID }) => {
         );
     };
 
-    // function handleAlertModal(message) {
-    //     setAlertIsOpe(true);
-    //     setAlertMessage(message);
-    // }
-
     const uploadCourse = async e => {
         e.preventDefault();
+        const positiveInteger = /^[0-9]*[1-9][0-9]*$/;
+        if (!positiveInteger.test(state.minOpeningNumber))
+            return handleAlertModal("開班人數至少1人且為整數");
         if (
             new Date(state.openingDate) < new Date() ||
             new Date(state.registrationDeadline) < new Date()
@@ -456,7 +469,7 @@ export const TeacherUpload = ({ userID }) => {
                         />
                     </LabelForDate>
                     <LabelForDate>
-                        <Title>開班日期</Title>
+                        <Title paddingLeft={true}>開班日期</Title>
                         <InputDate
                             type="date"
                             value={state.openingDate}
@@ -498,20 +511,29 @@ export const TeacherUpload = ({ userID }) => {
                                 ))}
                         </SkillsBox>
                     </SkillsDiv>
-                    <Label>
-                        <FiUpload />
+                    <LabeLForUpload>
+                        <div>
+                            <FiUpload />
 
-                        <span>上傳封面照 </span>
+                            <span>上傳封面照 </span>
+                        </div>
 
                         <FileInput
                             type="file"
                             accept="image/*"
                             onChange={e => uploadImage(e)}
                         />
-                        {image && <PreviewImg src={image} alt="上傳圖片" />}
-                    </Label>
 
-                    <Button onClick={uploadCourse}>上架課程</Button>
+                        <PreviewImg img={image}>
+                            {image ? "" : "預覽區"}
+                        </PreviewImg>
+                    </LabeLForUpload>
+                    <Button>
+                        <MyButton
+                            clickFunction={uploadCourse}
+                            buttonWord={"上架課程"}
+                        ></MyButton>
+                    </Button>
                 </FormArea>
             </Container>
             <AlertModal

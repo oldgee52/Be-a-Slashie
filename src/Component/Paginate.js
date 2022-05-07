@@ -78,23 +78,6 @@ const CourseDiv = styled.div`
     }
 `;
 
-function Items({ currentItems }) {
-    return (
-        <div className="items">
-            {currentItems &&
-                currentItems.map(item => (
-                    <div key={item.courseID}>
-                        <a href={`/course?courseID=${item.courseID}`}>
-                            <h3>{item.title}</h3>
-                            <p>{item.courseIntroduction}</p>
-                            <p>{item.view}</p>
-                        </a>
-                    </div>
-                ))}
-        </div>
-    );
-}
-
 function PaginatedItems({ itemsPerPage, searchData }) {
     // We start with an empty list of items.
     const [currentItems, setCurrentItems] = useState(null);

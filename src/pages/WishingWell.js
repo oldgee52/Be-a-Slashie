@@ -39,11 +39,7 @@ const Button = styled.button`
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background: linear-gradient(
-        to left,
-        rgb(2, 170, 176) -10.47%,
-        rgb(0, 224, 182) 65.84%
-    );
+    background: linear-gradient(to left, #ff8f08 -10.47%, #ff6700 65.84%);
 
     cursor: pointer;
 
