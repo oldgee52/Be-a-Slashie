@@ -405,7 +405,7 @@ export const TeacherUpload = ({ userID }) => {
         }
         setCourseID(docRef.id);
     };
-    console.log(courseID);
+    console.log(state.getSkills);
 
     return (
         <>
