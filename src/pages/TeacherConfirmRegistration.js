@@ -10,6 +10,7 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
+import { MyRadioButton } from "../Component/MyRadioButton";
 
 const Container = styled.div`
     display: flex;
@@ -113,6 +114,7 @@ const NoShow = styled.div`
 export const TeacherConfirmRegistration = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
+    const [selectedInput, setSelectedInput] = useState("");
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     const navigate = useNavigate();
@@ -187,6 +189,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
             console.log(error);
         }
     };
+
     return (
         <>
             {!courses ? (
@@ -221,33 +224,24 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                                                 />
                                             </Name>
                                             <InputArea>
-                                                <InputLabel
-                                                    htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        id={`${course.courseID}_${student.studentID}_agree`}
-                                                        name={`${course.courseID}_${student.studentID}`}
-                                                        value={1}
-                                                        onChange={handleChange}
-                                                    />
-                                                    <Agreement>同意</Agreement>
-                                                </InputLabel>{" "}
-                                                <InputLabel
-                                                    htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        id={`${course.courseID}_${student.studentID}_disagree`}
-                                                        name={`${course.courseID}_${student.studentID}`}
-                                                        value={2}
-                                                        onChange={handleChange}
-                                                    />
-
-                                                    <Agreement>
-                                                        不同意
-                                                    </Agreement>
-                                                </InputLabel>
+                                                <MyRadioButton
+                                                    title="同意"
+                                                    inputId={`${course.courseID}_${student.studentID}_agree`}
+                                                    inputName={`${course.courseID}_${student.studentID}`}
+                                                    inputValue={1}
+                                                    changeFunction={
+                                                        handleChange
+                                                    }
+                                                />
+                                                <MyRadioButton
+                                                    title="不同意"
+                                                    inputId={`${course.courseID}_${student.studentID}_disagree`}
+                                                    inputName={`${course.courseID}_${student.studentID}`}
+                                                    inputValue={2}
+                                                    changeFunction={
+                                                        handleChange
+                                                    }
+                                                />
                                             </InputArea>
                                         </StudentInfoBoc>
                                     ))

@@ -24,6 +24,7 @@ const MyCheckBox = styled.div`
     border: 1px solid ${props => (props.checked ? "#00e0b6" : "#707070")};
     border-radius: 2px;
     background: ${props => (props.checked ? "#00e0b6" : "white")};
+    transition: all 0.2s ease;
 `;
 const NewBsCheck = styled(BsCheck)`
     width: 13px;
