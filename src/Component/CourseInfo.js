@@ -80,7 +80,7 @@ const CourseName = styled.h4`
         width: 100%;
         font-size: 24px;
         padding-top: 40px;
-        height: 120px;
+        height: 130px;
         word-wrap: break-word;
         overflow: hidden;
     }

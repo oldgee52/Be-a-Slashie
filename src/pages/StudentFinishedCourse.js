@@ -35,7 +35,7 @@ const CourseArea = styled.div`
         align-items: flex-start;
         &::after {
             content: "";
-            width: calc(25% - 10px);
+            width: calc(30% - 10px);
         }
     }
 `;
@@ -44,7 +44,7 @@ const CourseDiv = styled.div`
     width: 100%;
 
     @media ${breakPoint.desktop} {
-        width: calc(28% - 10px);
+        width: calc(30% - 10px);
         margin-right: 10px;
     }
 `;
