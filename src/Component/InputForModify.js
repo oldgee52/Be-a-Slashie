@@ -61,8 +61,6 @@ const InputText = styled.textarea`
     font-size: 14px;
     padding: 5px;
     overflow: hidden;
-    margin-bottom: 10px;
-
     background-color: none;
 
     border: none;
@@ -81,6 +79,7 @@ const InputText = styled.textarea`
 `;
 
 const PencilBox = styled.button`
+    cursor: pointer;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
         margin-left: auto;
@@ -92,6 +91,7 @@ const ButtonBox = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin-top: 10px;
     @media ${breakPoint.desktop} {
         width: 20%;
         margin-left: auto;
