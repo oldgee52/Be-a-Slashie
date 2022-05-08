@@ -107,7 +107,6 @@ const UploadHomework = styled.div`
 
 const HomeworkTitle = styled.div`
     width: 100%;
-    font-weight: 700;
     word-break: break-all;
     margin-bottom: 5px;
 
@@ -482,10 +481,10 @@ export const StudentOpeningCourse = ({ userID }) => {
                                 </AllHomeworkArea>
                             )}{" "}
                             <Title>課程資料</Title>
-                            <AllHomeworkArea>
-                                {detail.materials.length === 0 ? (
-                                    <NoDataTitle title="無資料" />
-                                ) : (
+                            {detail.materials.length === 0 ? (
+                                <NoDataTitle title="無資料" />
+                            ) : (
+                                <AllHomeworkArea>
                                     <StudentUploadHomework>
                                         {detail.materials.map(material => (
                                             <UploadHomework
@@ -514,8 +513,8 @@ export const StudentOpeningCourse = ({ userID }) => {
                                             </UploadHomework>
                                         ))}
                                     </StudentUploadHomework>
-                                )}
-                            </AllHomeworkArea>
+                                </AllHomeworkArea>
+                            )}
                         </CourseCard>
                     ))}
                 </Container>

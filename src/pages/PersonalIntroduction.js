@@ -28,8 +28,8 @@ const InfoArea = styled.div`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    background-color: gray;
-    border: 1px solid white;
+    /* background: linear-gradient(rgb(2, 170, 176), rgb(0, 205, 172)); */
+    background: linear-gradient(#ff8f08, #ff6700);
     border-radius: 5px;
     color: white;
 
@@ -66,20 +66,17 @@ const UserSkills = styled.div`
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-
-    background-color: white;
-    min-height: 200px;
     padding: 10px;
-
     margin-top: 35px;
-
-    border: 1px solid white;
     border-radius: 5px;
 `;
 const SkillTitle = styled.div`
     font-size: 20px;
     width: 100%;
     font-weight: 700;
+    border-bottom: 1px solid #7f7f7f;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 `;
 
 const SkillBox = styled.div`

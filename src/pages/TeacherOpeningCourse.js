@@ -145,6 +145,7 @@ const UploadHomework = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
+    padding: 0 10px;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     @media ${breakPoint.desktop} {
@@ -154,7 +155,6 @@ const UploadHomework = styled.div`
 
 const HomeworkTitle = styled.div`
     width: 100%;
-    font-weight: 700;
     word-break: break-all;
     margin-bottom: 5px;
 
@@ -205,11 +205,10 @@ const FileInput = styled.input`
 const TeacherHomeworkBox = styled.div`
     display: flex;
     flex-direction: column;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     width: 100%;
+    padding: 0 10px;
     @media ${breakPoint.desktop} {
-        margin-bottom: 20px;
     }
 `;
 const TeacherHomework = styled.div`

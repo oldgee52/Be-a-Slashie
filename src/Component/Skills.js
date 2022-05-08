@@ -7,6 +7,7 @@ const SkillsBox = styled.div`
     justify-content: center;
     align-items: center;
     margin-right: 10px;
+    width: 120px;
 `;
 
 const Image = styled.img`
@@ -16,11 +17,11 @@ const Image = styled.img`
 `;
 
 const SkillTitle = styled.div`
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing: 2px;
 `;
 const SkillDate = styled.div`
-    font-size: 14px;
+    font-size: 12px;
     padding: 5px 0;
 `;
 
