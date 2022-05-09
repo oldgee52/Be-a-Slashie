@@ -26,19 +26,21 @@ export const StudentGotSkill = ({ userID }) => {
     const [gotSkills, SetGotSkill] = useState();
 
     useEffect(() => {
-        firebaseInit.getStudentSkills(userID).then(data => {
-            console.log(data);
-            const rankDecreasingByDate = data.sort(
-                (a, b) => a.getDate.seconds - b.getDate.seconds,
-            );
+        if (userID)
+            firebaseInit.getStudentSkills(userID).then(data => {
+                console.log(data);
+                const rankDecreasingByDate = data.sort(
+                    (a, b) => a.getDate.seconds - b.getDate.seconds,
+                );
 
-            const filterRepeatSkill = rankDecreasingByDate.filter(
-                (skill, index, self) =>
-                    index === self.findIndex(t => t.skillID === skill.skillID),
-            );
-            SetGotSkill(filterRepeatSkill.reverse());
-        });
-    }, []);
+                const filterRepeatSkill = rankDecreasingByDate.filter(
+                    (skill, index, self) =>
+                        index ===
+                        self.findIndex(t => t.skillID === skill.skillID),
+                );
+                SetGotSkill(filterRepeatSkill.reverse());
+            });
+    }, [userID]);
     return (
         <>
             {!gotSkills ? (
