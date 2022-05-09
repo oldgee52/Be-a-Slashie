@@ -560,38 +560,6 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                     handleSkillChange
                                                 }
                                             />
-                                            {/* <InputLabel
-                                                htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    id={`${course.courseID}_${student.studentID}_agree`}
-                                                    name={`${course.courseID}_${student.studentID}`}
-                                                    value={1}
-                                                    onChange={e =>
-                                                        handleSkillChange(e)
-                                                    }
-                                                />
-                                                <Agreement>
-                                                    同意給徽章
-                                                </Agreement>
-                                            </InputLabel>
-                                            <InputLabel
-                                                htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    id={`${course.courseID}_${student.studentID}_disagree`}
-                                                    name={`${course.courseID}_${student.studentID}`}
-                                                    value={2}
-                                                    onChange={e =>
-                                                        handleSkillChange(e)
-                                                    }
-                                                />
-                                                <Agreement>
-                                                    不同意給徽章
-                                                </Agreement>
-                                            </InputLabel> */}
                                         </InputArea>
                                     </StudentInfoBoc>
                                 ))}

@@ -52,6 +52,7 @@ const Input = styled.input`
     @media ${breakPoint.desktop} {
         text-align: left;
         width: 60%;
+        height: 40px;
     }
 `;
 
@@ -90,6 +91,7 @@ const ButtonBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    align-self: flex-end;
     width: 100%;
     margin-top: 10px;
     @media ${breakPoint.desktop} {
