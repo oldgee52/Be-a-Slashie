@@ -428,6 +428,7 @@ const TeacherInfoWebBox = styled.div`
         margin-top: -150px;
         width: 25%;
         order: 3;
+        z-index: 3;
     }
 `;
 
