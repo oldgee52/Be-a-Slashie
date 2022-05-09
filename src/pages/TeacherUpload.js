@@ -163,7 +163,7 @@ const Button = styled.div`
 const PreviewImg = styled.div`
     width: 200px;
     height: 130px;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     margin-top: 10px;
     background-color: white;
