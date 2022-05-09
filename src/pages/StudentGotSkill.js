@@ -15,20 +15,11 @@ const Container = styled.div`
 
     @media ${breakPoint.desktop} {
         width: 35%;
-        justify-content: space-between;
+        justify-content: flex-start;
         margin: auto;
         margin-left: 150px;
         margin-top: -135px;
     }
-`;
-
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
 `;
 
 export const StudentGotSkill = ({ userID }) => {

@@ -16,10 +16,13 @@ const Container = styled.div`
     width: 100%;
 
     padding: 80px 10px 80px 10px;
+    /* min-height: calc(100vh - 100px); */
 
     @media ${breakPoint.desktop} {
         margin: auto;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
+        justify-content: flex-start;
     }
 `;
 
