@@ -13,7 +13,7 @@ import { Footer } from "../Component/Footer";
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
     align-content: flex-start;
