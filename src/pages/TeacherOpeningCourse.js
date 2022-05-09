@@ -20,6 +20,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
+import { MyRadioButton } from "../Component/MyRadioButton";
 
 const Container = styled.div`
     display: flex;
@@ -541,7 +542,25 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         </StudentUploadHomework>
 
                                         <InputArea>
-                                            <InputLabel
+                                            <MyRadioButton
+                                                title="同意給徽章"
+                                                inputId={`${course.courseID}_${student.studentID}_agree`}
+                                                inputName={`${course.courseID}_${student.studentID}`}
+                                                inputValue={1}
+                                                changeFunction={
+                                                    handleSkillChange
+                                                }
+                                            />
+                                            <MyRadioButton
+                                                title="不同意給徽章"
+                                                inputId={`${course.courseID}_${student.studentID}_disagree`}
+                                                inputName={`${course.courseID}_${student.studentID}`}
+                                                inputValue={2}
+                                                changeFunction={
+                                                    handleSkillChange
+                                                }
+                                            />
+                                            {/* <InputLabel
                                                 htmlFor={`${course.courseID}_${student.studentID}_agree`}
                                             >
                                                 <input
@@ -556,7 +575,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                 <Agreement>
                                                     同意給徽章
                                                 </Agreement>
-                                            </InputLabel>{" "}
+                                            </InputLabel>
                                             <InputLabel
                                                 htmlFor={`${course.courseID}_${student.studentID}_disagree`}
                                             >
@@ -572,7 +591,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                 <Agreement>
                                                     不同意給徽章
                                                 </Agreement>
-                                            </InputLabel>
+                                            </InputLabel> */}
                                         </InputArea>
                                     </StudentInfoBoc>
                                 ))}

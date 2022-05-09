@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
@@ -22,7 +22,7 @@ const InputLabel = styled.label`
 // `;
 
 const Agreement = styled.div`
-    margin-left: 5px;
+    margin-left: 15px;
 `;
 
 const Radio = styled.span`
@@ -35,8 +35,8 @@ const Radio = styled.span`
     width: 15px;
     background-color: white;
     border-radius: 100%;
-    /* margin-top: 3px;*/
-    margin-right: 10px;
+    margin-top: 1px;
+
     transition: all 0.2s ease;
     &::after {
         content: "";
