@@ -13,6 +13,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
+import { NoDataTitle } from "../Component/NoDataTitle";
 
 const Box = styled.div`
     min-height: calc(100vh - 150px);
@@ -28,6 +29,7 @@ const Box = styled.div`
 const Container = styled.div`
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     min-width: 300px;
     max-width: 400px;
@@ -88,6 +90,8 @@ export const Login = ({ userLogin }) => {
         name: "",
     });
     const [isLogin, setIsLogin] = useState(true);
+    const [isNavigate, setIsNavigate] = useState(false);
+    const [isAutoNavigate, setIsAutoNavigate] = useState(true);
     const [emailErrorMessage, setEmailErrorMessage] = useState(" ");
     const [passwordErrorMessage, setPasswordErrorMessage] = useState(" ");
     const navigate = useNavigate();
@@ -98,10 +102,12 @@ export const Login = ({ userLogin }) => {
     const from = location.state?.from || "/";
 
     useEffect(() => {
-        if (userLogin === "in") navigate(from, { replace: true });
-    });
+        if (isAutoNavigate && userLogin === "in")
+            navigate(from, { replace: true });
+    }, [isAutoNavigate, userLogin]);
 
     function singUp() {
+        setIsAutoNavigate(false);
         createUserWithEmailAndPassword(
             firebaseInit.auth,
             info.email,
@@ -117,9 +123,11 @@ export const Login = ({ userLogin }) => {
                     photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
                     selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
                 });
-                window.alert("註冊成功，可以去個人修改大頭照跟自我介紹喔");
             })
-            .then(() => navigate(from, { replace: true }))
+            .then(() => {
+                setIsNavigate(true);
+                handleAlertModal("註冊成功，可以去個人修改大頭照跟自我介紹喔");
+            })
             .catch(error => {
                 const errorCode = error.code;
                 console.log(errorCode);
@@ -144,10 +152,11 @@ export const Login = ({ userLogin }) => {
     }
 
     function signIn() {
+        setIsAutoNavigate(false);
         signInWithEmailAndPassword(firebaseInit.auth, info.email, info.password)
             .then(() => {
-                window.alert("登入成功");
-                navigate(from, { replace: true });
+                setIsNavigate(true);
+                handleAlertModal("登入成功");
             })
             .catch(error => {
                 const errorCode = error.code;
@@ -183,7 +192,7 @@ export const Login = ({ userLogin }) => {
             <Box>
                 <Container>
                     {userLogin === "check" ? (
-                        "身分驗證中"
+                        <NoDataTitle title="身分驗證中" />
                     ) : (
                         <>
                             <SignInDiv
@@ -266,6 +275,8 @@ export const Login = ({ userLogin }) => {
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
                 setAlertIsOpen={setAlertIsOpen}
+                isNavigateToOtherRouter={isNavigate}
+                pathname={from}
             />
 
             <Footer />

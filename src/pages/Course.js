@@ -1002,6 +1002,8 @@ export const Course = ({ userID }) => {
                         content={alertMessage}
                         alertIsOpen={alertIsOpen}
                         setAlertIsOpen={setAlertIsOpen}
+                        isNavigateToOtherRouter={true}
+                        pathname={`/course?courseID=${courseID}`}
                     />
                 </>
             )}

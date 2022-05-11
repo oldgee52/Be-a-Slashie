@@ -3,6 +3,7 @@ import Modal from "styled-react-modal";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const StyledModal = Modal.styled`
   width: 80%;
@@ -53,13 +54,18 @@ export const AlertModal = ({
     alertIsOpen,
     setAlertIsOpen,
     courseID,
+    isNavigateToOtherRouter,
+    pathname,
 }) => {
     const navigate = useNavigate();
     function toggleModal() {
         setAlertIsOpen(false);
-        console.log(courseID);
+        console.log(isNavigateToOtherRouter);
         if (courseID) {
             navigate(`/course?courseID=${courseID}`);
+        }
+        if (isNavigateToOtherRouter) {
+            navigate(pathname, { replace: true });
         }
     }
 
@@ -75,4 +81,13 @@ export const AlertModal = ({
             </StyledModal>
         </>
     );
+};
+
+AlertModal.prototype = {
+    content: PropTypes.string.isRequired,
+    alertIsOpen: PropTypes.bool.isRequired,
+    setAlertIsOpen: PropTypes.func.isRequired,
+    courseID: PropTypes.string,
+    pathname: PropTypes.string,
+    isNavigateToOtherRouter: PropTypes.bool,
 };
