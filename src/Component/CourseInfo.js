@@ -212,7 +212,9 @@ export const CourseInfo = ({
                         <TeacherName>完課日期 {closedDate}</TeacherName>
                     )}
                 </CourseTitle>
-                {view && (
+                {view === undefined ? (
+                    ""
+                ) : (
                     <View>
                         <FiEye viewBox="0 -3 24 24 " />
                         <ViewSpan>{view}</ViewSpan>
