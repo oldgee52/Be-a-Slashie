@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { NoDataTitle } from "../Component/NoDataTitle";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
@@ -50,6 +51,7 @@ const CourseDiv = styled.div`
 `;
 export const StudentFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
+    const customDateDisplay = useCustomDateDisplay();
     useEffect(() => {
         if (userID)
             firebaseInit
@@ -90,36 +92,13 @@ export const StudentFinishedCourse = ({ userID }) => {
                                     image={course.image}
                                     title={course.title}
                                     teacherName={course.teacherName}
-                                    openingDate={new Date(
+                                    openingDate={customDateDisplay(
                                         course.courseOpeningDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    closedDate={new Date(
+                                    )}
+                                    closedDate={customDateDisplay(
                                         course?.courseClosedDate.seconds * 1000,
-                                    ).toLocaleDateString()}
+                                    )}
                                 />
-                                {/* <DivContent>
-                                項次
-                                {index + 1}
-                            </DivContent>
-                            <DivContent>課程名稱: {course.title}</DivContent>
-                            <DivContent>
-                                老師: {course.teacherName}
-                                <a href={`mailto: ${course.teacherEmail}`}>
-                                    與我聯繫
-                                </a>
-                            </DivContent>{" "}
-                            <DivContent>
-                                完課日期:{" "}
-                                {new Date(
-                                    course?.courseClosedDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                            </DivContent>
-                            <DivContent>
-                                開課日期:{" "}
-                                {new Date(
-                                    course?.courseOpeningDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                            </DivContent> */}
                             </CourseDiv>
                         ))}
                     </CourseArea>

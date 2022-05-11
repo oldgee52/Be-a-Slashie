@@ -28,6 +28,7 @@ import {
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useAlertModal } from "../customHooks/useAlertModal";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
@@ -481,6 +482,7 @@ export const Course = ({ userID }) => {
     const [skillsInfo, setSkillsInfo] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     const courseID = new URLSearchParams(window.location.search).get(
@@ -583,9 +585,9 @@ export const Course = ({ userID }) => {
         const studentEmail = findUserInfo(userID, "email");
         const teacherName = findUserInfo(courseData.teacherUserID, "name");
         const teacherEmail = findUserInfo(courseData.teacherUserID, "email");
-        const openingDate = new Date(
+        const openingDate = customDateDisplay(
             courseData.openingDate.seconds * 1000,
-        ).toLocaleDateString();
+        );
         const courseTitle = courseData.title;
 
         const teacherEmailContent = {
@@ -676,9 +678,9 @@ export const Course = ({ userID }) => {
                                     findUserInfo(question.askedUserID, "name")}
                             </CurrentMessageTitle>
                             <CurrentMessageTitle>
-                                {new Date(
+                                {customDateDisplay(
                                     question.askedDate.seconds * 1000,
-                                ).toLocaleDateString()}
+                                )}
                             </CurrentMessageTitle>
                             <CurrentMessageContent>
                                 {question.askedContent}
@@ -695,9 +697,9 @@ export const Course = ({ userID }) => {
                                             )}
                                     </CurrentMessageTitle>
                                     <CurrentMessageTitle>
-                                        {new Date(
+                                        {customDateDisplay(
                                             reply.repliedDate.seconds * 1000,
-                                        ).toLocaleDateString()}
+                                        )}
                                     </CurrentMessageTitle>
                                     <ReplyMessageContent>
                                         {reply.repliedContent}
@@ -711,7 +713,7 @@ export const Course = ({ userID }) => {
                         >
                             {inputFields[index]?.isShowReplyInput ? (
                                 <>
-                                    <RiCloseCircleLine viewBox="0 -2 24 24" />{" "}
+                                    <RiCloseCircleLine viewBox="0 -2 24 24" />
                                     取消
                                 </>
                             ) : (
@@ -916,20 +918,20 @@ export const Course = ({ userID }) => {
                                     <NewBsCalendarPlus viewBox="2 0 16 16" />{" "}
                                     <span>
                                         報名截止{" "}
-                                        {new Date(
+                                        {customDateDisplay(
                                             courseData.registrationDeadline
                                                 .seconds * 1000,
-                                        ).toLocaleDateString()}{" "}
+                                        )}
                                     </span>
                                 </AboutContent>
                                 <AboutContent>
                                     <NewBsCalendarCheck viewBox="2 0 16 16" />
                                     <span>
                                         開課時間{" "}
-                                        {new Date(
+                                        {customDateDisplay(
                                             courseData.openingDate.seconds *
                                                 1000,
-                                        ).toLocaleDateString()}
+                                        )}
                                     </span>
                                 </AboutContent>
                                 <AboutContentsSkill>

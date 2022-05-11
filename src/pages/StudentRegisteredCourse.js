@@ -6,6 +6,7 @@ import { CourseInfo } from "../Component/CourseInfo";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { Loading } from "../Component/Loading";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const Container = styled.div`
     display: flex;
@@ -78,6 +79,7 @@ const CourseDiv = styled.div`
 export const StudentRegisteredCourse = ({ userID }) => {
     const [registeredCourse, setRegisteredCourse] = useState();
     const [isShow, setIsShow] = useState([true, false, false]);
+    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         let isMounted = true;
@@ -121,9 +123,9 @@ export const StudentRegisteredCourse = ({ userID }) => {
                         image={course.image}
                         title={course.title}
                         teacherName={course.teacherName}
-                        openingDate={new Date(
+                        openingDate={customDateDisplay(
                             course.courseOpeningDate.seconds * 1000,
-                        ).toLocaleDateString()}
+                        )}
                     />
                 </CourseDiv>
             ))

@@ -12,6 +12,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const Container = styled.div`
     display: flex;
@@ -196,6 +197,7 @@ export const StudentOpeningCourse = ({ userID }) => {
     const [inputFields, SetInputFields] = useState([]);
     const [isShow, setIsShow] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     useEffect(() => {
@@ -262,9 +264,9 @@ export const StudentOpeningCourse = ({ userID }) => {
                         <UploadHomework key={homework.fileURL}>
                             <HomeworkTitle>{homework.title} </HomeworkTitle>
                             <HomeworkDate>
-                                {new Date(
+                                {customDateDisplay(
                                     homework.uploadDate.seconds * 1000,
-                                ).toLocaleDateString()}
+                                )}
                             </HomeworkDate>
                             <HomeworkDownload>
                                 <a
@@ -495,10 +497,10 @@ export const StudentOpeningCourse = ({ userID }) => {
                                                 </HomeworkTitle>
 
                                                 <HomeworkDate>
-                                                    {new Date(
+                                                    {customDateDisplay(
                                                         material.creatDate
                                                             .seconds * 1000,
-                                                    ).toLocaleDateString()}
+                                                    )}
                                                 </HomeworkDate>
 
                                                 <HomeworkDownload>

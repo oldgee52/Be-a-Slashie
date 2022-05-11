@@ -7,6 +7,7 @@ import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import banner from "../images/banner.png";
 
 const Container = styled.div`
@@ -134,8 +135,8 @@ export const Home = () => {
     const [latestCourse, setLatestCourse] = useState();
     const [popularCourse, setPopularCourse] = useState();
     const [searchField, setSearchField] = useState("");
-
     const navigate = useNavigate();
+    const customDateDisplay = useCustomDateDisplay();
     useEffect(() => {
         let isMounted = true;
 
@@ -214,13 +215,13 @@ export const Home = () => {
                                             }
                                             view={course.view}
                                             label={"最新"}
-                                            creatDate={new Date(
+                                            creatDate={customDateDisplay(
                                                 course.creatTime.seconds * 1000,
-                                            ).toLocaleDateString()}
-                                            openingDate={new Date(
+                                            )}
+                                            openingDate={customDateDisplay(
                                                 course.openingDate.seconds *
                                                     1000,
-                                            ).toLocaleDateString()}
+                                            )}
                                         />
                                     </CourseDiv>
                                 ))}
@@ -249,13 +250,13 @@ export const Home = () => {
                                             }
                                             view={course.view}
                                             label={"熱門"}
-                                            creatDate={new Date(
+                                            creatDate={customDateDisplay(
                                                 course.creatTime.seconds * 1000,
-                                            ).toLocaleDateString()}
-                                            openingDate={new Date(
+                                            )}
+                                            openingDate={customDateDisplay(
                                                 course.openingDate.seconds *
                                                     1000,
-                                            ).toLocaleDateString()}
+                                            )}
                                         />
                                     </CourseDiv>
                                 ))}

@@ -5,6 +5,7 @@ import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import firebaseInit from "../utils/firebase";
 import { Loading } from "../Component/Loading";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const Container = styled.div`
     display: flex;
@@ -51,6 +52,7 @@ const CourseDiv = styled.div`
 
 export const TeacherFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
+    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         let isMounted = true;
@@ -85,12 +87,12 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                     <CourseInfo
                                         image={course.image}
                                         title={course.title}
-                                        openingDate={new Date(
+                                        openingDate={customDateDisplay(
                                             course.openingDate.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                        closedDate={new Date(
+                                        )}
+                                        closedDate={customDateDisplay(
                                             course?.closedDate.seconds * 1000,
-                                        ).toLocaleDateString()}
+                                        )}
                                     />
 
                                     {/*

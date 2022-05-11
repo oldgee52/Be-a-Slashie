@@ -4,13 +4,10 @@ import styled from "styled-components";
 import { CourseInfo } from "./CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { breakPoint } from "../utils/breakPoint";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
-// You can style your pagination component
-// thanks to styled-components.
-// Use inner class names to style the controls.
 const MyPaginate = styled(ReactPaginate).attrs({
-    // You can redifine classes here, if you want.
-    activeClassName: "active", // default to "disabled"
+    activeClassName: "active",
 })`
     margin-bottom: 2rem;
     display: flex;
@@ -21,7 +18,7 @@ const MyPaginate = styled(ReactPaginate).attrs({
     li a {
         border-radius: 7px;
         padding: 0.1rem 1rem;
-        /* border: gray 1px solid; */
+
         cursor: pointer;
     }
     li.previous a,
@@ -32,7 +29,7 @@ const MyPaginate = styled(ReactPaginate).attrs({
     }
     li.active a {
         background-color: #ff6100;
-        /* border-color: transparent; */
+
         color: white;
         min-width: 32px;
     }
@@ -57,7 +54,6 @@ const CourseArea = styled.div`
     flex-wrap: wrap;
     width: 100%;
     padding: 0 10px 0 10px;
-    /* margin-bottom: 100px; */
     @media ${breakPoint.desktop} {
         justify-content: space-between;
         align-items: flex-start;
@@ -79,22 +75,19 @@ const CourseDiv = styled.div`
 `;
 
 function PaginatedItems({ itemsPerPage, searchData }) {
-    // We start with an empty list of items.
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
-    // Here we use item offsets; we could also use page offsets
-    // following the API or data you're working with.
+
     const [itemOffset, setItemOffset] = useState(0);
+    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
-        // Fetch items from another resources.
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
         setCurrentItems(searchData.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(searchData?.length / itemsPerPage));
     }, [itemOffset, itemsPerPage, searchData]);
 
-    // Invoke when user click to request another page.
     const handlePageClick = event => {
         const newOffset = (event.selected * itemsPerPage) % searchData.length;
         console.log(
@@ -119,12 +112,12 @@ function PaginatedItems({ itemsPerPage, searchData }) {
                                 title={course.title}
                                 teacherName={course.teacherInfo.name}
                                 view={course.view}
-                                creatDate={new Date(
+                                creatDate={customDateDisplay(
                                     course.creatTime.seconds * 1000,
-                                ).toLocaleDateString()}
-                                openingDate={new Date(
+                                )}
+                                openingDate={customDateDisplay(
                                     course.openingDate.seconds * 1000,
-                                ).toLocaleDateString()}
+                                )}
                             />
                         </CourseDiv>
                     ))}
@@ -138,26 +131,6 @@ function PaginatedItems({ itemsPerPage, searchData }) {
                     nextLabel={<MdKeyboardArrowRight />}
                 />
             </PaginateArea>
-            {/* <ReactPaginate
-                nextLabel="next"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={3}
-                marginPagesDisplayed={2}
-                pageCount={pageCount}
-                previousLabel="previous"
-                pageClassName="page-item"
-                pageLinkClassName="page-link"
-                previousClassName="page-item"
-                previousLinkClassName="page-link"
-                nextClassName="page-item"
-                nextLinkClassName="page-link"
-                breakLabel="..."
-                breakClassName="page-item"
-                breakLinkClassName="page-link"
-                containerClassName="pagination"
-                activeClassName="active"
-                renderOnZeroPageCount={null}
-            /> */}
         </>
     );
 }

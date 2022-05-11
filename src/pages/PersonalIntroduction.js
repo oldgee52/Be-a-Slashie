@@ -7,6 +7,7 @@ import { FiMail } from "react-icons/fi";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const Container = styled.div`
     display: flex;
@@ -117,7 +118,7 @@ export const PersonalIntroduction = () => {
     const [userInfo, setUserInfo] = useState();
     const [userSkills, setUserSkills] = useState();
     const [userFinishCourses, setUserFinishCourses] = useState();
-
+    const customDateDisplay = useCustomDateDisplay();
     const uid = new URLSearchParams(window.location.search).get("uid");
     useEffect(() => {
         firebaseInit.getCollectionData("users", uid).then(data => {
@@ -199,10 +200,10 @@ export const PersonalIntroduction = () => {
                                                   teacherName={
                                                       course.teacherName
                                                   }
-                                                  closedDate={new Date(
+                                                  closedDate={customDateDisplay(
                                                       course?.courseClosedDate
                                                           .seconds * 1000,
-                                                  ).toLocaleDateString()}
+                                                  )}
                                               />
                                           </CourseDiv>
                                       ))}

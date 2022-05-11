@@ -7,6 +7,7 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 const Container = styled.div`
     display: flex;
     justify-content: center;
@@ -55,6 +56,7 @@ const CourseDiv = styled.div`
 export const StudentCollectionCourse = ({ userID }) => {
     const [collectionCourses, SetCollectionCourses] = useState();
     const [usersInfo, setUsersInfo] = useState();
+    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         if (userID)
@@ -113,12 +115,12 @@ export const StudentCollectionCourse = ({ userID }) => {
                                             course.teacherUserID,
                                             "name",
                                         )}
-                                        creatDate={new Date(
+                                        creatDate={customDateDisplay(
                                             course.creatTime.seconds * 1000,
-                                        ).toLocaleDateString()}
-                                        openingDate={new Date(
+                                        )}
+                                        openingDate={customDateDisplay(
                                             course.openingDate.seconds * 1000,
-                                        ).toLocaleDateString()}
+                                        )}
                                     />
                                 </CourseDiv>
                             ))

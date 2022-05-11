@@ -21,6 +21,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { MyRadioButton } from "../Component/MyRadioButton";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const Container = styled.div`
     display: flex;
@@ -246,6 +247,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
+    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
 
@@ -518,12 +520,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                                 {homework.title}
                                                             </HomeworkTitle>{" "}
                                                             <HomeworkDate>
-                                                                {new Date(
+                                                                {customDateDisplay(
                                                                     homework
                                                                         .uploadDate
                                                                         .seconds *
                                                                         1000,
-                                                                ).toLocaleDateString()}
+                                                                )}
                                                             </HomeworkDate>
                                                             <HomeworkDownload>
                                                                 <a
@@ -582,14 +584,14 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                           </HomeworkTitle>
 
                                                           <HomeworkDate>
-                                                              {new Date(
+                                                              {customDateDisplay(
                                                                   Math.floor(
                                                                       material
                                                                           .creatDate
                                                                           .seconds *
                                                                           1000,
                                                                   ),
-                                                              ).toLocaleDateString()}
+                                                              )}
                                                           </HomeworkDate>
                                                           <HomeworkDownload>
                                                               <a
@@ -661,14 +663,14 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                                         {homework.title}
                                                     </HomeworkTitle>
                                                     <TeacherHomeworkDate>
-                                                        {new Date(
+                                                        {customDateDisplay(
                                                             Math.floor(
                                                                 homework
                                                                     .creatDate
                                                                     .seconds *
                                                                     1000,
                                                             ),
-                                                        ).toLocaleDateString()}
+                                                        )}
                                                     </TeacherHomeworkDate>
                                                 </TeacherHomework>
                                             ))

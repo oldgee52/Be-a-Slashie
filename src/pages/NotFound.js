@@ -55,7 +55,6 @@ export const NotFound = () => {
             <>
                 <CheckedImg />
                 <Text>Oooooooopps...</Text>
-
                 <ButtonBox>
                     <MyButton
                         buttonWord="只能回首頁"

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 
 const SkillsBox = styled.div`
     display: flex;
@@ -26,6 +27,7 @@ const SkillDate = styled.div`
 `;
 
 export const Skills = ({ skills }) => {
+    const customDateDisplay = useCustomDateDisplay();
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (
@@ -34,9 +36,7 @@ export const Skills = ({ skills }) => {
                 <Image src={skill.image} alt={skill.title} />
                 <SkillDate>
                     {skill.getDate &&
-                        new Date(
-                            skill.getDate.seconds * 1000,
-                        ).toLocaleDateString()}
+                        customDateDisplay(skill.getDate.seconds * 1000)}
                 </SkillDate>
                 <SkillTitle>{skill.title}</SkillTitle>
             </SkillsBox>
