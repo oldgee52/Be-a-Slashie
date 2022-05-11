@@ -112,6 +112,7 @@ export const Search = () => {
                 <InputDiv>
                     <SearchInput
                         searchField={searchField}
+                        setSearchField={setSearchField}
                         changeValueCallback={e =>
                             setSearchField(e.target.value)
                         }

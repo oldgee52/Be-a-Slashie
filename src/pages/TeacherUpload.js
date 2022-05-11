@@ -254,11 +254,8 @@ export const TeacherUpload = ({ userID }) => {
     const [image, setImage] = useState();
     const [courseID, setCourseID] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const [isOpen, setIsOpen] = useState(false);
-    const [message, setMessage] = useState("");
 
     useEffect(() => {
         (async function (db) {
@@ -363,9 +360,11 @@ export const TeacherUpload = ({ userID }) => {
         const docRef = doc(coursesRef);
         const coursesInfo = {
             ...state,
-            openingDate: new Date(`${state.openingDate} 23:59:59`),
+            openingDate: new Date(
+                `${state.openingDate.replace(/-/g, "/")} 23:59:59`,
+            ),
             registrationDeadline: new Date(
-                `${state.registrationDeadline} 23:59:59`,
+                `${state.registrationDeadline.replace(/-/g, "/")} 23:59:59`,
             ),
             creatTime: new Date(),
             courseID: docRef.id,
@@ -473,12 +472,13 @@ export const TeacherUpload = ({ userID }) => {
                         <InputDate
                             type="date"
                             value={state.openingDate}
-                            onChange={e =>
+                            onChange={e => {
+                                console.log(e.target.value.replace(/-/g, "/"));
                                 dispatch({
                                     type: "setOpeningDate",
                                     payload: { openingDate: e.target.value },
-                                })
-                            }
+                                });
+                            }}
                         />
                     </LabelForDate>
 

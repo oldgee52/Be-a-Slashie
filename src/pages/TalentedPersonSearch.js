@@ -270,7 +270,8 @@ export const TalentedPersonSearch = () => {
                         <SearchArea>
                             <SearchInputBox>
                                 <SearchInput
-                                    value={searchField}
+                                    searchField={searchField}
+                                    setSearchField={setSearchField}
                                     changeValueCallback={e => {
                                         setSearchField(e.target.value);
                                     }}
