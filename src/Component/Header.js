@@ -8,7 +8,7 @@ import logo from "../images/logo.png";
 import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import profile from "../images/profile.png";
-import { BiLogOut } from "react-icons/bi";
+import { BiLogOut, BiUser } from "react-icons/bi";
 import { AlertModal } from "./AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { keyframes } from "styled-components";
@@ -81,46 +81,40 @@ const LogoImg = styled.img`
 const MenuImg = styled.img`
     width: 20px;
     height: 20px;
-    margin-top: 15px;
     margin-right: 15px;
+    margin-top: 3px;
     cursor: pointer;
     @media ${breakPoint.desktop} {
         display: none;
     }
 `;
 
-const ProfileImg = styled(MenuImg)`
-    margin-right: 25px;
-
-    @media ${breakPoint.desktop} {
-        display: initial;
-        margin-right: 30px;
-    }
-`;
-const circle = keyframes` 0% {
-      width: 1px;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      margin: auto;
-      height: 1px;
-      z-index: -1;
-      background: #eee;
-      border-radius: 100%;
+const circle = keyframes`
+    0% {
+        width: 1px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        height: 1px;
+        z-index: -1;
+        background: #eee;
+        border-radius: 100%;
     }
     100% {
-      background: rgba(0,0,0,0.1);
-      height: 5000%;
-      width: 5000%;
-      z-index: -1;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      margin: auto;
-      border-radius: 0;
+        background: rgba(0,0,0,0.1);
+        height: 5000%;
+        width: 5000%;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        border-radius: 0;
     }`;
+
 const HeaderContent = styled.div`
     font-size: 16px;
     height: 50px;
@@ -156,34 +150,34 @@ const HeaderContent = styled.div`
 
 const RightArea = styled.div`
     display: flex;
+    align-items: center;
 `;
-const SignOutArea = styled.div`
+
+const RightAreaBox = styled.div`
     align-self: center;
-    margin-right: 30px;
+    margin-right: 15px;
+
+    width: 33px;
+    height: 25px;
+    overflow: hidden;
     cursor: pointer;
+
+    transition-duration: ${props => props.duration};
+    @media ${breakPoint.desktop} {
+        &:hover {
+            width: ${props => props.maxWidth};
+        }
+    }
 `;
 
 const NewBiLogOut = styled(BiLogOut)`
     width: 25px;
     height: 25px;
 `;
-const ImgBox = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 5px;
-    transition-duration: 0.5s;
-    overflow: hidden;
-`;
-const Text = styled.p`
-    display: none;
-    @media ${breakPoint.desktop} {
-        display: block;
-        font-size: 14px;
-        padding-bottom: 3px;
-        padding-left: 3px;
-        width: 68px;
-    }
+
+const NewBiUser = styled(BiUser)`
+    width: 25px;
+    height: 25px;
 `;
 const NewNavLink = styled(NavLink)`
     width: 33.3%;
@@ -191,6 +185,11 @@ const NewNavLink = styled(NavLink)`
     @media ${breakPoint.desktop} {
         width: 100px;
     }
+`;
+
+const RightAreaBoxTitle = styled.span`
+    line-height: 1.6;
+    padding-left: 10px;
 `;
 
 function Header({ userID }) {
@@ -251,22 +250,29 @@ function Header({ userID }) {
                 </MobileItemContainer>
                 <RightArea>
                     {userID && (
-                        <SignOutArea
+                        <RightAreaBox
                             onClick={() => {
                                 handleLinkToOtherRouterNavShow();
                                 handleSignOut();
                             }}
+                            maxWidth="70px"
+                            duration="0.2s"
                         >
                             <NewBiLogOut viewBox="0 -1 24 24" />
-                        </SignOutArea>
+                            <RightAreaBoxTitle>登出</RightAreaBoxTitle>
+                        </RightAreaBox>
                     )}
-
                     <NavLink to="personal/profile">
-                        <ProfileImg
-                            src={profile}
-                            alt="個人資料"
+                        <RightAreaBox
                             onClick={handleLinkToOtherRouterNavShow}
-                        />
+                            maxWidth={userID ? "105px" : "70px"}
+                            duration={userID ? "0.4s" : "0.2s"}
+                        >
+                            <NewBiUser viewBox="0 -1 24 24" />
+                            <RightAreaBoxTitle>
+                                {userID ? "個人資料" : "登入"}
+                            </RightAreaBoxTitle>
+                        </RightAreaBox>
                     </NavLink>
 
                     <MenuImg
