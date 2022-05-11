@@ -20,7 +20,20 @@ const InputArea = styled.input`
     border-left: none;
     border-right: none;
     color: #505050;
+    border-radius: 0;
     -webkit-appearance: none;
+    &:-moz-placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    }
+    &::-moz-input-placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    }
+    &::-webkit-input-placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    }
+    &:-ms-input-placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    }
     /* border-top-right-radius: 10px;
     border-bottom-right-radius: 10px; */
 
