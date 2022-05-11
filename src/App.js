@@ -25,7 +25,7 @@ import { Personal } from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
 import { ModalProvider } from "styled-react-modal";
 import { FinishedRegisteredCourse } from "./pages/FinishedRegisteredCourse";
-import { Footer } from "./Component/Footer";
+import { NotFound } from "./pages/NotFound";
 
 function App() {
     const [userID, setUserID] = useState("");
@@ -160,6 +160,7 @@ function App() {
                         {/* <Route path="course" element={<Course />} /> */}
                         <Route path="search" element={<Search />} />
                         <Route path="/" element={<Home />} />
+                        <Route path="*" element={<NotFound />} />
                     </Routes>
                 </BrowserRouter>
             </ModalProvider>
