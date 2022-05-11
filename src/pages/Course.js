@@ -42,12 +42,13 @@ const Container = styled.div`
     width: 100%;
     margin: auto;
 
-    padding: 80px 10px 80px 10px;
+    padding: 80px 10px 0 10px;
 
     @media ${breakPoint.desktop} {
         justify-content: space-between;
         align-items: flex-start;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
     }
 `;
 

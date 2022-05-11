@@ -7,24 +7,24 @@ const SkillName = styled.label`
     min-width: 100px;
     margin: 10px 0;
     display: flex;
+
     cursor: pointer;
 `;
-const SkillNameLabel = styled.div`
+const SkillNameLabel = styled.span`
     padding-left: 5px;
-    height: 13px;
-    line-height: 13px;
 `;
 
 const CheckBox = styled.input.attrs({ type: "checkbox" })`
     display: none;
 `;
 const MyCheckBox = styled.div`
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
     border: 1px solid ${props => (props.checked ? "#00e0b6" : "#707070")};
     border-radius: 2px;
     background: ${props => (props.checked ? "#00e0b6" : "white")};
     transition: all 0.2s ease;
+    margin-top: 1.8px;
 `;
 const NewBsCheck = styled(BsCheck)`
     width: 13px;
