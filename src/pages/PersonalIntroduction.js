@@ -8,6 +8,7 @@ import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { HoverInfo } from "../Component/HoverInfo";
 
 const Container = styled.div`
     display: flex;
@@ -107,7 +108,6 @@ const CourseBox = styled.div`
 
 const CourseDiv = styled.div`
     width: 100%;
-    /* margin-top: 20px; */
 
     @media ${breakPoint.desktop} {
         width: calc(33.3% - 30px);
@@ -141,7 +141,6 @@ export const PersonalIntroduction = () => {
     }, [uid]);
     useEffect(() => {
         firebaseInit.getStudentRegisteredCourseDetails(uid).then(data => {
-            // console.log(data)
             const finishedCourse = data.filter(course => {
                 return (
                     course.registrationStatus === 1 && course.courseStatus === 2
@@ -174,7 +173,9 @@ export const PersonalIntroduction = () => {
                             <UserName>
                                 {userInfo.name}{" "}
                                 <a href={`mailto: ${userInfo.email}`}>
-                                    <FiMail />
+                                    <HoverInfo content="發送E-mail">
+                                        <FiMail viewBox="-1 -1 24 24" />
+                                    </HoverInfo>
                                 </a>
                             </UserName>{" "}
                             <UserIntroduction>

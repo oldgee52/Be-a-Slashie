@@ -11,6 +11,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { MyRadioButton } from "../Component/MyRadioButton";
+import { HoverInfo } from "../Component/HoverInfo";
 
 const Container = styled.div`
     display: flex;
@@ -83,38 +84,42 @@ const InputArea = styled.div`
     }
 `;
 
-const InputLabel = styled.label`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-
-    cursor: pointer;
-`;
-
-const Agreement = styled.div`
-    margin-left: 5px;
-`;
-
 const ButtonArea = styled.div`
     @media ${breakPoint.desktop} {
         align-self: center;
     }
 `;
 
-const NewFiInfo = styled(FiInfo)`
+const IconBox = styled.span`
     cursor: pointer;
-`;
-const NoShow = styled.div`
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: 700;
+    margin-right: 5px;
+    margin-left: 5px;
+
+    &::before {
+        content: "${props => props.content}";
+        position: absolute;
+        transform: translateY(0px) translateX(-40%);
+        background-color: #e9e9e9;
+        color: #7f7f7f;
+        font-size: 12px;
+        width: max-content;
+        overflow: hidden;
+        padding: 5px;
+        border-radius: 5px;
+        z-index: -1;
+        opacity: 0;
+        transition-duration: 0.2s;
+    }
+    &:hover::before {
+        opacity: 1;
+        z-index: 10;
+        transform: translateY(20px) translateX(-40%);
+    }
 `;
 
 export const TeacherConfirmRegistration = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
-    const [selectedInput, setSelectedInput] = useState("");
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     const navigate = useNavigate();
@@ -209,19 +214,24 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                                     course.students.map((student, index) => (
                                         <StudentInfoBoc key={index}>
                                             <Name>
-                                                {student.name}{" "}
+                                                <span> {student.name} </span>
                                                 <a
                                                     href={`mailto: ${student.email}`}
                                                 >
-                                                    <FiMail />
+                                                    <HoverInfo content="發送E-mail">
+                                                        <FiMail viewBox="-1 -1 24 24" />
+                                                    </HoverInfo>
                                                 </a>{" "}
-                                                <NewFiInfo
+                                                <IconBox
+                                                    content="查看個人資料"
                                                     onClick={() =>
                                                         navigate(
                                                             `/personal-introduction?uid=${student.studentID}`,
                                                         )
                                                     }
-                                                />
+                                                >
+                                                    <FiInfo viewBox="-1 -1 24 24" />
+                                                </IconBox>
                                             </Name>
                                             <InputArea>
                                                 <MyRadioButton
