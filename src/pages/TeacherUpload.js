@@ -339,11 +339,6 @@ export const TeacherUpload = ({ userID }) => {
         const positiveInteger = /^[0-9]*[1-9][0-9]*$/;
         if (!positiveInteger.test(state.minOpeningNumber))
             return handleAlertModal("開班人數至少1人且為整數");
-        if (
-            new Date(state.openingDate) < new Date() ||
-            new Date(state.registrationDeadline) < new Date()
-        )
-            return handleAlertModal("選擇日期不得晚於今日");
 
         if (new Date(state.openingDate) < new Date(state.registrationDeadline))
             return handleAlertModal("開課日不得早於報名截止日");
@@ -472,6 +467,7 @@ export const TeacherUpload = ({ userID }) => {
                         <InputDate
                             type="date"
                             value={state.openingDate}
+                            min={new Date().toLocaleDateString("en-ca")}
                             onChange={e => {
                                 console.log(e.target.value.replace(/-/g, "/"));
                                 dispatch({
@@ -487,6 +483,7 @@ export const TeacherUpload = ({ userID }) => {
                         <InputDate
                             type="date"
                             value={state.registrationDeadline}
+                            min={new Date().toLocaleDateString("en-ca")}
                             onChange={e =>
                                 dispatch({
                                     type: "setRegistrationDeadline",
