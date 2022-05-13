@@ -79,7 +79,7 @@ const Collection = styled.button`
     border: ${props => (props.collected ? "none" : "1px solid #505050")};
 
     color: ${props => (props.collected ? "whitesmoke" : " #505050")};
-    background: ${props => (props.collected ? "#00e0b6" : "whitesmoke")};
+    background: ${props => (props.collected ? "#00bea4" : "whitesmoke")};
     cursor: pointer;
 
     display: flex;
@@ -124,7 +124,7 @@ const TeacherInfo = styled.div`
     background-color: whitesmoke;
     min-height: 250px;
     color: #505050;
-    border: 1px solid #00e0b6;
+    border: 1px solid #00bea4;
     @media ${breakPoint.desktop} {
         margin: 0;
         width: 100%;
@@ -313,12 +313,12 @@ const SendButton = styled.button`
     width: 50px;
     height: 30px;
     line-height: 30px;
-    background-color: #00e0b6;
+    background-color: #00bea4;
     color: white;
     margin-left: auto;
     margin-top: 10px;
-
     border-radius: 5px;
+    cursor: pointer;
 `;
 
 const CurrentMessageArea = styled.div`

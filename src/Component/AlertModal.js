@@ -25,15 +25,14 @@ const StyledModal = Modal.styled`
 const ModalButton = styled.button`
     width: 50px;
     height: 30px;
+    line-height: 30px;
     border-radius: 5px;
-    background: #00e0b6;
+    background: #00bea4;
     color: #fff;
-    letter-spacing: 2px;
     cursor: pointer;
     align-self: flex-end;
     margin-right: 10px;
     margin-bottom: 10px;
-    border: 1px solid #00e0b6;
 `;
 const TextArea = styled.div`
     width: 100%;

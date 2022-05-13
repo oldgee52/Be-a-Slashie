@@ -24,7 +24,7 @@ const CheckedImg = styled.div`
     background-size: 90%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #5fc198;
+    background-color: #00bea4;
     width: 250px;
     height: 250px;
     margin-bottom: 10px;

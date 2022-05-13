@@ -15,9 +15,9 @@ const InputLabel = styled.label`
 // const Radio = styled.div`
 //     width: 13px;
 //     height: 13px;
-//     border: 1px solid ${props => (props.checked ? "#00e0b6" : "#707070")};
+//     border: 1px solid ${props => (props.checked ? "#00bea4" : "#707070")};
 //     border-radius: 100%;
-//     background: ${props => (props.checked ? "#00e0b6" : "white")};
+//     background: ${props => (props.checked ? "#00bea4" : "white")};
 //     transition: all 0.2s ease;
 // `;
 
@@ -47,7 +47,7 @@ const Radio = styled.span`
         width: 10px;
         height: 10px;
         border-radius: 100%;
-        background: #00e0b6;
+        background: #00bea4;
         @media ${breakPoint.desktop} {
             top: 1.5px;
             left: 1.5px;
@@ -61,7 +61,7 @@ const RadioButton = styled.input`
     cursor: pointer;
     &:checked + ${Radio} {
         background-color: white;
-        border-color: #00e0b6;
+        border-color: #00bea4;
         &::after {
             display: block;
         }

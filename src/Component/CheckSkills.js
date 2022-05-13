@@ -20,9 +20,9 @@ const CheckBox = styled.input.attrs({ type: "checkbox" })`
 const MyCheckBox = styled.div`
     width: 12px;
     height: 12px;
-    border: 1px solid ${props => (props.checked ? "#00e0b6" : "#707070")};
+    border: 1px solid ${props => (props.checked ? "#00bea4" : "#707070")};
     border-radius: 2px;
-    background: ${props => (props.checked ? "#00e0b6" : "white")};
+    background: ${props => (props.checked ? "#00bea4" : "white")};
     transition: all 0.2s ease;
     margin-top: 1.8px;
 `;

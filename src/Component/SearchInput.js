@@ -16,13 +16,18 @@ const InputArea = styled.input`
     width: 100%;
     height: 30px;
     background: whitesmoke;
-    border: 2px solid #505050;
+    border: 1px solid #7f7f7f;
     border-left: none;
     border-right: none;
     color: #505050;
     border-radius: 0;
     -webkit-appearance: none;
-    &:-moz-placeholder {
+    &::placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+        letter-spacing: 1px;
+        font-weight: 500;
+    }
+    /* &:-moz-placeholder {
         font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
     }
     &::-moz-input-placeholder {
@@ -33,7 +38,7 @@ const InputArea = styled.input`
     }
     &:-ms-input-placeholder {
         font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
-    }
+    } */
     /* border-top-right-radius: 10px;
     border-bottom-right-radius: 10px; */
 
@@ -52,7 +57,7 @@ const Search = styled(FiSearch)`
     width: 30px;
     height: 30px;
 
-    border: 2px solid #505050;
+    border: 1px solid #7f7f7f;
     background-color: whitesmoke;
     border-right: none;
 
@@ -66,7 +71,8 @@ const DeleteButton = styled.span`
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     background: whitesmoke;
-    border: 2px solid #505050;
+    border: 1px solid #7f7f7f;
+
     border-left: none;
 
     &::before {

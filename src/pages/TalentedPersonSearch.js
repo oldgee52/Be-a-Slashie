@@ -77,7 +77,7 @@ const Card = styled.div`
     border-radius: 5px;
 
     padding-bottom: 20px;
-    border-bottom: 3px solid #00e0b6;
+    border-bottom: 3px solid #00bea4;
     cursor: pointer;
 
     background-color: whitesmoke;
@@ -89,7 +89,7 @@ const Card = styled.div`
         margin-top: 30px;
         align-items: center;
         border-radius: 5px;
-        border-bottom: 5px solid #00e0b6;
+        border-bottom: 5px solid #00bea4;
     }
 `;
 const CardBox = styled.div`

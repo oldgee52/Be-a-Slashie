@@ -111,7 +111,7 @@ const Input = styled.input`
     height: 40px;
     padding-left: 10px;
     border-radius: 5px;
-    border: 1px solid #ff6100;
+    border: 1px solid #7f7f7f;
 
     &:focus {
         outline: none;
@@ -136,7 +136,7 @@ const InputText = styled.textarea`
     padding-top: 5px;
     border-radius: 5px;
 
-    border: 1px solid #ff6100;
+    border: 1px solid #7f7f7f;
     &:focus {
         outline: none;
     }
@@ -168,7 +168,8 @@ const PreviewImg = styled.div`
     margin-top: 10px;
     background-color: white;
     background-image: url(${props => props.img});
-    border: 1px solid #ff6100;
+    border: 1px solid #7f7f7f;
+    border-radius: 5px;
     display: flex;
     justify-content: center;
     align-items: center;

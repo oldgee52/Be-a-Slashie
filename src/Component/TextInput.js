@@ -25,15 +25,17 @@ const Input = styled.input`
     height: 40px;
     padding-left: 10px;
     border-radius: 5px;
-    border: 1px solid #ff6100;
-
+    border: 1px solid #7f7f7f;
+    &::placeholder {
+        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+        letter-spacing: 1px;
+        font-weight: 500;
+    }
     &:focus {
         outline: none;
     }
-
     @media ${breakPoint.desktop} {
         /* width: 80%; */
-
         flex: 1 0;
     }
 `;

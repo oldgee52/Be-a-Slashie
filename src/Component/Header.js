@@ -72,7 +72,7 @@ const NavShowBackground = styled.div`
 
 const LogoImg = styled.img`
     width: 120px;
-    margin-top: -18px;
+    margin-top: 9px;
 
     margin-left: 15px;
     cursor: pointer;

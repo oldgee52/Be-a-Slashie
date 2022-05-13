@@ -53,6 +53,7 @@ const UserPhoto = styled.img`
     left: 20px;
 
     border: 2px solid white;
+    object-fit: cover;
 `;
 
 const UserName = styled.div`
