@@ -51,8 +51,7 @@ export const Search = () => {
 
     useEffect(() => {
         let isMounted = true;
-        if (!q) return;
-
+        if (!q) navigate("/search?q=latest");
         setIsLoading(true);
 
         firebaseInit
@@ -70,8 +69,9 @@ export const Search = () => {
 
                 if (isMounted) {
                     window.scrollTo({ top: 0 });
-                    if (q === "latest")
+                    if (q === "latest") {
                         return setSearchCourses(orderByCreatTime);
+                    }
                     if (q === "popular") return setSearchCourses(orderByView);
                     if (q) {
                         const filteredCourses = orderByCreatTime.filter(
@@ -88,8 +88,8 @@ export const Search = () => {
                         );
                         console.log(filteredCourses);
                         if (filteredCourses.length === 0) {
-                            setSearchCourses();
-                            return handleAlertModal("查無資料");
+                            handleAlertModal("暫無此類課程，提供您熱門課程！");
+                            return navigate("/search?q=popular");
                         }
                         setSearchCourses(filteredCourses);
                     }

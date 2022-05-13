@@ -1,4 +1,5 @@
 import { collection } from "firebase/firestore";
+import { func } from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -6,9 +7,9 @@ import { AlertModal } from "../Component/AlertModal";
 import { CheckSkills } from "../Component/CheckSkills";
 import { Footer } from "../Component/Footer";
 import { Loading } from "../Component/Loading";
-import PaginatedItems from "../Component/Paginate";
+import { NoDataTitle } from "../Component/NoDataTitle";
 import { SearchInput } from "../Component/SearchInput";
-import { useAlertModal } from "../customHooks/useAlertModal";
+
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
@@ -35,7 +36,8 @@ const SearchInputBox = styled.div`
     width: 100%;
 
     @media ${breakPoint.desktop} {
-        width: 400px;
+        width: 31%;
+        padding-left: 15px;
     }
 `;
 
@@ -49,6 +51,7 @@ const SkillsBox = styled.div`
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
+        padding-left: 10px;
     }
 `;
 
@@ -57,6 +60,7 @@ const SkillFilter = styled.div`
     font-weight: 600;
     letter-spacing: 1px;
     width: 100%;
+    padding-left: ${props => (props.paddingLeft ? props.paddingLeft : "0")};
 `;
 
 const SearchArea = styled.div`
@@ -178,16 +182,15 @@ const UserSkillName = styled.div`
 export const TalentedPersonSearch = () => {
     const [searchField, setSearchField] = useState("");
     const [allUsers, setAllUsers] = useState();
-    const [searchUsers, setSearchUsers] = useState();
+    const [searchUsers, setSearchUsers] = useState([]);
     const [skills, setSkills] = useState();
     const [checkedSkills, setCheckedSkills] = useState([]);
-    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
-        useAlertModal();
     const navigate = useNavigate();
 
     useEffect(() => {
         firebaseInit.getUsersInfoIncludeSkill().then(data => {
             console.log(data);
+            setSearchUsers(data);
             setAllUsers(data);
         });
     }, []);
@@ -201,47 +204,62 @@ export const TalentedPersonSearch = () => {
             });
     }, []);
 
-    function searchUsersByKeyword(e) {
-        e.preventDefault();
-        if (!searchField.trim() && checkedSkills.length === 0)
-            return handleAlertModal("請輸入關鍵字或選擇技能");
-
-        const filteredUserByKeyword = searchField.trim()
-            ? allUsers.filter(data => {
+    function filterOutcome(searchValue, checkedSkillsArray) {
+        const filteredUserByKeyword = searchValue.trim()
+            ? allUsers.filter(user => {
                   return (
-                      data.name
+                      user.name
                           .toLowerCase()
-                          .includes(searchField.toLowerCase().trim()) ||
-                      data.selfIntroduction
+                          .includes(searchValue.toLowerCase().trim()) ||
+                      user.selfIntroduction
                           .toLowerCase()
-                          .includes(searchField.toLowerCase().trim()) ||
-                      data.skills.some(skill =>
-                          skill.title
-                              .toLowerCase()
-                              .includes(searchField.toLowerCase().trim()),
-                      )
+                          .includes(searchValue.toLowerCase().trim())
                   );
               })
             : [];
+        const filteredUserBySkill = allUsers.filter(user => {
+            if (
+                checkedSkillsArray.every(skillID =>
+                    user.skills.map(e => e.skillID).includes(skillID),
+                )
+            )
+                return user;
 
-        const filteredUserBySkill = allUsers.filter(data =>
-            data.skills.find(t => checkedSkills.includes(t.skillID)),
-        );
+            return null;
+        });
 
         const allSearchOutcome = [
             ...filteredUserByKeyword,
             ...filteredUserBySkill,
         ];
 
-        const filterRepeatSearchOutcome = allSearchOutcome.filter(
-            (user, index, self) =>
-                index === self.findIndex(t => t.uid === user.uid),
+        return { allSearchOutcome, filteredUserByKeyword, filteredUserBySkill };
+    }
+    function findUniqueOutcome(array) {
+        return array.filter(
+            (item, index, self) =>
+                index !== self.findIndex(t => t.uid === item.uid),
         );
+    }
 
-        if (filterRepeatSearchOutcome.length === 0) {
-            setSearchUsers([]);
-            return handleAlertModal("查無資料");
-        }
+    function searchUsersByKeyword(e) {
+        if (!e.target.value.trim() && checkedSkills.length === 0)
+            return setSearchUsers(allUsers);
+        const outcome = filterOutcome(e.target.value, checkedSkills);
+
+        const filterRepeatSearchOutcome =
+            checkedSkills.length === 0
+                ? outcome.filteredUserByKeyword
+                : outcome.filteredUserByKeyword.length !== 0 &&
+                  outcome.filteredUserBySkill.length !== 0
+                ? findUniqueOutcome(outcome.allSearchOutcome)
+                : outcome.filteredUserBySkill.length === 0 &&
+                  outcome.filteredUserByKeyword.length !== 0
+                ? outcome.filteredUserByKeyword
+                : outcome.filteredUserBySkill.length !== 0 &&
+                  !e.target.value.trim()
+                ? outcome.filteredUserBySkill
+                : [];
 
         setSearchUsers(filterRepeatSearchOutcome);
     }
@@ -250,19 +268,39 @@ export const TalentedPersonSearch = () => {
         const { value, checked } = e.target;
 
         if (checked) {
-            setCheckedSkills(prev => [...prev, value]);
+            const NewCheckedSkills = [...checkedSkills, value];
+            setCheckedSkills(NewCheckedSkills);
+            const outcome = filterOutcome(searchField, NewCheckedSkills);
+            const filterRepeatSearchOutcome =
+                outcome.filteredUserByKeyword.length === 0
+                    ? outcome.filteredUserBySkill
+                    : findUniqueOutcome(outcome.allSearchOutcome);
+
+            setSearchUsers(filterRepeatSearchOutcome);
         }
 
         if (!checked) {
-            setCheckedSkills(prev => prev.filter(e => e !== value));
+            const NewCheckedSkills = checkedSkills.filter(e => e !== value);
+            setCheckedSkills(NewCheckedSkills);
+            if (!searchField.trim() && NewCheckedSkills.length === 0)
+                return setSearchUsers(allUsers);
+            const outcome = filterOutcome(searchField, NewCheckedSkills);
+
+            const filterRepeatSearchOutcome =
+                NewCheckedSkills.length === 0
+                    ? outcome.filteredUserByKeyword
+                    : outcome.filteredUserByKeyword.length === 0
+                    ? outcome.filteredUserBySkill
+                    : findUniqueOutcome(outcome.allSearchOutcome);
+
+            setSearchUsers(filterRepeatSearchOutcome);
         }
     };
-
-    console.log(checkedSkills);
+    console.log(searchField);
 
     return (
         <>
-            {!skills || !allUsers ? (
+            {!skills || !allUsers || !searchUsers ? (
                 <Loading />
             ) : (
                 <>
@@ -274,11 +312,10 @@ export const TalentedPersonSearch = () => {
                                     setSearchField={setSearchField}
                                     changeValueCallback={e => {
                                         setSearchField(e.target.value);
+                                        searchUsersByKeyword(e);
                                     }}
-                                    searchCallback={e =>
-                                        searchUsersByKeyword(e)
-                                    }
-                                    placeholderText="找找你/妳想要的人才..."
+                                    searchCallback={e => e.preventDefault()}
+                                    placeholderText="輸入姓名或勾選下方技能找人才..."
                                 />
                             </SearchInputBox>
                             <SkillsBox>
@@ -296,7 +333,11 @@ export const TalentedPersonSearch = () => {
                                     ))}
                             </SkillsBox>
                             <CardBox>
-                                {searchUsers &&
+                                {searchUsers.length === 0 ? (
+                                    <SkillFilter paddingLeft="18px">
+                                        <NoDataTitle title="無符合結果" />
+                                    </SkillFilter>
+                                ) : (
                                     searchUsers.map(user => (
                                         <Card
                                             onClick={() => {
@@ -304,6 +345,7 @@ export const TalentedPersonSearch = () => {
                                                     `/personal-introduction?uid=${user.uid}`,
                                                 );
                                             }}
+                                            key={user.uid}
                                         >
                                             <UserPhoto
                                                 src={user.photo}
@@ -338,18 +380,14 @@ export const TalentedPersonSearch = () => {
                                                       ))}
                                             </UserSkillBox>
                                         </Card>
-                                    ))}
+                                    ))
+                                )}
                             </CardBox>
                         </SearchArea>
                     </Container>
                     <Footer />
                 </>
             )}
-            <AlertModal
-                content={alertMessage}
-                alertIsOpen={alertIsOpen}
-                setAlertIsOpen={setAlertIsOpen}
-            />
         </>
     );
 };
