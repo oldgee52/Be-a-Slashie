@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
@@ -35,18 +35,21 @@ const Input = styled.input`
     width: 50%;
     /* height: 50px; */
     padding: 5px;
-
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    font-size: 16px;
     word-break: break-word;
     text-align: center;
     border: none;
-    background-color: none;
+    border-radius: 5px;
+
+    background-color: rgba(0, 0, 0, 0.1);
     &:focus {
         outline: none;
     }
 
-    /* &:disabled {
-        background-color: white;
-    } */
+    &:disabled {
+        background-color: rgba(0, 0, 0, 0.001);
+    }
 
     @media ${breakPoint.desktop} {
         text-align: left;
@@ -60,17 +63,20 @@ const InputText = styled.textarea`
     height: 70px;
     padding: 5px;
     overflow: hidden;
-    background-color: none;
+    background-color: rgba(0, 0, 0, 0.1);
 
     border: none;
+    border-radius: 5px;
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    font-size: 16px;
     &:focus {
         outline: none;
         overflow: inherit;
     }
 
-    /* &:disabled {
-        background-color: white;
-    } */
+    &:disabled {
+        background-color: rgba(0, 0, 0, 0.001);
+    }
 
     @media ${breakPoint.desktop} {
         width: 60%;
@@ -128,6 +134,12 @@ export const InputForModify = ({
     targetName,
     inputText,
 }) => {
+    const inputElement = useRef(null);
+
+    useEffect(() => {
+        if (!handleDisable) inputElement.current.focus();
+    }, [inputElement, handleDisable]);
+
     function handleInputChange(e) {
         let data = { ...inputFields };
         data[e.target.name] = e.target.value;
@@ -169,6 +181,7 @@ export const InputForModify = ({
                     name={targetName}
                     onChange={e => handleInputChange(e)}
                     disabled={handleDisable}
+                    ref={inputElement}
                 />
             ) : (
                 <InputText
@@ -176,18 +189,24 @@ export const InputForModify = ({
                     name={targetName}
                     onChange={e => handleInputChange(e)}
                     disabled={handleDisable}
+                    onFocus={e => {
+                        const value = e.target.value;
+                        e.target.value = "";
+                        e.target.value = value;
+                    }}
+                    ref={inputElement}
                 />
             )}
 
             {handleDisable && (
                 <PencilBox
-                    onClick={() =>
+                    onClick={() => {
                         handleModifyClick(
                             handleDisable,
                             setHandleDisable,
                             targetName,
-                        )
-                    }
+                        );
+                    }}
                 >
                     <BsPencil />
                 </PencilBox>

@@ -86,6 +86,7 @@ button {
   padding: 0;
   border: none;
   background: none;
+  font-family: "Noto Sans TC", "微軟正黑體","Arial", sans-serif;
 }
 `;
 
