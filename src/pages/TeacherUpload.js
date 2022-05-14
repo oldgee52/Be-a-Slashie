@@ -14,7 +14,6 @@ import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
 import { MyButton } from "../Component/MyButton";
-import { useNavigate } from "react-router-dom";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { LoadingForPost } from "../Component/LoadingForPost";
@@ -184,6 +183,26 @@ const SkillsBox = styled.div`
     @media ${breakPoint.desktop} {
         width: 80%;
         margin-bottom: 0;
+    }
+`;
+const DirectionBox = styled.div`
+    /* padding: 5px; */
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: 5px;
+`;
+const DirectionTitle = styled.div`
+    font-weight: 600;
+    font-size: 16px;
+    margin: 5px 0 5px 0;
+`;
+
+const List = styled.li`
+    &::before {
+        content: "${"\0"}040";
+        color: #ff6700;
+        top: -1px;
+        margin-right: 5px;
     }
 `;
 const initState = {
@@ -406,6 +425,25 @@ export const TeacherUpload = ({ userID }) => {
         <>
             <Container>
                 <FormArea>
+                    <DirectionBox>
+                        <DirectionTitle>課程上架說明</DirectionTitle>
+                        <ul>
+                            <List>
+                                本網站僅提供課程上架與媒合，實際上課方式、價錢等，請自行與學生確認並負相關責任
+                            </List>
+                            <List>
+                                上架完成後，若有學生報名將會收到mail通知，開課前請確認同意上課的學生
+                            </List>
+                            <List>
+                                進行中課程，提供教材上傳及作業設定，可查看學生上傳作業資訊，課程結束前請確認是否給技能徽章
+                            </List>
+                            <List>
+                                若發現無適合可得技能，請
+                                <a href="mailto:beaslashie@gmail.com">Mail</a>
+                                與我們聯繫
+                            </List>
+                        </ul>
+                    </DirectionBox>
                     <Label>
                         <Title>課程名稱</Title>
                         <Input
