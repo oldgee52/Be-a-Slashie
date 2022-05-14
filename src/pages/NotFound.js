@@ -24,7 +24,7 @@ const CheckedImg = styled.div`
     background-size: 90%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #00bea4;
+    background-color: #5fc198;
     width: 250px;
     height: 250px;
     margin-bottom: 10px;
@@ -34,7 +34,7 @@ const CheckedImg = styled.div`
 const Text = styled.div`
     width: 100%;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 12px;
     line-height: 1.2;
 `;

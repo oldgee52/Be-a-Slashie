@@ -31,7 +31,7 @@ const CheckedImg = styled.div`
 const Text = styled.div`
     width: 100%;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     margin-top: 12px;
     line-height: 1.2;
 `;

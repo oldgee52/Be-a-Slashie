@@ -84,11 +84,14 @@ const DirectionBox = styled.div`
     flex-direction: column;
 `;
 const Title = styled.div`
-    font-size: 24px;
+    font-size: 20px;
     letter-spacing: 10px;
     padding-bottom: 10px;
     margin-bottom: 10px;
     width: 100%;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const CourseCard = styled.div`
@@ -140,22 +143,20 @@ const InfoArea = styled.div`
 `;
 
 const Info = styled.p`
-    font-size: 14px;
+    font-size: 16px;
     margin-top: 22px;
     @media ${breakPoint.desktop} {
-        font-size: 18px;
         margin-top: 20px;
     }
 `;
 
 const TeacherName = styled.p`
     color: #7f7f7f;
-    font-size: 14px;
+
     line-height: 20px;
     margin-top: 5px;
     width: calc(100% - 40px);
     @media ${breakPoint.desktop} {
-        font-size: 18px;
         margin-top: 10px;
     }
 `;

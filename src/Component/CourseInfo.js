@@ -72,6 +72,8 @@ const CourseName = styled.h4`
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
+    height: 72px;
+    overflow: hidden;
     word-wrap: break-word;
 
     margin-bottom: 10px;
@@ -81,14 +83,12 @@ const CourseName = styled.h4`
         font-size: 24px;
         padding-top: 40px;
         height: 130px;
-        word-wrap: break-word;
-        overflow: hidden;
     }
 `;
 
 const TeacherName = styled.p`
     color: #7f7f7f;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
     margin-top: 5px;
 
@@ -107,7 +107,6 @@ const View = styled.p`
     justify-content: flex-end;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
-        font-size: 16px;
         margin-top: -20px;
         margin-right: 30px;
     }
@@ -151,8 +150,6 @@ const Label = styled.div`
         letter-spacing: 5px;
         right: -30px;
         top: 12px;
-        font-size: 14px;
-
         transform: rotate(45deg);
     }
 `;

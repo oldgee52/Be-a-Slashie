@@ -9,6 +9,7 @@ import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import banner from "../images/banner.png";
+import { FaArrowRight } from "react-icons/fa";
 
 const Container = styled.div`
     display: flex;
@@ -62,9 +63,12 @@ const SeeMore = styled.div`
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
-        font-size: 14px;
+        font-size: 16px;
         padding-top: 10px;
         margin-bottom: 40px;
+        &:hover {
+            text-decoration: underline;
+        }
     }
 `;
 
@@ -89,8 +93,10 @@ const BannerTitle = styled.div`
     text-align: center;
     width: 100%;
     margin-bottom: 20px;
+    line-height: 1.5;
 
     @media ${breakPoint.desktop} {
+        font-size: 28px;
         text-align: left;
         padding-left: 20px;
     }
@@ -169,7 +175,9 @@ export const Home = () => {
                     <Banner>
                         <InputArea>
                             <BannerTitle>
-                                夢想，不是浮躁，而是沈澱和累積
+                                夢想，不是浮躁
+                                <br />
+                                而是沈澱和累積
                             </BannerTitle>
                             <InputDiv>
                                 <SearchInput
@@ -198,7 +206,10 @@ export const Home = () => {
                                 <SeeMore
                                     onClick={() => navigate(`/search?q=latest`)}
                                 >
-                                    點我看更多
+                                    點我看更多{" "}
+                                    <span>
+                                        <FaArrowRight />
+                                    </span>
                                 </SeeMore>
 
                                 {latestCourse.map(course => (
@@ -233,7 +244,10 @@ export const Home = () => {
                                         navigate(`/search?q=popular`)
                                     }
                                 >
-                                    點我看更多
+                                    點我看更多{" "}
+                                    <span>
+                                        <FaArrowRight />
+                                    </span>
                                 </SeeMore>
 
                                 {popularCourse.map(course => (

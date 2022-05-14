@@ -30,17 +30,19 @@ const TitleArea = styled.div`
     justify-content: center;
     margin-top: 10px;
     /* color: #7f7f7f; */
+    font-size: 14px;
 
     @media ${breakPoint.desktop} {
         width: 10%;
         flex-direction: column;
+        font-size: 16px;
     }
 `;
 
 const SubTitleArea = styled(TitleArea)`
     font-size: 12px;
     @media ${breakPoint.desktop} {
-        font-size: 14px;
+        font-size: 16px;
         flex-direction: row;
         width: 60%;
         justify-content: flex-start;
@@ -93,7 +95,7 @@ const SubTitle = styled.div`
         border-left: none;
         margin-right: 10px;
         box-shadow: 1px 1px 0px 1px rgba(0, 0, 0, 0.1);
-        width: 100px;
+        width: 110px;
         transition-duration: 0.5s;
         &:hover {
             border-bottom: ${prop =>

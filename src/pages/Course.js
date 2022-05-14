@@ -33,6 +33,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { Footer } from "../Component/Footer";
+import { HoverInfo } from "../Component/HoverInfo";
 
 const Container = styled.div`
     display: flex;
@@ -177,6 +178,7 @@ const AboutTitle = styled.div`
     color: #ff6700;
 
     @media ${breakPoint.desktop} {
+        font-size: 24px;
         width: 100%;
     }
 `;
@@ -215,7 +217,7 @@ const CourseIntroduction = styled.p`
     line-height: 1.5;
     padding-left: 10px;
     @media ${breakPoint.desktop} {
-        font-size: 14px;
+        font-size: 16px;
     }
 `;
 
@@ -286,7 +288,10 @@ const MessageContainer = styled.div`
 `;
 
 const MessageHeader = styled.div`
-    font-size: 18px;
+    font-size: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const MessageInputArea = styled.div`
@@ -714,12 +719,12 @@ export const Course = ({ userID }) => {
                         >
                             {inputFields[index]?.isShowReplyInput ? (
                                 <>
-                                    <RiCloseCircleLine viewBox="0 -2 24 24" />
-                                    取消
+                                    <RiCloseCircleLine viewBox="0 -2 24 24" />{" "}
+                                    <span>取消</span>
                                 </>
                             ) : (
                                 <>
-                                    <BsReply /> 回覆
+                                    <BsReply /> <span>回覆</span>
                                 </>
                             )}
                         </IsShowReply>
@@ -853,14 +858,18 @@ export const Course = ({ userID }) => {
                                             "photo",
                                         )}
                                     />
+
                                     <a
                                         href={`mailto:${findUserInfo(
                                             courseData.teacherUserID,
                                             "email",
                                         )}`}
                                     >
-                                        <NewFiMail />
+                                        <HoverInfo content="發送E-mail">
+                                            <NewFiMail />
+                                        </HoverInfo>
                                     </a>
+
                                     <TeacherName>
                                         {findUserInfo(
                                             courseData.teacherUserID,

@@ -40,12 +40,15 @@ const CourseCard = styled.div`
 `;
 
 const CourseTitle = styled.h3`
-    font-size: 16px;
+    font-size: 18px;
     padding-bottom: 10px;
     border-bottom: 1px solid #505050;
     line-height: 1.2;
 
     word-break: break-all;
+    @media ${breakPoint.desktop} {
+        font-size: 22px;
+    }
 `;
 
 const StudentInfoBoc = styled.div`

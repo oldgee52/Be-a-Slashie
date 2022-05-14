@@ -60,6 +60,9 @@ const UserName = styled.div`
     padding-top: 10px;
     font-weight: 700;
     font-size: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const UserIntroduction = styled.div`
@@ -83,6 +86,9 @@ const SkillTitle = styled.div`
     border-bottom: 1px solid #7f7f7f;
     padding-bottom: 15px;
     margin-bottom: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const SkillBox = styled.div`

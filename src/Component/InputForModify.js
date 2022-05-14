@@ -34,7 +34,6 @@ const Title = styled.div`
 const Input = styled.input`
     width: 50%;
     /* height: 50px; */
-    font-size: 20px;
     padding: 5px;
 
     word-break: break-word;
@@ -59,7 +58,6 @@ const Input = styled.input`
 const InputText = styled.textarea`
     width: 50%;
     height: 70px;
-    font-size: 14px;
     padding: 5px;
     overflow: hidden;
     background-color: none;
