@@ -10,6 +10,7 @@ import { Footer } from "../Component/Footer";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import banner from "../images/banner.png";
 import { FaArrowRight } from "react-icons/fa";
+import { keyframes } from "styled-components";
 
 const Container = styled.div`
     display: flex;
@@ -53,13 +54,27 @@ const Title = styled.h2`
         margin-bottom: 40px;
     }
 `;
+
+const move = keyframes`
+    0%{
+        transform: translateX(0%);
+    }
+    50% {
+        transform: translateX(-10%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+    
+
+`;
 const SeeMore = styled.div`
     margin-top: 20px;
     margin-bottom: 20px;
     width: 30%;
     text-align: right;
-    font-size: 12px;
-
+    font-size: 14px;
+    animation: ${move} 3s infinite ease-in-out;
     cursor: pointer;
 
     @media ${breakPoint.desktop} {
