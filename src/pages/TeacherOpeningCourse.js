@@ -22,6 +22,7 @@ import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { MyRadioButton } from "../Component/MyRadioButton";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -485,7 +486,13 @@ export const TeacherOpeningCourse = ({ userID }) => {
             ) : (
                 <Container>
                     {courses.length === 0 ? (
-                        <NoDataTitle title="目前沒有課程喔" />
+                        <NoDataBox
+                            marginTop="35px"
+                            marginLeft="140px"
+                            title="尚未有課程喔，可以去看看開課方式！"
+                            buttonWord="來去看看"
+                            path="/personal/teacher-upload-course"
+                        />
                     ) : (
                         courses?.map((course, index) => (
                             <CourseCard key={index} show={course.isShow}>

@@ -13,6 +13,7 @@ const Button = styled.button`
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
 
     background: ${props =>
         props.disabled

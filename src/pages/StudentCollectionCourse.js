@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import { collection } from "firebase/firestore";
-import { NoDataTitle } from "../Component/NoDataTitle";
 import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { NoDataBox } from "../Component/NoDataBox";
 const Container = styled.div`
     display: flex;
     justify-content: center;
@@ -99,7 +98,13 @@ export const StudentCollectionCourse = ({ userID }) => {
                 <Container>
                     <CourseArea>
                         {collectionCourses.length === 0 ? (
-                            <NoDataTitle title="還沒有收藏喔，快去逛逛！" />
+                            <NoDataBox
+                                marginTop="20px"
+                                marginLeft="150px"
+                                title="還沒有收藏喔，快去逛逛！"
+                                buttonWord="來去逛逛"
+                                path="/search?q=latest"
+                            />
                         ) : (
                             collectionCourses.map(course => (
                                 <CourseDiv key={course.courseID}>

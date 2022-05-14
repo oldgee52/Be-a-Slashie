@@ -12,6 +12,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { MyRadioButton } from "../Component/MyRadioButton";
 import { HoverInfo } from "../Component/HoverInfo";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -205,7 +206,13 @@ export const TeacherConfirmRegistration = ({ userID }) => {
             ) : (
                 <Container>
                     {courses?.length === 0 ? (
-                        <NoDataTitle title="目前沒有課程喔" />
+                        <NoDataBox
+                            marginTop="35px"
+                            marginLeft="140px"
+                            title="尚未有課程喔，可以去看看開課方式！"
+                            buttonWord="來去看看"
+                            path="/personal/teacher-upload-course"
+                        />
                     ) : (
                         courses &&
                         courses.map(course => (

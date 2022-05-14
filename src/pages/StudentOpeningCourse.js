@@ -13,6 +13,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -122,18 +123,9 @@ const HomeworkDate = styled.div`
     }
 `;
 const HomeworkDownload = styled.div`
-    /* font-size: 12px; */
     width: 30%;
     text-align: right;
     color: #ff6100;
-    /* height: 15px;
-    padding: 2px;
-
-    text-align: center;
-    background-color: rgb(0 190 164);
-    color: whitesmoke;
-    border-radius: 10px;
-    cursor: pointer; */
     @media ${breakPoint.desktop} {
         width: 10%;
     }
@@ -447,7 +439,13 @@ export const StudentOpeningCourse = ({ userID }) => {
                 <Loading />
             ) : courseDetails.length === 0 ? (
                 <Container>
-                    <NoDataTitle title="目前沒有課程喔" />
+                    <NoDataBox
+                        marginTop="35px"
+                        marginLeft="180px"
+                        title="還沒有進行中的課程喔，快去逛逛！"
+                        buttonWord="來去逛逛"
+                        path="/search?q=latest"
+                    />
                 </Container>
             ) : (
                 <Container>

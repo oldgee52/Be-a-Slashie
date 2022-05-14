@@ -4,6 +4,7 @@ import { Loading } from "../Component/Loading";
 import { Skills } from "../Component/Skills";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -47,7 +48,17 @@ export const StudentGotSkill = ({ userID }) => {
                 <Loading />
             ) : (
                 <Container>
-                    <Skills skills={gotSkills} />
+                    {gotSkills.length === 0 ? (
+                        <NoDataBox
+                            marginTop="20px"
+                            marginLeft="150px"
+                            title="還沒有獲得徽章，快去逛逛！"
+                            buttonWord="來去逛逛"
+                            path="/search?q=latest"
+                        />
+                    ) : (
+                        <Skills skills={gotSkills} />
+                    )}
                 </Container>
             )}
         </>

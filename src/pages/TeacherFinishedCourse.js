@@ -6,6 +6,7 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import firebaseInit from "../utils/firebase";
 import { Loading } from "../Component/Loading";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -80,7 +81,13 @@ export const TeacherFinishedCourse = ({ userID }) => {
                 <Container>
                     <CourseArea>
                         {finishedCourses.length === 0 ? (
-                            <NoDataTitle title="尚未有完成的課程喔" />
+                            <NoDataBox
+                                marginTop="35px"
+                                marginLeft="100px"
+                                title="尚未有課程喔，可以去看看開課方式！"
+                                buttonWord="來去看看"
+                                path="/personal/teacher-upload-course"
+                            />
                         ) : (
                             finishedCourses.map((course, index) => (
                                 <CourseDiv key={course.courseID}>

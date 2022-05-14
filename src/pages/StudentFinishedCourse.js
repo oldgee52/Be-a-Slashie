@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
-import { NoDataTitle } from "../Component/NoDataTitle";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -80,7 +80,13 @@ export const StudentFinishedCourse = ({ userID }) => {
                 <Loading />
             ) : finishedCourses.length === 0 ? (
                 <Container>
-                    <NoDataTitle title="還沒有完成的課程喔" />
+                    <NoDataBox
+                        marginTop="15px"
+                        marginLeft="150px"
+                        title="還沒有完成的課程喔，快去逛逛！"
+                        buttonWord="來去逛逛"
+                        path="/search?q=latest"
+                    />
                 </Container>
             ) : (
                 <Container>
