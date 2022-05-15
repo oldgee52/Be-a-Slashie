@@ -125,7 +125,7 @@ const CourseName = styled.h4`
         width: inherit;
         font-size: 24px;
         padding-top: 40px;
-        height: 120px;
+        height: 80px;
         word-wrap: break-word;
     }
 `;

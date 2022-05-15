@@ -88,7 +88,7 @@ const SeeMore = styled.div`
 `;
 
 const InputArea = styled.div`
-    top: 250px;
+    top: 200px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -96,8 +96,6 @@ const InputArea = styled.div`
     flex-wrap: wrap;
 
     @media ${breakPoint.desktop} {
-        top: 250px;
-
         max-width: 1200px;
         justify-content: flex-start;
     }
