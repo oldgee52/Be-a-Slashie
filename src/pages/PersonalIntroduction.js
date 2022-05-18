@@ -18,7 +18,6 @@ const Container = styled.div`
     width: 100%;
 
     padding: 80px 10px 80px 10px;
-    /* min-height: calc(100vh - 100px); */
 
     @media ${breakPoint.desktop} {
         margin: auto;
@@ -33,7 +32,6 @@ const InfoArea = styled.div`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    /* background: linear-gradient(rgb(2, 170, 176), rgb(0, 205, 172)); */
     background: linear-gradient(#ff8f08, #ff6700);
     border-radius: 5px;
     color: white;

@@ -13,7 +13,6 @@ import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
 import { Loading } from "../Component/Loading";
 
 const Box = styled.div`
@@ -74,16 +73,6 @@ const SingUpDiv = styled.div`
     align-self: flex-start;
 `;
 
-const ErrorMessage = styled.div`
-    width: 100%;
-    font-size: 12px;
-    text-align: left;
-    color: #ff6100;
-    align-self: flex-start;
-    padding-left: 5px;
-    height: 15px;
-`;
-
 export const Login = ({ userLogin }) => {
     const [info, setInfo] = useState({
         email: "",
@@ -93,8 +82,6 @@ export const Login = ({ userLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
     const [isNavigate, setIsNavigate] = useState(false);
     const [isAutoNavigate, setIsAutoNavigate] = useState(true);
-    const [emailErrorMessage, setEmailErrorMessage] = useState(" ");
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState(" ");
     const navigate = useNavigate();
     const location = useLocation();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -203,8 +190,6 @@ export const Login = ({ userLogin }) => {
                                     password: "",
                                     name: "",
                                 });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
                             }}
                             login={isLogin}
                         >
@@ -218,8 +203,6 @@ export const Login = ({ userLogin }) => {
                                     password: "",
                                     name: "",
                                 });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
                             }}
                             login={isLogin}
                         >
@@ -232,7 +215,6 @@ export const Login = ({ userLogin }) => {
                             name="email"
                             placeholder="請輸入信箱"
                         />
-                        {/* <ErrorMessage>{emailErrorMessage}</ErrorMessage> */}
                         <TextInput
                             value={info.password}
                             handleChange={handleChange}
@@ -240,7 +222,6 @@ export const Login = ({ userLogin }) => {
                             type="password"
                             placeholder="請輸入密碼"
                         />
-                        {/* <ErrorMessage>{passwordErrorMessage}</ErrorMessage> */}
                         {!isLogin && (
                             <TextInput
                                 value={info.name}

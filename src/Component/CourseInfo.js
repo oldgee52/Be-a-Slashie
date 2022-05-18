@@ -68,7 +68,6 @@ const CourseTitle = styled.div`
 `;
 
 const CourseName = styled.h4`
-    /* width: 60vw; */
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;

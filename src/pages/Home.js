@@ -28,8 +28,6 @@ const Container = styled.div`
 const Banner = styled.div`
     width: 100%;
     height: 500px;
-
-    /* background-color: #ff6100; */
     background-image: url(${banner});
     background-repeat: no-repeat;
     background-size: cover;
@@ -134,7 +132,6 @@ const CourseArea = styled.div`
 
 const CourseDiv = styled.div`
     width: 100%;
-    /* margin-top: 20px; */
 
     @media ${breakPoint.desktop} {
         width: calc(33.3% - 30px);

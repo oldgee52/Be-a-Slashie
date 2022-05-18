@@ -1,9 +1,7 @@
-import { collection } from "firebase/firestore";
-import { func } from "prop-types";
 import React, { useEffect, useState } from "react";
+import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { AlertModal } from "../Component/AlertModal";
 import { CheckSkills } from "../Component/CheckSkills";
 import { Footer } from "../Component/Footer";
 import { Loading } from "../Component/Loading";
@@ -47,7 +45,6 @@ const SkillsBox = styled.div`
     align-items: center;
 
     margin: 10px 0 10px 10px;
-    /* color: #7f7f7f; */
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;

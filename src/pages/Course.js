@@ -101,7 +101,6 @@ const CourseInfo = styled.div`
     @media ${breakPoint.desktop} {
         margin-bottom: 20px;
         justify-content: flex-start;
-        /* width: 25%; */
         order: 1;
         padding-left: 20px;
     }
@@ -230,8 +229,6 @@ const RegisterArea = styled.div`
     width: 100%;
     background-color: whitesmoke;
     height: 50px;
-    /* margin-top: 50px; */
-
     @media ${breakPoint.desktop} {
         display: none;
     }

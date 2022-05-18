@@ -29,7 +29,6 @@ const TitleArea = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    /* color: #7f7f7f; */
     font-size: 14px;
 
     @media ${breakPoint.desktop} {

@@ -7,7 +7,6 @@ import { breakPoint } from "../utils/breakPoint";
 import logo from "../images/logo.png";
 import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
-import profile from "../images/profile.png";
 import { BiLogOut, BiUser } from "react-icons/bi";
 import { AlertModal } from "./AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
@@ -61,9 +60,6 @@ const NavShowBackground = styled.div`
     top: 0;
     z-index: 4;
     right: ${props => (props.show ? "0" : "-1000px")};
-    /* z-index: ${props => (props.show ? "4" : "-10")}; */
-    /* display: ${props => (props.show ? "block" : "none")}; */
-    /* opacity: ${props => (props.show ? "1" : "0")}; */
     transition-duration: 0.5s;
     @media ${breakPoint.desktop} {
         display: none;

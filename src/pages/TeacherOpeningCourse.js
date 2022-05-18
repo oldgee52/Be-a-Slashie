@@ -15,7 +15,6 @@ import { MyButton } from "../Component/MyButton";
 import { TextInput } from "../Component/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { NoDataTitle } from "../Component/NoDataTitle";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";

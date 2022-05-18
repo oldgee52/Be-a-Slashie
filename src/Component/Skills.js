@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { breakPoint } from "../utils/breakPoint";
 
 const SkillsBox = styled.div`
     display: flex;

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
 import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
 import firebaseInit from "../utils/firebase";
 import { Loading } from "../Component/Loading";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
@@ -101,21 +100,6 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                             course?.closedDate.seconds * 1000,
                                         )}
                                     />
-
-                                    {/*
-                            <DivContent>
-                                學生:
-                                {course.students.map(student => (
-                                    <Div14 key={student.studentID}>
-                                        <DivContent1>
-                                            姓名: {student.name}
-                                        </DivContent1>
-                                        <DivContent1>
-                                            email: {student.email}
-                                        </DivContent1>
-                                    </Div14>
-                                ))}{" "}
-                            </DivContent> */}
                                 </CourseDiv>
                             ))
                         )}

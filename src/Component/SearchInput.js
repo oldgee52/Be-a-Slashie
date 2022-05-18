@@ -27,30 +27,11 @@ const InputArea = styled.input`
         letter-spacing: 1px;
         font-weight: 500;
     }
-    /* &:-moz-placeholder {
-        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
-    }
-    &::-moz-input-placeholder {
-        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
-    }
-    &::-webkit-input-placeholder {
-        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
-    }
-    &:-ms-input-placeholder {
-        font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
-    } */
-    /* border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px; */
-
     font-weight: 600;
 
     &:focus {
         outline: none;
     }
-
-    /* @media ${breakPoint.desktop} {
-        width: 350px;
-    } */
 `;
 
 const Search = styled(FiSearch)`

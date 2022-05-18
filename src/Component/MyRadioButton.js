@@ -12,24 +12,11 @@ const InputLabel = styled.label`
     cursor: pointer;
 `;
 
-// const Radio = styled.div`
-//     width: 13px;
-//     height: 13px;
-//     border: 1px solid ${props => (props.checked ? "#00bea4" : "#707070")};
-//     border-radius: 100%;
-//     background: ${props => (props.checked ? "#00bea4" : "white")};
-//     transition: all 0.2s ease;
-// `;
-
 const Agreement = styled.div`
     margin-left: 15px;
 `;
 
 const Radio = styled.span`
-    /* position: absolute;
-    top: 0;
-    left: 0; */
-    /* position: relative; */
     border: 1px solid #707070;
     height: 15px;
     width: 15px;
@@ -87,7 +74,6 @@ export const MyRadioButton = ({
             />
             <Radio />
             <Agreement>{title}</Agreement>
-            {/* <Radio checked={isChecked} /> */}
         </InputLabel>
     );
 };

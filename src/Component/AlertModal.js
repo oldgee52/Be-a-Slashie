@@ -44,8 +44,6 @@ const TextArea = styled.div`
     padding: 0 20px;
     white-space: pre-line;
     line-height: 1;
-    /* padding-left: 50px;
-    padding-top: 50px; */
 `;
 
 export const AlertModal = ({
