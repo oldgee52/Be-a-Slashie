@@ -6,7 +6,7 @@ import { Course } from "./pages/Course";
 import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
 import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
 import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
-import Sidebar from "./Component/Sidebar";
+import Header from "./Component/Header";
 import { Profile } from "./pages/Profile";
 import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
 import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
@@ -23,6 +23,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { Login } from "./pages/Login";
 import { Personal } from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
+import { ModalProvider } from "styled-react-modal";
+import { FinishedRegisteredCourse } from "./pages/FinishedRegisteredCourse";
+import { NotFound } from "./pages/NotFound";
 
 function App() {
     const [userID, setUserID] = useState("");
@@ -45,105 +48,122 @@ function App() {
     return (
         <>
             <GlobalStyle />
-            <BrowserRouter>
-                <Sidebar userID={userID} />
+            <ModalProvider>
+                <BrowserRouter>
+                    <Header userID={userID} />
 
-                <Routes>
-                    <Route
-                        path="personal"
-                        element={
-                            <RequireAuth userLogin={userLogin}>
-                                <Personal />
-                            </RequireAuth>
-                        }
-                    >
+                    <Routes>
                         <Route
-                            path="student-got-skill"
-                            element={<StudentGotSkill userID={userID} />}
-                        />
-                        <Route
-                            path="student-collection-course"
+                            path="personal"
                             element={
-                                <StudentCollectionCourse userID={userID} />
+                                <RequireAuth userLogin={userLogin}>
+                                    <Personal />
+                                </RequireAuth>
+                            }
+                        >
+                            <Route
+                                path="student-got-skill"
+                                element={<StudentGotSkill userID={userID} />}
+                            />
+                            <Route
+                                path="student-collection-course"
+                                element={
+                                    <StudentCollectionCourse userID={userID} />
+                                }
+                            />
+                            <Route
+                                path="student-finished-course"
+                                element={
+                                    <StudentFinishedCourse userID={userID} />
+                                }
+                            />
+                            <Route
+                                path="student-registered-course"
+                                element={
+                                    <StudentRegisteredCourse userID={userID} />
+                                }
+                            />
+                            <Route
+                                path="student-opening-course"
+                                element={
+                                    <StudentOpeningCourse userID={userID} />
+                                }
+                            />
+
+                            <Route
+                                path="profile"
+                                element={<Profile userID={userID} />}
+                            />
+                            <Route
+                                path="teacher-finished-course"
+                                element={
+                                    <TeacherFinishedCourse userID={userID} />
+                                }
+                            />
+
+                            <Route
+                                path="teacher-confirm-registration"
+                                element={
+                                    <TeacherConfirmRegistration
+                                        userID={userID}
+                                    />
+                                }
+                            />
+                            <Route
+                                path="teacher-upload-course"
+                                element={<TeacherUpload userID={userID} />}
+                            />
+                            <Route
+                                path="teacher-opening-course"
+                                element={
+                                    <TeacherOpeningCourse userID={userID} />
+                                }
+                            />
+                        </Route>
+                        <Route
+                            path="wishing-well"
+                            element={
+                                <RequireAuth userLogin={userLogin}>
+                                    <WishingWell userID={userID} />
+                                </RequireAuth>
+                            }
+                        />
+
+                        <Route
+                            path="course"
+                            element={
+                                <RequireAuth userLogin={userLogin}>
+                                    <Course userID={userID} />
+                                </RequireAuth>
+                            }
+                        />
+
+                        <Route
+                            path="login"
+                            element={
+                                <Login userID={userID} userLogin={userLogin} />
                             }
                         />
                         <Route
-                            path="student-finished-course"
-                            element={<StudentFinishedCourse userID={userID} />}
+                            path="talented-person-search"
+                            element={<TalentedPersonSearch />}
                         />
                         <Route
-                            path="student-registered-course"
-                            element={
-                                <StudentRegisteredCourse userID={userID} />
-                            }
+                            path="personal-introduction"
+                            element={<PersonalIntroduction />}
                         />
                         <Route
-                            path="student-opening-course"
-                            element={<StudentOpeningCourse userID={userID} />}
+                            path="finished-registered-course/:courseID"
+                            element={<FinishedRegisteredCourse />}
                         />
 
-                        <Route
-                            path="profile"
-                            element={<Profile userID={userID} />}
-                        />
-                        <Route
-                            path="teacher-finished-course"
-                            element={<TeacherFinishedCourse userID={userID} />}
-                        />
-
-                        <Route
-                            path="teacher-confirm-registration"
-                            element={
-                                <TeacherConfirmRegistration userID={userID} />
-                            }
-                        />
-                        <Route
-                            path="teacher-upload-course"
-                            element={<TeacherUpload userID={userID} />}
-                        />
-                        <Route
-                            path="teacher-opening-course"
-                            element={<TeacherOpeningCourse userID={userID} />}
-                        />
-                    </Route>
-                    <Route
-                        path="wishing-well"
-                        element={
-                            <RequireAuth userLogin={userLogin}>
-                                <WishingWell userID={userID} />
-                            </RequireAuth>
-                        }
-                    />
-
-                    <Route
-                        path="course"
-                        element={
-                            <RequireAuth userLogin={userLogin}>
-                                <Course userID={userID} />
-                            </RequireAuth>
-                        }
-                    />
-
-                    <Route
-                        path="login"
-                        element={
-                            <Login userID={userID} userLogin={userLogin} />
-                        }
-                    />
-                    <Route
-                        path="talented-person-search"
-                        element={<TalentedPersonSearch />}
-                    />
-                    <Route
-                        path="personal-introduction"
-                        element={<PersonalIntroduction />}
-                    />
-
-                    {/* <Route path="course" element={<Course />} /> */}
-                    <Route path="search" element={<Search />} />
-                    <Route path="/" element={<Home />} />
-                </Routes>
-            </BrowserRouter>
+                        {/* <Route path="course" element={<Course />} /> */}
+                        <Route path="search" element={<Search />} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </BrowserRouter>
+            </ModalProvider>
         </>
     );
 }

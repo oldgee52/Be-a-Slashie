@@ -8,9 +8,12 @@ import logo from "../images/logo.png";
 import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import profile from "../images/profile.png";
-import { BiLogOut } from "react-icons/bi";
+import { BiLogOut, BiUser } from "react-icons/bi";
+import { AlertModal } from "./AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { keyframes } from "styled-components";
 
-const SidebarContainer = styled.nav`
+const HeaderContainer = styled.nav`
     width: 100%;
     height: 50px;
     background-color: whitesmoke;
@@ -18,7 +21,7 @@ const SidebarContainer = styled.nav`
     justify-content: space-between;
     position: fixed;
     top: 0;
-    z-index: 5;
+    z-index: 6;
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
     }
@@ -34,8 +37,10 @@ const MobileItemContainer = styled.div`
     background-color: whitesmoke;
 
     position: fixed;
-    top: ${props => (props.show ? "50px" : "-50px")};
+    top: 50px;
+    right: ${props => (props.show ? "0" : "-1000px")};
     z-index: 5;
+    transition-duration: 0.5s;
 
     @media ${breakPoint.desktop} {
         display: flex;
@@ -55,15 +60,20 @@ const NavShowBackground = styled.div`
     position: fixed;
     top: 0;
     z-index: 4;
-    display: ${props => (props.show ? "block" : "none")};
+    right: ${props => (props.show ? "0" : "-1000px")};
+    /* z-index: ${props => (props.show ? "4" : "-10")}; */
+    /* display: ${props => (props.show ? "block" : "none")}; */
+    /* opacity: ${props => (props.show ? "1" : "0")}; */
+    transition-duration: 0.5s;
     @media ${breakPoint.desktop} {
         display: none;
     }
 `;
 
 const LogoImg = styled.img`
-    width: 150px;
-    margin-top: 5px;
+    width: 120px;
+    margin-top: 9px;
+
     margin-left: 15px;
     cursor: pointer;
 `;
@@ -71,34 +81,93 @@ const LogoImg = styled.img`
 const MenuImg = styled.img`
     width: 20px;
     height: 20px;
-    margin-top: 15px;
     margin-right: 15px;
+    margin-top: 3px;
     cursor: pointer;
     @media ${breakPoint.desktop} {
         display: none;
     }
 `;
 
-const ProfileImg = styled(MenuImg)`
-    margin-right: 30px;
-    @media ${breakPoint.desktop} {
-        display: initial;
+const circle = keyframes`
+    0% {
+        width: 1px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        height: 1px;
+        z-index: -1;
+        background: #eee;
+        border-radius: 100%;
     }
-`;
+    100% {
+        background: rgba(0,0,0,0.1);
+        height: 5000%;
+        width: 5000%;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        border-radius: 0;
+    }`;
 
-const SidebarContent = styled.div`
+const HeaderContent = styled.div`
     font-size: 16px;
-    color: ${props => (props.active ? "#ff6100" : "#7f7f7f")};
+    height: 50px;
+    line-height: 28px;
+    color: ${props => (props.active ? "#ff6100" : "#505050")};
+    background: ${props => (props.active ? "rgba(0,0,0,0.1)" : "none")};
     padding: 10px;
+    z-index: 1;
+    overflow: hidden;
+
+    &:hover {
+        color: #ff6100;
+    }
+    &:after {
+        display: block;
+        position: absolute;
+        margin: 0;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        content: ".";
+        color: transparent;
+        width: 1px;
+        height: 1px;
+        border-radius: 50%;
+        background: transparent;
+    }
+    &:hover:after {
+        animation: ${circle} 1.5s ease-in forwards;
+    }
 `;
 
 const RightArea = styled.div`
     display: flex;
+    align-items: center;
 `;
-const SignOutArea = styled.div`
+
+const RightAreaBox = styled.div`
     align-self: center;
-    margin-right: 30px;
+    margin-right: 15px;
+
+    width: 33px;
+    height: 25px;
+    overflow: hidden;
     cursor: pointer;
+
+    transition-duration: ${props => props.duration};
+    @media ${breakPoint.desktop} {
+        &:hover {
+            width: ${props => props.maxWidth};
+        }
+    }
 `;
 
 const NewBiLogOut = styled(BiLogOut)`
@@ -106,9 +175,28 @@ const NewBiLogOut = styled(BiLogOut)`
     height: 25px;
 `;
 
-function Sidebar({ userID }) {
+const NewBiUser = styled(BiUser)`
+    width: 25px;
+    height: 25px;
+`;
+const NewNavLink = styled(NavLink)`
+    width: 33.3%;
+    text-align: center;
+    @media ${breakPoint.desktop} {
+        width: 100px;
+    }
+`;
+
+const RightAreaBoxTitle = styled.span`
+    line-height: 1.6;
+    padding-left: 10px;
+`;
+
+function Header({ userID }) {
     const [isShow, setIsShow] = useState(false);
     const navigate = useNavigate();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
 
     function handleMobileNavShow() {
         setIsShow(prev => !prev);
@@ -121,11 +209,11 @@ function Sidebar({ userID }) {
     function handleSignOut() {
         signOut(firebaseInit.auth)
             .then(() => {
-                window.alert("已登出成功");
+                handleAlertModal("已登出成功");
                 navigate("/");
             })
             .catch(error => {
-                window.alert(error);
+                handleAlertModal(error);
             });
     }
 
@@ -137,7 +225,7 @@ function Sidebar({ userID }) {
     return (
         <>
             <NavShowBackground show={isShow} onClick={handleMobileNavShow} />
-            <SidebarContainer>
+            <HeaderContainer>
                 <NavLink to="/">
                     <LogoImg
                         src={logo}
@@ -148,45 +236,59 @@ function Sidebar({ userID }) {
 
                 <MobileItemContainer show={isShow}>
                     {narbarRouter.map(router => (
-                        <NavLink to={router.link} key={router.link}>
+                        <NewNavLink to={router.link} key={router.link}>
                             {({ isActive }) => (
-                                <SidebarContent
+                                <HeaderContent
                                     active={isActive}
                                     onClick={handleLinkToOtherRouterNavShow}
                                 >
                                     {router.title}
-                                </SidebarContent>
+                                </HeaderContent>
                             )}
-                        </NavLink>
+                        </NewNavLink>
                     ))}
                 </MobileItemContainer>
                 <RightArea>
                     {userID && (
-                        <SignOutArea
+                        <RightAreaBox
                             onClick={() => {
                                 handleLinkToOtherRouterNavShow();
                                 handleSignOut();
                             }}
+                            maxWidth="70px"
+                            duration="0.2s"
                         >
                             <NewBiLogOut viewBox="0 -1 24 24" />
-                        </SignOutArea>
+                            <RightAreaBoxTitle>登出</RightAreaBoxTitle>
+                        </RightAreaBox>
                     )}
                     <NavLink to="personal/profile">
-                        <ProfileImg
-                            src={profile}
-                            alt="個人資料"
+                        <RightAreaBox
                             onClick={handleLinkToOtherRouterNavShow}
-                        />
+                            maxWidth={userID ? "105px" : "70px"}
+                            duration={userID ? "0.4s" : "0.2s"}
+                        >
+                            <NewBiUser viewBox="0 -1 24 24" />
+                            <RightAreaBoxTitle>
+                                {userID ? "個人資料" : "登入"}
+                            </RightAreaBoxTitle>
+                        </RightAreaBox>
                     </NavLink>
+
                     <MenuImg
                         src={isShow ? cross : hamburger_menu}
                         onClick={handleMobileNavShow}
                         alt="menu"
                     />
                 </RightArea>
-            </SidebarContainer>
+            </HeaderContainer>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
         </>
     );
 }
 
-export default Sidebar;
+export default Header;

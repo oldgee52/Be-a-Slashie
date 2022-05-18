@@ -4,6 +4,9 @@ import { CourseInfo } from "../Component/CourseInfo";
 import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import firebaseInit from "../utils/firebase";
+import { Loading } from "../Component/Loading";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -34,7 +37,7 @@ const CourseArea = styled.div`
         align-items: flex-start;
         &::after {
             content: "";
-            width: calc(25% - 10px);
+            width: calc(30% - 10px);
         }
     }
 `;
@@ -43,13 +46,14 @@ const CourseDiv = styled.div`
     width: 100%;
 
     @media ${breakPoint.desktop} {
-        width: calc(28% - 10px);
+        width: calc(30% - 10px);
         margin-right: 10px;
     }
 `;
 
 export const TeacherFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
+    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         let isMounted = true;
@@ -70,28 +74,35 @@ export const TeacherFinishedCourse = ({ userID }) => {
         };
     }, [userID]);
     return (
-        <Container>
+        <>
             {!finishedCourses ? (
-                "loading..."
+                <Loading />
             ) : (
-                <CourseArea>
-                    {finishedCourses.length === 0 ? (
-                        <NoDataTitle title="尚未有完成的課程喔" />
-                    ) : (
-                        finishedCourses.map((course, index) => (
-                            <CourseDiv key={course.courseID}>
-                                <CourseInfo
-                                    image={course.image}
-                                    title={course.title}
-                                    openingDate={new Date(
-                                        course.openingDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                    closedDate={new Date(
-                                        course?.closedDate.seconds * 1000,
-                                    ).toLocaleDateString()}
-                                />
+                <Container>
+                    <CourseArea>
+                        {finishedCourses.length === 0 ? (
+                            <NoDataBox
+                                marginTop="35px"
+                                marginLeft="100px"
+                                title="尚未有課程喔，可以去看看開課方式！"
+                                buttonWord="來去看看"
+                                path="/personal/teacher-upload-course"
+                            />
+                        ) : (
+                            finishedCourses.map((course, index) => (
+                                <CourseDiv key={course.courseID}>
+                                    <CourseInfo
+                                        image={course.image}
+                                        title={course.title}
+                                        openingDate={customDateDisplay(
+                                            course.openingDate.seconds * 1000,
+                                        )}
+                                        closedDate={customDateDisplay(
+                                            course?.closedDate.seconds * 1000,
+                                        )}
+                                    />
 
-                                {/*
+                                    {/*
                             <DivContent>
                                 學生:
                                 {course.students.map(student => (
@@ -105,11 +116,12 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                     </Div14>
                                 ))}{" "}
                             </DivContent> */}
-                            </CourseDiv>
-                        ))
-                    )}
-                </CourseArea>
+                                </CourseDiv>
+                            ))
+                        )}
+                    </CourseArea>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

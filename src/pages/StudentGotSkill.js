@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Loading } from "../Component/Loading";
 import { Skills } from "../Component/Skills";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -14,42 +16,51 @@ const Container = styled.div`
 
     @media ${breakPoint.desktop} {
         width: 35%;
-        justify-content: space-between;
+        justify-content: flex-start;
         margin: auto;
         margin-left: 150px;
         margin-top: -135px;
     }
 `;
 
-const Div1 = styled.div`
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
-`;
-
 export const StudentGotSkill = ({ userID }) => {
     const [gotSkills, SetGotSkill] = useState();
 
     useEffect(() => {
-        firebaseInit.getStudentSkills(userID).then(data => {
-            console.log(data);
-            const rankDecreasingByDate = data.sort(
-                (a, b) => a.getDate.seconds - b.getDate.seconds,
-            );
+        if (userID)
+            firebaseInit.getStudentSkills(userID).then(data => {
+                console.log(data);
+                const rankDecreasingByDate = data.sort(
+                    (a, b) => a.getDate.seconds - b.getDate.seconds,
+                );
 
-            const filterRepeatSkill = rankDecreasingByDate.filter(
-                (skill, index, self) =>
-                    index === self.findIndex(t => t.skillID === skill.skillID),
-            );
-            SetGotSkill(filterRepeatSkill.reverse());
-        });
-    }, []);
+                const filterRepeatSkill = rankDecreasingByDate.filter(
+                    (skill, index, self) =>
+                        index ===
+                        self.findIndex(t => t.skillID === skill.skillID),
+                );
+                SetGotSkill(filterRepeatSkill.reverse());
+            });
+    }, [userID]);
     return (
-        <Container>
-            {!gotSkills ? "loading..." : <Skills skills={gotSkills} />}
-        </Container>
+        <>
+            {!gotSkills ? (
+                <Loading />
+            ) : (
+                <Container>
+                    {gotSkills.length === 0 ? (
+                        <NoDataBox
+                            marginTop="20px"
+                            marginLeft="150px"
+                            title="還沒有獲得徽章，快去逛逛！"
+                            buttonWord="來去逛逛"
+                            path="/search?q=latest"
+                        />
+                    ) : (
+                        <Skills skills={gotSkills} />
+                    )}
+                </Container>
+            )}
+        </>
     );
 };

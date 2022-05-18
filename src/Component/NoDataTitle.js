@@ -4,8 +4,7 @@ import { breakPoint } from "../utils/breakPoint";
 
 const NoShow = styled.div`
     margin-top: 10px;
-    font-size: 16px;
-    font-weight: 700;
+    margin-bottom: 10px;
     @media ${breakPoint.desktop} {
         align-self: flex-start;
     }

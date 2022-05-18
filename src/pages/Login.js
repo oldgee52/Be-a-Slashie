@@ -9,12 +9,28 @@ import {
     signInWithEmailAndPassword,
 } from "firebase/auth";
 import { MyButton } from "../Component/MyButton";
+import { AlertModal } from "../Component/AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { Footer } from "../Component/Footer";
+import { breakPoint } from "../utils/breakPoint";
+import { NoDataTitle } from "../Component/NoDataTitle";
+import { Loading } from "../Component/Loading";
+
+const Box = styled.div`
+    min-height: calc(100vh - 150px);
+    margin: 100px auto 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @media ${breakPoint.desktop} {
+        min-height: calc(100vh - 155px);
+    }
+`;
 
 const Container = styled.div`
-    margin: 180px auto 0 auto;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
     min-width: 300px;
     max-width: 400px;
@@ -29,12 +45,16 @@ const SignInDiv = styled.div`
     height: 40px;
     text-align: center;
     line-height: 40px;
-    background-color: ${props => (props.login ? "#ff6100" : "none")};
-    color: ${props => (props.login ? "white" : "black")};
+    background: ${props =>
+        props.login
+            ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "none"};
+    color: ${props => (props.login ? "white" : "inherit")};
     border-bottom-left-radius: 10px;
     border-top-left-radius: 10px;
     transition-duration: 0.5s;
     cursor: pointer;
+    align-self: flex-start;
 `;
 
 const SingUpDiv = styled.div`
@@ -42,12 +62,26 @@ const SingUpDiv = styled.div`
     height: 40px;
     text-align: center;
     line-height: 40px;
-    background-color: ${props => (!props.login ? "#ff6100" : "none")};
-    color: ${props => (!props.login ? "white" : "black")};
+    background: ${props =>
+        !props.login
+            ? "linear-gradient(to right,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "none"};
+    color: ${props => (!props.login ? "white" : "inherit")};
     border-bottom-right-radius: 10px;
     border-top-right-radius: 10px;
     transition-duration: 0.5s;
     cursor: pointer;
+    align-self: flex-start;
+`;
+
+const ErrorMessage = styled.div`
+    width: 100%;
+    font-size: 12px;
+    text-align: left;
+    color: #ff6100;
+    align-self: flex-start;
+    padding-left: 5px;
+    height: 15px;
 `;
 
 export const Login = ({ userLogin }) => {
@@ -57,18 +91,24 @@ export const Login = ({ userLogin }) => {
         name: "",
     });
     const [isLogin, setIsLogin] = useState(true);
+    const [isNavigate, setIsNavigate] = useState(false);
+    const [isAutoNavigate, setIsAutoNavigate] = useState(true);
+    const [emailErrorMessage, setEmailErrorMessage] = useState(" ");
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState(" ");
     const navigate = useNavigate();
     const location = useLocation();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
+
     const from = location.state?.from || "/";
 
     useEffect(() => {
-        if (userLogin === "in") navigate(from, { replace: true });
-    });
+        if (isAutoNavigate && userLogin === "in")
+            navigate(from, { replace: true });
+    }, [isAutoNavigate, userLogin]);
 
     function singUp() {
-        if (!info.email.trim() || !info.password.trim() || !info.name.trim())
-            return window.alert("請輸入完整資料");
-
+        setIsAutoNavigate(false);
         createUserWithEmailAndPassword(
             firebaseInit.auth,
             info.email,
@@ -84,55 +124,60 @@ export const Login = ({ userLogin }) => {
                     photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
                     selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
                 });
-                window.alert("註冊成功，可以去個人修改大頭照跟自我介紹喔");
             })
-            .then(() => navigate(from, { replace: true }))
+            .then(() => {
+                setIsNavigate(true);
+                handleAlertModal("註冊成功，可以去個人修改大頭照跟自我介紹喔");
+            })
             .catch(error => {
                 const errorCode = error.code;
                 console.log(errorCode);
                 switch (errorCode) {
                     case "auth/invalid-email":
-                        window.alert(`輸入信箱格式有誤`);
+                        handleAlertModal(`輸入信箱格式有誤`);
                         break;
                     case "auth/weak-password":
-                        window.alert(`密碼規格不符(至少6字元)`);
+                        handleAlertModal(`密碼規格不符(至少6字元)`);
                         break;
                     case "auth/email-already-in-use":
-                        window.alert(`已經註冊過囉，直接登入就好`);
+                        handleAlertModal(`已經註冊過囉，直接登入就好`);
+                        setIsLogin(true);
                         break;
                     case "auth/too-many-requests":
-                        window.alert(`試太多次囉，請等五分鐘後作業`);
+                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
                         break;
                     default:
-                        window.alert(errorCode);
+                        handleAlertModal(errorCode);
                 }
             });
     }
 
     function signIn() {
+        setIsAutoNavigate(false);
         signInWithEmailAndPassword(firebaseInit.auth, info.email, info.password)
             .then(() => {
-                window.alert("登入成功");
-                navigate(from, { replace: true });
+                setIsNavigate(true);
+                handleAlertModal("登入成功");
             })
             .catch(error => {
                 const errorCode = error.code;
 
                 switch (errorCode) {
                     case "auth/invalid-email":
-                        window.alert(`輸入信箱格式有誤`);
+                        handleAlertModal(`輸入信箱格式有誤`);
                         break;
                     case "auth/wrong-password":
-                        window.alert(`輸入密碼有誤`);
+                        handleAlertModal(`輸入密碼有誤`);
                         break;
                     case "auth/user-not-found":
-                        window.alert(`我不認得您，請先註冊`);
+                        handleAlertModal(`我不認得您，請先註冊`);
+                        setIsLogin(false);
                         break;
                     case "auth/too-many-requests":
-                        window.alert(`試太多次囉，請等五分鐘後作業`);
+                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
                         break;
                     default:
-                        window.alert(errorCode);
+                        handleAlertModal(errorCode);
                 }
             });
     }
@@ -144,79 +189,96 @@ export const Login = ({ userLogin }) => {
     }
 
     return (
-        <Container>
-            {userLogin === "check" ? (
-                "身分驗證中"
-            ) : (
-                <>
-                    <SignInDiv
-                        onClick={() => {
-                            setIsLogin(true);
-                            setInfo({
-                                email: "",
-                                password: "",
-                                name: "",
-                            });
-                        }}
-                        login={isLogin}
-                    >
-                        登入
-                    </SignInDiv>
-                    <SingUpDiv
-                        onClick={() => {
-                            setIsLogin(false);
-                            setInfo({
-                                email: "",
-                                password: "",
-                                name: "",
-                            });
-                        }}
-                        login={isLogin}
-                    >
-                        註冊
-                    </SingUpDiv>
+        <>
+            <Box>
+                {userLogin === "check" ? (
+                    <Loading />
+                ) : (
+                    <Container>
+                        <SignInDiv
+                            onClick={() => {
+                                setIsLogin(true);
+                                setInfo({
+                                    email: "",
+                                    password: "",
+                                    name: "",
+                                });
+                                // setEmailErrorMessage("");
+                                // setPasswordErrorMessage("");
+                            }}
+                            login={isLogin}
+                        >
+                            登入
+                        </SignInDiv>
+                        <SingUpDiv
+                            onClick={() => {
+                                setIsLogin(false);
+                                setInfo({
+                                    email: "",
+                                    password: "",
+                                    name: "",
+                                });
+                                // setEmailErrorMessage("");
+                                // setPasswordErrorMessage("");
+                            }}
+                            login={isLogin}
+                        >
+                            註冊
+                        </SingUpDiv>
 
-                    <TextInput
-                        value={info.email}
-                        handleChange={handleChange}
-                        name="email"
-                        placeholder="請輸入信箱"
-                    />
-                    <TextInput
-                        value={info.password}
-                        handleChange={handleChange}
-                        name="password"
-                        type="password"
-                        placeholder="請輸入密碼"
-                    />
-                    {!isLogin && (
                         <TextInput
-                            value={info.name}
+                            value={info.email}
                             handleChange={handleChange}
-                            name="name"
-                            placeholder="請輸入姓名"
+                            name="email"
+                            placeholder="請輸入信箱"
                         />
-                    )}
-                    {isLogin && (
-                        <MyButton
-                            clickFunction={signIn}
-                            buttonWord="登入"
-                            isDisabled={!info.password || !info.email}
-                            width="100%"
+                        {/* <ErrorMessage>{emailErrorMessage}</ErrorMessage> */}
+                        <TextInput
+                            value={info.password}
+                            handleChange={handleChange}
+                            name="password"
+                            type="password"
+                            placeholder="請輸入密碼"
                         />
-                    )}
-                    {!isLogin && (
-                        <MyButton
-                            clickFunction={singUp}
-                            buttonWord="註冊"
-                            isDisabled={Object.values(info).some(
-                                value => !value,
-                            )}
-                            width="100%"
-                        />
-                    )}
-                </>
-            )}
-        </Container>
+                        {/* <ErrorMessage>{passwordErrorMessage}</ErrorMessage> */}
+                        {!isLogin && (
+                            <TextInput
+                                value={info.name}
+                                handleChange={handleChange}
+                                name="name"
+                                placeholder="請輸入姓名"
+                            />
+                        )}
+                        {isLogin && (
+                            <MyButton
+                                clickFunction={signIn}
+                                buttonWord="登入"
+                                isDisabled={!info.password || !info.email}
+                                width="100%"
+                            />
+                        )}
+                        {!isLogin && (
+                            <MyButton
+                                clickFunction={singUp}
+                                buttonWord="註冊"
+                                isDisabled={Object.values(info).some(
+                                    value => !value,
+                                )}
+                                width="100%"
+                            />
+                        )}
+                    </Container>
+                )}
+            </Box>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+                isNavigateToOtherRouter={isNavigate}
+                pathname={from}
+            />
+
+            <Footer />
+        </>
     );
 };

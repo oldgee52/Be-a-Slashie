@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
@@ -34,46 +34,49 @@ const Title = styled.div`
 const Input = styled.input`
     width: 50%;
     /* height: 50px; */
-    font-size: 20px;
     padding: 5px;
-
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    font-size: 16px;
     word-break: break-word;
     text-align: center;
     border: none;
-    background-color: none;
+    border-radius: 5px;
+
+    background-color: rgba(0, 0, 0, 0.1);
     &:focus {
         outline: none;
     }
 
-    /* &:disabled {
-        background-color: white;
-    } */
+    &:disabled {
+        background-color: rgba(0, 0, 0, 0.001);
+    }
 
     @media ${breakPoint.desktop} {
         text-align: left;
         width: 60%;
+        height: 40px;
     }
 `;
 
 const InputText = styled.textarea`
     width: 50%;
     height: 70px;
-    font-size: 14px;
     padding: 5px;
     overflow: hidden;
-    margin-bottom: 10px;
-
-    background-color: none;
+    background-color: rgba(0, 0, 0, 0.1);
 
     border: none;
+    border-radius: 5px;
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
+    font-size: 16px;
     &:focus {
         outline: none;
         overflow: inherit;
     }
 
-    /* &:disabled {
-        background-color: white;
-    } */
+    &:disabled {
+        background-color: rgba(0, 0, 0, 0.001);
+    }
 
     @media ${breakPoint.desktop} {
         width: 60%;
@@ -81,6 +84,7 @@ const InputText = styled.textarea`
 `;
 
 const PencilBox = styled.button`
+    cursor: pointer;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
         margin-left: auto;
@@ -91,7 +95,9 @@ const ButtonBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    align-self: flex-end;
     width: 100%;
+    margin-top: 10px;
     @media ${breakPoint.desktop} {
         width: 20%;
         margin-left: auto;
@@ -102,7 +108,11 @@ const ButtonConfirm = styled.button`
     width: 80px;
     height: 40px;
     color: white;
-    background-color: ${props => (props.confirm ? "#ff6100" : "#7f7f7f")};
+    cursor: pointer;
+    background: ${props =>
+        props.confirm
+            ? "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"
+            : "#7f7f7f"};
 
     border-radius: 5px;
     margin-right: 10px;
@@ -124,6 +134,12 @@ export const InputForModify = ({
     targetName,
     inputText,
 }) => {
+    const inputElement = useRef(null);
+
+    useEffect(() => {
+        if (!handleDisable) inputElement.current.focus();
+    }, [inputElement, handleDisable]);
+
     function handleInputChange(e) {
         let data = { ...inputFields };
         data[e.target.name] = e.target.value;
@@ -165,6 +181,7 @@ export const InputForModify = ({
                     name={targetName}
                     onChange={e => handleInputChange(e)}
                     disabled={handleDisable}
+                    ref={inputElement}
                 />
             ) : (
                 <InputText
@@ -172,18 +189,24 @@ export const InputForModify = ({
                     name={targetName}
                     onChange={e => handleInputChange(e)}
                     disabled={handleDisable}
+                    onFocus={e => {
+                        const value = e.target.value;
+                        e.target.value = "";
+                        e.target.value = value;
+                    }}
+                    ref={inputElement}
                 />
             )}
 
             {handleDisable && (
                 <PencilBox
-                    onClick={() =>
+                    onClick={() => {
                         handleModifyClick(
                             handleDisable,
                             setHandleDisable,
                             targetName,
-                        )
-                    }
+                        );
+                    }}
                 >
                     <BsPencil />
                 </PencilBox>

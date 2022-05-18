@@ -1,10 +1,15 @@
 import { collection } from "firebase/firestore";
+import { func } from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { AlertModal } from "../Component/AlertModal";
 import { CheckSkills } from "../Component/CheckSkills";
-import PaginatedItems from "../Component/Paginate";
+import { Footer } from "../Component/Footer";
+import { Loading } from "../Component/Loading";
+import { NoDataTitle } from "../Component/NoDataTitle";
 import { SearchInput } from "../Component/SearchInput";
+
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
@@ -15,12 +20,15 @@ const Container = styled.div`
     flex-wrap: wrap;
     width: 100%;
     margin: auto;
+    align-content: flex-start;
 
     padding: 80px 10px;
+    min-height: calc(100vh - 100px);
 
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
     }
 `;
 
@@ -28,7 +36,8 @@ const SearchInputBox = styled.div`
     width: 100%;
 
     @media ${breakPoint.desktop} {
-        width: 400px;
+        width: 31%;
+        padding-left: 15px;
     }
 `;
 
@@ -38,10 +47,11 @@ const SkillsBox = styled.div`
     align-items: center;
 
     margin: 10px 0 10px 10px;
-    color: #7f7f7f;
+    /* color: #7f7f7f; */
 
     @media ${breakPoint.desktop} {
         margin-bottom: 0;
+        padding-left: 10px;
     }
 `;
 
@@ -50,6 +60,7 @@ const SkillFilter = styled.div`
     font-weight: 600;
     letter-spacing: 1px;
     width: 100%;
+    padding-left: ${props => (props.paddingLeft ? props.paddingLeft : "0")};
 `;
 
 const SearchArea = styled.div`
@@ -63,11 +74,13 @@ const Card = styled.div`
 
     margin-top: 10px;
 
+    border-radius: 5px;
+
     padding-bottom: 20px;
-    border-bottom: 3px solid rgb(0 190 164);
+    border-bottom: 3px solid #00bea4;
     cursor: pointer;
 
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: whitesmoke;
 
     @media ${breakPoint.desktop} {
         width: calc(25% - 10px);
@@ -76,6 +89,7 @@ const Card = styled.div`
         margin-top: 30px;
         align-items: center;
         border-radius: 5px;
+        border-bottom: 5px solid #00bea4;
     }
 `;
 const CardBox = styled.div`
@@ -111,7 +125,7 @@ const CourseName = styled.h4`
         width: inherit;
         font-size: 24px;
         padding-top: 40px;
-        height: 120px;
+        height: 80px;
         word-wrap: break-word;
     }
 `;
@@ -136,14 +150,13 @@ const UserPhoto = styled.img`
     margin-top: 5px;
     margin-left: 5px;
     object-fit: cover;
-    border: 5px solid white;
+    border: 3px solid whitesmoke;
     @media ${breakPoint.desktop} {
         display: block;
         position: absolute;
         width: 70px;
         height: 70px;
         border-radius: 100%;
-        border: 3px solid whitesmoke;
         object-fit: cover;
         z-index: 2;
 
@@ -169,7 +182,7 @@ const UserSkillName = styled.div`
 export const TalentedPersonSearch = () => {
     const [searchField, setSearchField] = useState("");
     const [allUsers, setAllUsers] = useState();
-    const [searchUsers, setSearchUsers] = useState();
+    const [searchUsers, setSearchUsers] = useState([]);
     const [skills, setSkills] = useState();
     const [checkedSkills, setCheckedSkills] = useState([]);
     const navigate = useNavigate();
@@ -177,6 +190,7 @@ export const TalentedPersonSearch = () => {
     useEffect(() => {
         firebaseInit.getUsersInfoIncludeSkill().then(data => {
             console.log(data);
+            setSearchUsers(data);
             setAllUsers(data);
         });
     }, []);
@@ -190,47 +204,62 @@ export const TalentedPersonSearch = () => {
             });
     }, []);
 
-    function searchUsersByKeyword(e) {
-        e.preventDefault();
-        if (!searchField.trim() && checkedSkills.length === 0)
-            return window.alert("請輸入關鍵字或選擇技能");
-
-        const filteredUserByKeyword = searchField.trim()
-            ? allUsers.filter(data => {
+    function filterOutcome(searchValue, checkedSkillsArray) {
+        const filteredUserByKeyword = searchValue.trim()
+            ? allUsers.filter(user => {
                   return (
-                      data.name
+                      user.name
                           .toLowerCase()
-                          .includes(searchField.toLowerCase().trim()) ||
-                      data.selfIntroduction
+                          .includes(searchValue.toLowerCase().trim()) ||
+                      user.selfIntroduction
                           .toLowerCase()
-                          .includes(searchField.toLowerCase().trim()) ||
-                      data.skills.some(skill =>
-                          skill.title
-                              .toLowerCase()
-                              .includes(searchField.toLowerCase().trim()),
-                      )
+                          .includes(searchValue.toLowerCase().trim())
                   );
               })
             : [];
+        const filteredUserBySkill = allUsers.filter(user => {
+            if (
+                checkedSkillsArray.every(skillID =>
+                    user.skills.map(e => e.skillID).includes(skillID),
+                )
+            )
+                return user;
 
-        const filteredUserBySkill = allUsers.filter(data =>
-            data.skills.find(t => checkedSkills.includes(t.skillID)),
-        );
+            return null;
+        });
 
         const allSearchOutcome = [
             ...filteredUserByKeyword,
             ...filteredUserBySkill,
         ];
 
-        const filterRepeatSearchOutcome = allSearchOutcome.filter(
-            (user, index, self) =>
-                index === self.findIndex(t => t.uid === user.uid),
+        return { allSearchOutcome, filteredUserByKeyword, filteredUserBySkill };
+    }
+    function findUniqueOutcome(array) {
+        return array.filter(
+            (item, index, self) =>
+                index !== self.findIndex(t => t.uid === item.uid),
         );
+    }
 
-        if (filterRepeatSearchOutcome.length === 0) {
-            setSearchUsers([]);
-            return window.alert("查無資料");
-        }
+    function searchUsersByKeyword(e) {
+        if (!e.target.value.trim() && checkedSkills.length === 0)
+            return setSearchUsers(allUsers);
+        const outcome = filterOutcome(e.target.value, checkedSkills);
+
+        const filterRepeatSearchOutcome =
+            checkedSkills.length === 0
+                ? outcome.filteredUserByKeyword
+                : outcome.filteredUserByKeyword.length !== 0 &&
+                  outcome.filteredUserBySkill.length !== 0
+                ? findUniqueOutcome(outcome.allSearchOutcome)
+                : outcome.filteredUserBySkill.length === 0 &&
+                  outcome.filteredUserByKeyword.length !== 0
+                ? outcome.filteredUserByKeyword
+                : outcome.filteredUserBySkill.length !== 0 &&
+                  !e.target.value.trim()
+                ? outcome.filteredUserBySkill
+                : [];
 
         setSearchUsers(filterRepeatSearchOutcome);
     }
@@ -239,86 +268,126 @@ export const TalentedPersonSearch = () => {
         const { value, checked } = e.target;
 
         if (checked) {
-            setCheckedSkills(prev => [...prev, value]);
+            const NewCheckedSkills = [...checkedSkills, value];
+            setCheckedSkills(NewCheckedSkills);
+            const outcome = filterOutcome(searchField, NewCheckedSkills);
+            const filterRepeatSearchOutcome =
+                outcome.filteredUserByKeyword.length === 0
+                    ? outcome.filteredUserBySkill
+                    : findUniqueOutcome(outcome.allSearchOutcome);
+
+            setSearchUsers(filterRepeatSearchOutcome);
         }
 
         if (!checked) {
-            setCheckedSkills(prev => prev.filter(e => e !== value));
+            const NewCheckedSkills = checkedSkills.filter(e => e !== value);
+            setCheckedSkills(NewCheckedSkills);
+            if (!searchField.trim() && NewCheckedSkills.length === 0)
+                return setSearchUsers(allUsers);
+            const outcome = filterOutcome(searchField, NewCheckedSkills);
+
+            const filterRepeatSearchOutcome =
+                NewCheckedSkills.length === 0
+                    ? outcome.filteredUserByKeyword
+                    : outcome.filteredUserByKeyword.length === 0
+                    ? outcome.filteredUserBySkill
+                    : findUniqueOutcome(outcome.allSearchOutcome);
+
+            setSearchUsers(filterRepeatSearchOutcome);
         }
     };
-
-    console.log(checkedSkills);
+    console.log(searchField);
 
     return (
-        <Container>
-            {!skills ? (
-                "loading..."
+        <>
+            {!skills || !allUsers || !searchUsers ? (
+                <Loading />
             ) : (
-                <SearchArea>
-                    <SearchInputBox>
-                        <SearchInput
-                            value={searchField}
-                            changeValueCallback={e => {
-                                setSearchField(e.target.value);
-                            }}
-                            searchCallback={e => searchUsersByKeyword(e)}
-                            placeholderText="找找你/妳想要的人才..."
-                        />
-                    </SearchInputBox>
-                    <SkillsBox>
-                        <SkillFilter>技能篩選</SkillFilter>
-                        {skills &&
-                            skills.map(skill => (
-                                <CheckSkills
-                                    key={skill.skillID}
-                                    skillID={skill.skillID}
-                                    handleSkillChange={handleSkillChange}
-                                    title={skill.title}
-                                />
-                            ))}
-                    </SkillsBox>
-                    <CardBox>
-                        {searchUsers &&
-                            searchUsers.map(user => (
-                                <Card
-                                    onClick={() => {
-                                        navigate(
-                                            `/personal-introduction?uid=${user.uid}`,
-                                        );
+                <>
+                    <Container>
+                        <SearchArea>
+                            <SearchInputBox>
+                                <SearchInput
+                                    searchField={searchField}
+                                    setSearchField={setSearchField}
+                                    changeValueCallback={e => {
+                                        setSearchField(e.target.value);
+                                        searchUsersByKeyword(e);
                                     }}
-                                >
-                                    <UserPhoto
-                                        src={user.photo}
-                                        alt={user.name}
-                                    ></UserPhoto>
+                                    searchCallback={e => e.preventDefault()}
+                                    placeholderText="輸入姓名或勾選下方技能找人才..."
+                                />
+                            </SearchInputBox>
+                            <SkillsBox>
+                                <SkillFilter>技能篩選</SkillFilter>
+                                {skills &&
+                                    skills.map(skill => (
+                                        <CheckSkills
+                                            key={skill.skillID}
+                                            skillID={skill.skillID}
+                                            handleSkillChange={
+                                                handleSkillChange
+                                            }
+                                            title={skill.title}
+                                        />
+                                    ))}
+                            </SkillsBox>
+                            <CardBox>
+                                {searchUsers.length === 0 ? (
+                                    <SkillFilter paddingLeft="18px">
+                                        <NoDataTitle title="無符合結果" />
+                                    </SkillFilter>
+                                ) : (
+                                    searchUsers.map(user => (
+                                        <Card
+                                            onClick={() => {
+                                                navigate(
+                                                    `/personal-introduction?uid=${user.uid}`,
+                                                );
+                                            }}
+                                            key={user.uid}
+                                        >
+                                            <UserPhoto
+                                                src={user.photo}
+                                                alt={user.name}
+                                            ></UserPhoto>
 
-                                    <UserInfo>
-                                        <CourseName>{user.name}</CourseName>
-                                        <SelfIntroduction>
-                                            {user.selfIntroduction.length > 35
-                                                ? `${user.selfIntroduction.substring(
-                                                      0,
-                                                      35,
-                                                  )}...`
-                                                : user.selfIntroduction}
-                                        </SelfIntroduction>
-                                    </UserInfo>
-                                    <UserSkillBox>
-                                        {user.skills.length === 0
-                                            ? ""
-                                            : user.skills.map(skill => (
-                                                  <UserSkillName
-                                                      key={skill.skillID}
-                                                  >
-                                                      #{skill.title}
-                                                  </UserSkillName>
-                                              ))}
-                                    </UserSkillBox>
-                                </Card>
-                            ))}
-                    </CardBox>
-                </SearchArea>
+                                            <UserInfo>
+                                                <CourseName>
+                                                    {user.name}
+                                                </CourseName>
+                                                <SelfIntroduction>
+                                                    {user.selfIntroduction
+                                                        .length > 35
+                                                        ? `${user.selfIntroduction.substring(
+                                                              0,
+                                                              35,
+                                                          )}...`
+                                                        : user.selfIntroduction}
+                                                </SelfIntroduction>
+                                            </UserInfo>
+                                            <UserSkillBox>
+                                                {user.skills.length === 0
+                                                    ? ""
+                                                    : user.skills.map(skill => (
+                                                          <UserSkillName
+                                                              key={
+                                                                  skill.skillID
+                                                              }
+                                                          >
+                                                              #{skill.title}
+                                                          </UserSkillName>
+                                                      ))}
+                                            </UserSkillBox>
+                                        </Card>
+                                    ))
+                                )}
+                            </CardBox>
+                        </SearchArea>
+                    </Container>
+                    <Footer />
+                </>
             )}
-        </Container>
+        </>
     );
 };

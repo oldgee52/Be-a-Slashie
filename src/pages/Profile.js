@@ -6,6 +6,9 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
+import { AlertModal } from "../Component/AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { Loading } from "../Component/Loading";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -14,6 +17,7 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
+    margin-bottom: 20px;
 
     @media ${breakPoint.desktop} {
         width: 70%;
@@ -34,7 +38,7 @@ const UserPhoto = styled.img`
     width: 100px;
     height: 100px;
     border-radius: 100%;
-    border: 1px solid black;
+    border: 1px solid #505050;
 `;
 
 const FileInput = styled.input`
@@ -57,6 +61,8 @@ export const Profile = ({ userID }) => {
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
     const [inputFields, SetInputFields] = useState();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     useEffect(() => {
         if (userID)
             firebaseInit.getCollectionData("users", userID).then(data => {
@@ -69,7 +75,7 @@ export const Profile = ({ userID }) => {
     }, [userID]);
 
     const uploadImage = e => {
-        if (!e.target.value) return window.alert("請先選擇檔案");
+        if (!e.target.value) return handleAlertModal("請先選擇檔案");
         const mountainImagesRef = ref(
             firebaseInit.storage,
             `photo-${e.target.value}`,
@@ -97,7 +103,7 @@ export const Profile = ({ userID }) => {
             },
             error => {
                 console.log(error);
-                window.alert("上傳失敗");
+                handleAlertModal("上傳失敗");
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(
@@ -112,7 +118,7 @@ export const Profile = ({ userID }) => {
                         }));
 
                         e.target.value = "";
-                        window.alert("上傳成功");
+                        handleAlertModal("上傳成功");
                     },
                 );
             },
@@ -120,9 +126,11 @@ export const Profile = ({ userID }) => {
     };
 
     return (
-        <Container>
-            {userInfo && (
-                <>
+        <>
+            {!userInfo ? (
+                <Loading />
+            ) : (
+                <Container>
                     <UserPhotoLabel htmlFor="photo">
                         <UserPhoto src={userInfo.photo} alt={userInfo.name} />
                         <FileInput
@@ -164,8 +172,13 @@ export const Profile = ({ userID }) => {
                             />
                         </>
                     )}
-                </>
+                </Container>
             )}
-        </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

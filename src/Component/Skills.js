@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { breakPoint } from "../utils/breakPoint";
 
 const SkillsBox = styled.div`
     display: flex;
@@ -7,6 +9,7 @@ const SkillsBox = styled.div`
     justify-content: center;
     align-items: center;
     margin-right: 10px;
+    width: 120px;
 `;
 
 const Image = styled.img`
@@ -17,17 +20,15 @@ const Image = styled.img`
 
 const SkillTitle = styled.div`
     font-size: 16px;
-    font-weight: 700;
-    color: gray;
     letter-spacing: 2px;
 `;
 const SkillDate = styled.div`
-    font-size: 14px;
-    color: gray;
+    font-size: 12px;
     padding: 5px 0;
 `;
 
 export const Skills = ({ skills }) => {
+    const customDateDisplay = useCustomDateDisplay();
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (
@@ -36,9 +37,7 @@ export const Skills = ({ skills }) => {
                 <Image src={skill.image} alt={skill.title} />
                 <SkillDate>
                     {skill.getDate &&
-                        new Date(
-                            skill.getDate.seconds * 1000,
-                        ).toLocaleDateString()}
+                        customDateDisplay(skill.getDate.seconds * 1000)}
                 </SkillDate>
                 <SkillTitle>{skill.title}</SkillTitle>
             </SkillsBox>

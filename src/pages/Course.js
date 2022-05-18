@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import {
     doc,
@@ -16,9 +16,24 @@ import { Skills } from "../Component/Skills";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
-import { BsReply } from "react-icons/bs";
+import {
+    BsReply,
+    BsPersonCheck,
+    BsCalendarPlus,
+    BsCalendarCheck,
+    BsPatchCheck,
+    BsCardText,
+    BsBookmark,
+} from "react-icons/bs";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { AlertModal } from "../Component/AlertModal";
+import { Loading } from "../Component/Loading";
+import { LoadingForPost } from "../Component/LoadingForPost";
+import { Footer } from "../Component/Footer";
+import { HoverInfo } from "../Component/HoverInfo";
 
 const Container = styled.div`
     display: flex;
@@ -28,11 +43,13 @@ const Container = styled.div`
     width: 100%;
     margin: auto;
 
-    padding: 80px 10px 80px 10px;
+    padding: 80px 10px 0 10px;
 
     @media ${breakPoint.desktop} {
-        justify-content: flex-start;
+        justify-content: space-between;
+        align-items: flex-start;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
     }
 `;
 
@@ -48,30 +65,30 @@ const CourseTitle = styled.div`
     @media ${breakPoint.desktop} {
         text-align: left;
         font-size: 24px;
+        padding-left: 20px;
     }
 `;
 
-const Collection = styled.div`
+const Collection = styled.button`
     margin-top: 20px;
     width: 100%;
     text-align: center;
     height: 50px;
     line-height: 50px;
-    border: 1px solid black;
     border-radius: 5px;
+    font-size: 16px;
+    border: ${props => (props.collected ? "none" : "1px solid #505050")};
 
-    color: ${props => (props.collected ? "white" : "black")};
-    background-color: ${props => (props.collected ? "#ff6100" : "white")};
-
+    color: ${props => (props.collected ? "whitesmoke" : " #505050")};
+    background: ${props => (props.collected ? "#00bea4" : "whitesmoke")};
     cursor: pointer;
 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     @media ${breakPoint.desktop} {
-        margin-left: 75%;
-        width: 25%;
-        order: 5;
-        position: sticky;
-        top: 460px;
-        order: 5;
+        width: 100%;
         z-index: 2;
     }
 `;
@@ -86,6 +103,7 @@ const CourseInfo = styled.div`
         justify-content: flex-start;
         /* width: 25%; */
         order: 1;
+        padding-left: 20px;
     }
 `;
 const InfoTitle = styled.div`
@@ -101,21 +119,16 @@ const TeacherInfo = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid black;
     border-radius: 5px;
     margin-top: 20px;
     width: 300px;
-    background-color: white;
-
+    background-color: whitesmoke;
+    min-height: 250px;
+    color: #505050;
+    border: 1px solid #00bea4;
     @media ${breakPoint.desktop} {
-        align-self: stretch;
-        position: sticky;
-        order: 4;
-        top: 50px;
-        margin-left: auto;
-        width: 25%;
-        z-index: 2;
-        margin-top: -75px;
+        margin: 0;
+        width: 100%;
     }
 `;
 
@@ -153,17 +166,19 @@ const AboutCourse = styled.div`
         flex-direction: row;
         flex-wrap: wrap;
         width: calc(75% - 20px);
-        order: 3;
-        padding-left: 0;
+        padding-left: 20px;
+        order: 2;
     }
 `;
-const AboutTitle = styled.h3`
+const AboutTitle = styled.div`
     font-size: 20px;
-    font-weight: 700;
+
     margin-top: 10px;
     margin-bottom: 10px;
+    color: #ff6700;
 
     @media ${breakPoint.desktop} {
+        font-size: 24px;
         width: 100%;
     }
 `;
@@ -172,6 +187,7 @@ const AboutContent = styled.div`
     font-size: 16px;
     margin-top: 10px;
     margin-bottom: 10px;
+    padding-left: 5px;
 
     @media ${breakPoint.desktop} {
         padding-right: 50px;
@@ -189,6 +205,8 @@ const FlexDiv = styled.div`
     margin-top: 20px;
     justify-content: center;
     width: 100%;
+    margin-left: 10px;
+    font-weight: 500;
     @media ${breakPoint.desktop} {
         justify-content: flex-start;
     }
@@ -197,20 +215,22 @@ const CourseIntroduction = styled.p`
     margin-top: 15px;
     font-size: 12px;
     line-height: 1.5;
+    padding-left: 10px;
     @media ${breakPoint.desktop} {
-        font-size: 14px;
+        font-size: 16px;
     }
 `;
 
 const RegisterArea = styled.div`
     display: flex;
-    position: fixed;
+    position: sticky;
     justify-content: center;
     align-items: center;
     bottom: 0;
-    width: 100vw;
+    width: 100%;
     background-color: whitesmoke;
     height: 50px;
+    /* margin-top: 50px; */
 
     @media ${breakPoint.desktop} {
         display: none;
@@ -227,21 +247,12 @@ const Button = styled.button`
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: ${props => (props.active ? "gray" : "#ff6100")};
+    background: ${props =>
+        props.active
+            ? "gray"
+            : "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"};
     border: none;
     cursor: ${props => (props.active ? "not-allowed" : "pointer")};
-
-    @media ${breakPoint.desktop} {
-        margin-top: 20px;
-        height: 50px;
-        width: 25%;
-        margin-left: 75%;
-        order: 6;
-
-        position: sticky;
-        top: 530px;
-        z-index: 2;
-    }
 `;
 
 const WebButton = styled(Button)`
@@ -249,35 +260,38 @@ const WebButton = styled(Button)`
 
     @media ${breakPoint.desktop} {
         display: block;
-        margin-top: 20px;
+        width: 100%;
         height: 50px;
-        width: 25%;
-        margin-left: 75%;
-        order: 6;
+        margin-top: 20px;
     }
 `;
 
 const MessageArea = styled.div`
     width: 100%;
+    margin-top: 10px;
     @media ${breakPoint.desktop} {
-        order: 7;
+        order: 4;
     }
 `;
 
 const MessageContainer = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 30px 0 30px 0;
+    padding: 20px 0 30px 0;
     width: 90%;
     margin: auto;
+    border-top: 1px solid #7f7f7f;
     @media ${breakPoint.desktop} {
-        width: calc(75% - 10px);
+        width: calc(75% - 20px);
         margin: 0;
     }
 `;
 
 const MessageHeader = styled.div`
-    font-size: 18px;
+    font-size: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const MessageInputArea = styled.div`
@@ -304,12 +318,12 @@ const SendButton = styled.button`
     width: 50px;
     height: 30px;
     line-height: 30px;
-    background-color: rgb(0, 190, 164);
+    background-color: #00bea4;
     color: white;
     margin-left: auto;
     margin-top: 10px;
-
     border-radius: 5px;
+    cursor: pointer;
 `;
 
 const CurrentMessageArea = styled.div`
@@ -388,6 +402,83 @@ const ReplyInput = styled(Input)`
     margin-top: 20px;
 `;
 
+const BlurImage = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    color: whitesmoke;
+
+    &::before {
+        content: "";
+        top: -50px;
+        left: -15px;
+        width: 100vw;
+        height: 98%;
+        position: absolute;
+        background-image: url(${props => props.img});
+        background-size: cover;
+        background-repeat: no-repeat;
+        filter: blur(5px) brightness(60%);
+    }
+    @media ${breakPoint.desktop} {
+        display: none;
+    }
+`;
+
+const TeacherInfoWebBox = styled.div`
+    display: none;
+    @media ${breakPoint.desktop} {
+        display: block;
+        position: sticky;
+        top: 80px;
+        margin-top: -150px;
+        width: 25%;
+        order: 3;
+        z-index: 3;
+    }
+`;
+
+const BlurImageWeb = styled(BlurImage)`
+    display: none;
+    @media ${breakPoint.desktop} {
+        display: block;
+        width: 100%;
+        height: 150px;
+        &::before {
+            width: 100%;
+            height: 120%;
+            left: 0;
+            background-image: url(${props => props.img});
+        }
+    }
+`;
+
+const NewBsPersonCheck = styled(BsPersonCheck)`
+    width: 20px;
+`;
+const NewBsCalendarPlus = styled(BsCalendarPlus)`
+    width: 20px;
+`;
+
+const NewBsCalendarCheck = styled(BsCalendarCheck)`
+    width: 20px;
+    margin-right: 5px;
+`;
+const NewBsPatchCheck = styled(BsPatchCheck)`
+    width: 20px;
+    margin-right: 5px;
+`;
+const NewBsCardText = styled(BsCardText)`
+    width: 20px;
+    margin-right: 5px;
+`;
+
+const NewBsBookmark = styled(BsBookmark)`
+    width: 20px;
+    margin-right: 5px;
+`;
+
 export const Course = ({ userID }) => {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
@@ -395,10 +486,18 @@ export const Course = ({ userID }) => {
     const [inputFields, setInputFields] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const customDateDisplay = useCustomDateDisplay();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
+
+    useEffect(() => {
+        if (!courseID) navigate("/");
+    }, [courseID]);
 
     useEffect(() => {
         async function addView() {
@@ -406,11 +505,11 @@ export const Course = ({ userID }) => {
                 view: increment(1),
             });
         }
-        addView();
+        if (courseID) addView();
     }, [courseID]);
 
     useEffect(() => {
-        if (userID)
+        if (userID && courseID)
             firebaseInit.getCollectionData("users", userID).then(data => {
                 const isCollect = data.collectCourses?.some(
                     collectCourse => collectCourse === courseID,
@@ -420,37 +519,49 @@ export const Course = ({ userID }) => {
     }, [courseID, userID]);
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(
-            doc(firebaseInit.db, "courses", courseID),
-            snapshot => {
-                const courseDate = snapshot.data();
-                console.log(courseDate);
-                setCourseData(courseDate);
-                setInputFields(
-                    Array(courseDate.askedQuestions?.length || 0)
-                        .fill()
-                        .map(() => ({ reply: "", isShowReplyInput: false })),
-                );
+        let unsubscribe;
+        if (courseID)
+            unsubscribe = onSnapshot(
+                doc(firebaseInit.db, "courses", courseID),
+                snapshot => {
+                    const courseDate = snapshot.data();
+                    console.log(courseDate);
+                    setCourseData(courseDate);
+                    setInputFields(
+                        Array(courseDate.askedQuestions?.length || 0)
+                            .fill()
+                            .map(() => ({
+                                reply: "",
+                                isShowReplyInput: false,
+                            })),
+                    );
 
-                const SkillsPromise = courseDate.getSkills.map(skill =>
-                    firebaseInit.getCollectionData("skills", skill),
-                );
+                    const SkillsPromise = courseDate.getSkills.map(skill =>
+                        firebaseInit.getCollectionData("skills", skill),
+                    );
 
-                Promise.all(SkillsPromise).then(data => setSkillsInfo(data));
-            },
-        );
+                    Promise.all(SkillsPromise).then(data =>
+                        setSkillsInfo(data),
+                    );
+                },
+            );
 
         return () => {
-            unsubscribe();
+            if (courseID) unsubscribe();
         };
     }, [courseID]);
     useEffect(() => {
+        let isMounted = true;
         firebaseInit
             .getCollection(collection(firebaseInit.db, "users"))
             .then(data => {
                 console.log(data);
-                setUsersInfo(data);
+                if (isMounted) setUsersInfo(data);
             });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     function findUserInfo(userID, info) {
@@ -475,14 +586,14 @@ export const Course = ({ userID }) => {
     }
     async function handleRegistration(e) {
         e.preventDefault();
-
+        setIsLoading(true);
         const studentName = findUserInfo(userID, "name");
         const studentEmail = findUserInfo(userID, "email");
         const teacherName = findUserInfo(courseData.teacherUserID, "name");
         const teacherEmail = findUserInfo(courseData.teacherUserID, "email");
-        const openingDate = new Date(
+        const openingDate = customDateDisplay(
             courseData.openingDate.seconds * 1000,
-        ).toLocaleDateString();
+        );
         const courseTitle = courseData.title;
 
         const teacherEmailContent = {
@@ -536,22 +647,17 @@ export const Course = ({ userID }) => {
                 email.sendEmail(studentEmailContent),
                 email.sendEmail(teacherEmailContent),
             ]).then(() => {
-                const confirmMessage = window.confirm(
-                    "報名成功\n點選「確定」，查看報名狀態。\n點選「取消」，回到首頁。",
-                );
-                if (confirmMessage) {
-                    navigate("/personal/student-registered-course");
-                } else {
-                    navigate("/");
-                }
+                setIsLoading(false);
+                navigate(`/finished-Registered-Course/${courseData.courseID}`);
             });
         } catch (error) {
+            setIsLoading(false);
             console.log(error);
-            window.alert("發生錯誤，請重新試一次");
+            handleAlertModal("發生錯誤，請重新試一次");
         }
     }
     async function handSendMessage() {
-        if (!message.trim()) return window.alert("請輸入訊息");
+        if (!message.trim()) return handleAlertModal("請輸入訊息");
 
         await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
             askedQuestions: arrayUnion({
@@ -563,7 +669,7 @@ export const Course = ({ userID }) => {
         });
         setMessage("");
 
-        return window.alert("留言已送出");
+        return handleAlertModal("留言已送出");
     }
 
     function renderMessages() {
@@ -578,9 +684,9 @@ export const Course = ({ userID }) => {
                                     findUserInfo(question.askedUserID, "name")}
                             </CurrentMessageTitle>
                             <CurrentMessageTitle>
-                                {new Date(
+                                {customDateDisplay(
                                     question.askedDate.seconds * 1000,
-                                ).toLocaleDateString()}
+                                )}
                             </CurrentMessageTitle>
                             <CurrentMessageContent>
                                 {question.askedContent}
@@ -597,9 +703,9 @@ export const Course = ({ userID }) => {
                                             )}
                                     </CurrentMessageTitle>
                                     <CurrentMessageTitle>
-                                        {new Date(
+                                        {customDateDisplay(
                                             reply.repliedDate.seconds * 1000,
-                                        ).toLocaleDateString()}
+                                        )}
                                     </CurrentMessageTitle>
                                     <ReplyMessageContent>
                                         {reply.repliedContent}
@@ -613,12 +719,12 @@ export const Course = ({ userID }) => {
                         >
                             {inputFields[index]?.isShowReplyInput ? (
                                 <>
-                                    <RiCloseCircleLine />
-                                    取消
+                                    <RiCloseCircleLine viewBox="0 -2 24 24" />{" "}
+                                    <span>取消</span>
                                 </>
                             ) : (
                                 <>
-                                    <BsReply /> 回覆
+                                    <BsReply /> <span>回覆</span>
                                 </>
                             )}
                         </IsShowReply>
@@ -657,7 +763,8 @@ export const Course = ({ userID }) => {
     };
 
     const handleSendReplyMessage = async index => {
-        if (!inputFields[index].reply.trim()) return window.alert("請輸入訊息");
+        if (!inputFields[index].reply.trim())
+            return handleAlertModal("請輸入訊息");
         const stateCopy = JSON.parse(JSON.stringify(courseData));
 
         stateCopy.askedQuestions.forEach((question, i) => {
@@ -674,146 +781,243 @@ export const Course = ({ userID }) => {
             askedQuestions: stateCopy.askedQuestions,
         });
 
-        return window.alert("回覆已送出");
+        return handleAlertModal("回覆已送出");
     };
 
     return (
         <>
-            {courseData && usersInfo && (
-                <Container>
-                    <CourseTitle>{courseData.title}</CourseTitle>
-                    <CourseInfo>
-                        <InfoTitle>
-                            報名人數 {courseData.registrationNumber}
-                        </InfoTitle>
+            {!courseData || !usersInfo || !skillsInfo ? (
+                <Loading />
+            ) : (
+                <>
+                    <>
+                        <Container>
+                            <BlurImage img={courseData.image}>
+                                <CourseTitle>{courseData.title}</CourseTitle>
+                                <CourseInfo>
+                                    <InfoTitle>
+                                        報名人數 {courseData.registrationNumber}
+                                    </InfoTitle>
 
-                        <InfoTitle>瀏覽人數 {courseData.view}</InfoTitle>
-                    </CourseInfo>
-                    <TeacherInfo>
-                        <TeacherImg
-                            src={findUserInfo(
-                                courseData.teacherUserID,
-                                "photo",
-                            )}
-                        />
-                        <a
-                            href={`mailto:${findUserInfo(
-                                courseData.teacherUserID,
-                                "email",
-                            )}`}
-                        >
-                            <NewFiMail />
-                        </a>
-                        <TeacherName>
-                            {findUserInfo(courseData.teacherUserID, "name")}
-                        </TeacherName>
-                        <TeacherIntroduction>
-                            {courseData.teacherIntroduction}
-                        </TeacherIntroduction>
-                    </TeacherInfo>
-                    <Collection
-                        onClick={handleCollection}
-                        collected={userCollection}
-                    >
-                        {userCollection ? "已收藏" : "加入收藏"}
-                    </Collection>
-                    <AboutCourse>
-                        <AboutTitle>關於課程</AboutTitle>
-                        <AboutContent>
-                            開班人數 {courseData.minOpeningNumber}
-                        </AboutContent>
-                        <AboutContent>
-                            報名截止{" "}
-                            {new Date(
-                                courseData.registrationDeadline.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </AboutContent>
-                        <AboutContent>
-                            開課時間{" "}
-                            {new Date(
-                                courseData.openingDate.seconds * 1000,
-                            ).toLocaleDateString()}
-                        </AboutContent>
-                        <AboutContentsSkill>
-                            可獲技能{" "}
-                            <FlexDiv>
-                                {" "}
-                                {skillsInfo && <Skills skills={skillsInfo} />}
-                            </FlexDiv>
-                        </AboutContentsSkill>
-                        <AboutContent>
-                            課程詳情
-                            <CourseIntroduction>
-                                {courseData.courseIntroduction}
-                            </CourseIntroduction>
-                        </AboutContent>
-                    </AboutCourse>{" "}
-                    <MessageArea>
-                        <MessageContainer>
-                            <MessageHeader>上課前問問</MessageHeader>
-                            <MessageInputArea>
-                                <Input
-                                    value={message}
-                                    onChange={e => setMessage(e.target.value)}
-                                />
-                                <SendButton onClick={handSendMessage}>
-                                    送出
-                                </SendButton>
-                            </MessageInputArea>
-                            {renderMessages()}
-                        </MessageContainer>
-                    </MessageArea>
-                    <WebButton
-                        onClick={handleRegistration}
-                        disabled={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                        active={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                    >
-                        {courseData.teacherUserID === userID
-                            ? "您是老師喔"
-                            : findUserInfo(userID, "studentsCourses")?.some(
-                                  value => value === courseID,
-                              )
-                            ? "你已經報名囉"
-                            : "我要報名"}
-                    </WebButton>
-                </Container>
-            )}
-            {courseData && usersInfo && (
-                <RegisterArea>
-                    <Button
-                        onClick={handleRegistration}
-                        disabled={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                        active={
-                            courseData.teacherUserID === userID ||
-                            findUserInfo(userID, "studentsCourses")?.some(
-                                value => value === courseID,
-                            )
-                        }
-                    >
-                        {courseData.teacherUserID === userID
-                            ? "您是老師喔"
-                            : findUserInfo(userID, "studentsCourses")?.some(
-                                  value => value === courseID,
-                              )
-                            ? "你已經報名囉"
-                            : "我要報名"}
-                    </Button>
-                </RegisterArea>
+                                    <InfoTitle>
+                                        瀏覽人數 {courseData.view}
+                                    </InfoTitle>
+                                </CourseInfo>
+                                <TeacherInfo>
+                                    <TeacherImg
+                                        src={findUserInfo(
+                                            courseData.teacherUserID,
+                                            "photo",
+                                        )}
+                                    />
+                                    <a
+                                        href={`mailto:${findUserInfo(
+                                            courseData.teacherUserID,
+                                            "email",
+                                        )}`}
+                                    >
+                                        <NewFiMail />
+                                    </a>
+                                    <TeacherName>
+                                        {findUserInfo(
+                                            courseData.teacherUserID,
+                                            "name",
+                                        )}
+                                    </TeacherName>
+                                    <TeacherIntroduction>
+                                        {courseData.teacherIntroduction}
+                                    </TeacherIntroduction>
+                                </TeacherInfo>
+                                <Collection
+                                    onClick={handleCollection}
+                                    collected={userCollection}
+                                >
+                                    <NewBsBookmark />
+                                    <span>
+                                        {userCollection ? "已收藏" : "加入收藏"}
+                                    </span>
+                                </Collection>{" "}
+                            </BlurImage>
+                            <BlurImageWeb img={courseData.image}>
+                                <CourseTitle>{courseData.title}</CourseTitle>
+                                <CourseInfo>
+                                    <InfoTitle>
+                                        報名人數 {courseData.registrationNumber}
+                                    </InfoTitle>
+
+                                    <InfoTitle>
+                                        瀏覽人數 {courseData.view}
+                                    </InfoTitle>
+                                </CourseInfo>
+                            </BlurImageWeb>
+                            <TeacherInfoWebBox>
+                                <TeacherInfo>
+                                    <TeacherImg
+                                        src={findUserInfo(
+                                            courseData.teacherUserID,
+                                            "photo",
+                                        )}
+                                    />
+
+                                    <a
+                                        href={`mailto:${findUserInfo(
+                                            courseData.teacherUserID,
+                                            "email",
+                                        )}`}
+                                    >
+                                        <HoverInfo content="發送E-mail">
+                                            <NewFiMail />
+                                        </HoverInfo>
+                                    </a>
+
+                                    <TeacherName>
+                                        {findUserInfo(
+                                            courseData.teacherUserID,
+                                            "name",
+                                        )}
+                                    </TeacherName>
+                                    <TeacherIntroduction>
+                                        {courseData.teacherIntroduction}
+                                    </TeacherIntroduction>
+                                </TeacherInfo>
+                                <Collection
+                                    onClick={handleCollection}
+                                    collected={userCollection}
+                                >
+                                    <NewBsBookmark />
+                                    <span>
+                                        {userCollection ? "已收藏" : "加入收藏"}
+                                    </span>
+                                </Collection>
+                                <WebButton
+                                    onClick={handleRegistration}
+                                    disabled={
+                                        courseData.teacherUserID === userID ||
+                                        findUserInfo(
+                                            userID,
+                                            "studentsCourses",
+                                        )?.some(value => value === courseID)
+                                    }
+                                    active={
+                                        courseData.teacherUserID === userID ||
+                                        findUserInfo(
+                                            userID,
+                                            "studentsCourses",
+                                        )?.some(value => value === courseID)
+                                    }
+                                >
+                                    {courseData.teacherUserID === userID
+                                        ? "您是老師喔"
+                                        : findUserInfo(
+                                              userID,
+                                              "studentsCourses",
+                                          )?.some(value => value === courseID)
+                                        ? "你已經報名囉"
+                                        : "我要報名"}
+                                </WebButton>
+                            </TeacherInfoWebBox>
+                            <AboutCourse>
+                                <AboutTitle>關於課程</AboutTitle>
+                                <AboutContent>
+                                    <NewBsPersonCheck viewBox="0 0 16 16" />{" "}
+                                    <span>
+                                        開班人數 {courseData.minOpeningNumber}
+                                    </span>
+                                </AboutContent>
+                                <AboutContent>
+                                    <NewBsCalendarPlus viewBox="2 0 16 16" />{" "}
+                                    <span>
+                                        報名截止{" "}
+                                        {customDateDisplay(
+                                            courseData.registrationDeadline
+                                                .seconds * 1000,
+                                        )}
+                                    </span>
+                                </AboutContent>
+                                <AboutContent>
+                                    <NewBsCalendarCheck viewBox="2 0 16 16" />
+                                    <span>
+                                        開課時間{" "}
+                                        {customDateDisplay(
+                                            courseData.openingDate.seconds *
+                                                1000,
+                                        )}
+                                    </span>
+                                </AboutContent>
+                                <AboutContentsSkill>
+                                    <NewBsPatchCheck viewBox="2 0 16 16" />
+                                    <span>
+                                        可獲技能{" "}
+                                        <FlexDiv>
+                                            <Skills skills={skillsInfo} />
+                                        </FlexDiv>
+                                    </span>
+                                </AboutContentsSkill>
+                                <AboutContent>
+                                    <NewBsCardText viewBox="2 0 16 16" />
+                                    <span>課程詳情</span>
+                                    <CourseIntroduction>
+                                        {courseData.courseIntroduction}
+                                    </CourseIntroduction>
+                                </AboutContent>
+                            </AboutCourse>{" "}
+                            <MessageArea>
+                                <MessageContainer>
+                                    <MessageHeader>上課前問問</MessageHeader>
+                                    <MessageInputArea>
+                                        <Input
+                                            value={message}
+                                            onChange={e =>
+                                                setMessage(e.target.value)
+                                            }
+                                        />
+                                        <SendButton onClick={handSendMessage}>
+                                            送出
+                                        </SendButton>
+                                    </MessageInputArea>
+                                    {renderMessages()}
+                                </MessageContainer>
+                            </MessageArea>
+                        </Container>
+                        <RegisterArea>
+                            <Button
+                                onClick={handleRegistration}
+                                disabled={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                                active={
+                                    courseData.teacherUserID === userID ||
+                                    findUserInfo(
+                                        userID,
+                                        "studentsCourses",
+                                    )?.some(value => value === courseID)
+                                }
+                            >
+                                {courseData.teacherUserID === userID
+                                    ? "您是老師喔"
+                                    : findUserInfo(
+                                          userID,
+                                          "studentsCourses",
+                                      )?.some(value => value === courseID)
+                                    ? "你已經報名囉"
+                                    : "我要報名"}
+                            </Button>
+                        </RegisterArea>
+                        <Footer />
+                    </>
+                    {isLoading ? <LoadingForPost /> : ""}
+                    <AlertModal
+                        content={alertMessage}
+                        alertIsOpen={alertIsOpen}
+                        setAlertIsOpen={setAlertIsOpen}
+                        isNavigateToOtherRouter={true}
+                        pathname={`/course?courseID=${courseID}`}
+                    />
+                </>
             )}
         </>
     );

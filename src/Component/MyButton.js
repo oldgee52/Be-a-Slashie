@@ -7,13 +7,18 @@ const Button = styled.button`
     height: 40px;
     text-align: center;
     line-height: 40px;
+    letter-spacing: 1px;
 
-    color: #ffffff;
+    color: white;
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
+    font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
 
-    background-color: ${props => (props.disabled ? "gray" : "#ff6100")};
+    background: ${props =>
+        props.disabled
+            ? "gray"
+            : "linear-gradient(to left,#ff8f08 -10.47%,#ff6700 65.84%)"};
     cursor: ${props => (props.disabled ? "not-allowed" : "pointer")};
 
     @media ${breakPoint.desktop} {

@@ -1,11 +1,12 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { Loading } from "./Loading";
 
 function RequireAuth({ children, userLogin }) {
     const location = useLocation();
 
     if (userLogin === "check") {
-        return <div>身分驗證中</div>;
+        return <Loading />;
     }
     if (userLogin === "out") {
         console.log(location);

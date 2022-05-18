@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
-import { NoDataTitle } from "../Component/NoDataTitle";
+import { Loading } from "../Component/Loading";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -34,7 +36,7 @@ const CourseArea = styled.div`
         align-items: flex-start;
         &::after {
             content: "";
-            width: calc(25% - 10px);
+            width: calc(30% - 10px);
         }
     }
 `;
@@ -43,12 +45,13 @@ const CourseDiv = styled.div`
     width: 100%;
 
     @media ${breakPoint.desktop} {
-        width: calc(28% - 10px);
+        width: calc(30% - 10px);
         margin-right: 10px;
     }
 `;
 export const StudentFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
+    const customDateDisplay = useCustomDateDisplay();
     useEffect(() => {
         if (userID)
             firebaseInit
@@ -72,54 +75,41 @@ export const StudentFinishedCourse = ({ userID }) => {
     }, [userID]);
 
     return (
-        <Container>
+        <>
             {!finishedCourses ? (
-                "loading..."
+                <Loading />
             ) : finishedCourses.length === 0 ? (
-                <NoDataTitle title="還沒有完成的課程喔" />
+                <Container>
+                    <NoDataBox
+                        marginTop="15px"
+                        marginLeft="150px"
+                        title="還沒有完成的課程喔，快去逛逛！"
+                        buttonWord="來去逛逛"
+                        path="/search?q=latest"
+                    />
+                </Container>
             ) : (
-                <CourseArea>
-                    {finishedCourses.map((course, index) => (
-                        <CourseDiv key={course.courseID}>
-                            <CourseInfo
-                                teacherPhoto={course.teacherPhoto}
-                                image={course.image}
-                                title={course.title}
-                                teacherName={course.teacherName}
-                                openingDate={new Date(
-                                    course.courseOpeningDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                                closedDate={new Date(
-                                    course?.courseClosedDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                            />
-                            {/* <DivContent>
-                                項次
-                                {index + 1}
-                            </DivContent>
-                            <DivContent>課程名稱: {course.title}</DivContent>
-                            <DivContent>
-                                老師: {course.teacherName}
-                                <a href={`mailto: ${course.teacherEmail}`}>
-                                    與我聯繫
-                                </a>
-                            </DivContent>{" "}
-                            <DivContent>
-                                完課日期:{" "}
-                                {new Date(
-                                    course?.courseClosedDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                            </DivContent>
-                            <DivContent>
-                                開課日期:{" "}
-                                {new Date(
-                                    course?.courseOpeningDate.seconds * 1000,
-                                ).toLocaleDateString()}
-                            </DivContent> */}
-                        </CourseDiv>
-                    ))}
-                </CourseArea>
+                <Container>
+                    <CourseArea>
+                        {finishedCourses.map((course, index) => (
+                            <CourseDiv key={course.courseID}>
+                                <CourseInfo
+                                    teacherPhoto={course.teacherPhoto}
+                                    image={course.image}
+                                    title={course.title}
+                                    teacherName={course.teacherName}
+                                    openingDate={customDateDisplay(
+                                        course.courseOpeningDate.seconds * 1000,
+                                    )}
+                                    closedDate={customDateDisplay(
+                                        course?.courseClosedDate.seconds * 1000,
+                                    )}
+                                />
+                            </CourseDiv>
+                        ))}
+                    </CourseArea>
+                </Container>
             )}
-        </Container>
+        </>
     );
 };

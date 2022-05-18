@@ -1,12 +1,14 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
+
     html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: "微軟正黑體", Arial, Helvetica, sans-serif;
+  font-family: "Noto Sans TC", "微軟正黑體","Arial", sans-serif;
+  letter-spacing: 1px;
   vertical-align: top;
   box-sizing: border-box;
    ${"" /* border: 1px solid black;     */}
@@ -16,6 +18,7 @@ const GlobalStyle = createGlobalStyle`
 body{
 
   background-color: rgba(0,0,0,0.1);
+  color: #505050;
 }
 address, caption, cite, code, dfn, em, strong, th, var, b {
   font-weight: normal;
@@ -83,6 +86,7 @@ button {
   padding: 0;
   border: none;
   background: none;
+  font-family: "Noto Sans TC", "微軟正黑體","Arial", sans-serif;
 }
 `;
 

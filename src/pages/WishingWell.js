@@ -1,22 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TextInput } from "../Component/TextInput";
 import styled from "styled-components";
-import { collection, doc, setDoc, Timestamp } from "firebase/firestore";
+import {
+    arrayRemove,
+    arrayUnion,
+    collection,
+    doc,
+    setDoc,
+    Timestamp,
+    updateDoc,
+} from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { AlertModal } from "../Component/AlertModal";
+import { Loading } from "../Component/Loading";
+import { Footer } from "../Component/Footer";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
 
 const Container = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     width: 100%;
+    align-content: flex-start;
 
     padding: 80px 10px 0px 10px;
+    min-height: 100vh;
 
     @media ${breakPoint.desktop} {
         margin: auto;
+        margin-bottom: 50px;
         max-width: 1200px;
     }
 `;
@@ -27,11 +43,12 @@ const Button = styled.button`
     line-height: 40px;
     text-align: center;
     border-radius: 5px;
+    letter-spacing: 1px;
 
     color: #ffffff;
     font-size: 16px;
     line-height: 24px;
-    background-color: #ff6100;
+    background: linear-gradient(to left, #ff8f08 -10.47%, #ff6700 65.84%);
 
     cursor: pointer;
 
@@ -56,15 +73,25 @@ const InputArea = styled.div`
         margin-bottom: 20px;
     }
 `;
-
+const DirectionBox = styled.div`
+    width: 100%;
+    background-color: whitesmoke;
+    border-radius: 5px;
+    padding: 10px;
+    padding-left: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+`;
 const Title = styled.div`
-    font-size: 24px;
+    font-size: 20px;
     letter-spacing: 10px;
     padding-bottom: 10px;
     margin-bottom: 10px;
     width: 100%;
-
-    text-align: center;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const CourseCard = styled.div`
@@ -73,8 +100,7 @@ const CourseCard = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
-    background-color: white;
-    border: 1px solid white;
+    background-color: whitesmoke;
     border-radius: 5px;
 
     padding-bottom: 20px;
@@ -100,6 +126,9 @@ const UserPhoto = styled.img`
 const ContentArea = styled.div`
     width: 100%;
     padding: 0 25px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
     @media ${breakPoint.desktop} {
         width: 85%;
 
@@ -114,22 +143,20 @@ const InfoArea = styled.div`
 `;
 
 const Info = styled.p`
-    color: #7f7f7f;
-    font-size: 14px;
+    font-size: 16px;
     margin-top: 22px;
     @media ${breakPoint.desktop} {
-        font-size: 18px;
         margin-top: 20px;
     }
 `;
 
 const TeacherName = styled.p`
     color: #7f7f7f;
-    font-size: 14px;
+
     line-height: 20px;
     margin-top: 5px;
+    width: calc(100% - 40px);
     @media ${breakPoint.desktop} {
-        font-size: 18px;
         margin-top: 10px;
     }
 `;
@@ -145,12 +172,42 @@ const WishContainer = styled.div`
         column-gap: 20px;
     }
 `;
+const NewBsHeart = styled(BsHeart)`
+    width: 12px;
+    height: 12px;
+`;
+const NewBsHeartFill = styled(BsHeartFill)`
+    width: 12px;
+    height: 12px;
+    color: #ff6100;
+`;
+const HeartBox = styled.div`
+    width: 40px;
+    text-align: right;
+    cursor: pointer;
+`;
+
+const LikeNumber = styled.span`
+    font-size: 12px;
+    line-height: 15.5px;
+    padding-left: 8px;
+    color: #7f7f7f;
+`;
+
+const WishDirection = styled.div`
+    font-size: 18px;
+`;
+
+const WishDirectionSpan = styled.span`
+    color: #ff6100;
+`;
 
 export const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [usersInfo, setUsersInfo] = useState();
-
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     const lasWishSnapshotRef = useRef();
 
     useEffect(() => {
@@ -190,7 +247,7 @@ export const WishingWell = ({ userID }) => {
     }
 
     async function makeWish() {
-        if (!wishingContent.trim()) return window.alert("請輸入內容");
+        if (!wishingContent.trim()) return handleAlertModal("請輸入內容");
         try {
             const coursesRef = collection(firebaseInit.db, "wishingWells");
             const docRef = doc(coursesRef);
@@ -205,19 +262,49 @@ export const WishingWell = ({ userID }) => {
 
             setWishingContent("");
             setWishes([data, ...wishes]);
-            window.alert("許願成功");
+            handleAlertModal("許願成功");
         } catch (error) {
-            window.alert("許願失敗，請再試一次");
+            handleAlertModal("許願失敗，請再試一次");
             console.log("錯誤", error);
         }
     }
+    async function handleAddLike(wishId, index, condition) {
+        if (condition) {
+            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
+                like: arrayRemove(userID),
+            });
+            let data = [...wishes];
+            const newLikeList = data[index]["like"].filter(
+                user => user !== userID,
+            );
+            data[index]["like"] = newLikeList;
+            console.log(data[index]);
+            return setWishes(data);
+        }
+        if (!condition) {
+            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
+                like: arrayUnion(userID),
+            });
 
+            let data = [...wishes];
+            if (data[index]["like"]) {
+                data[index]["like"] = [...data[index]["like"], userID];
+                console.log(data[index]["like"]);
+            }
+            if (!data[index]["like"]) {
+                console.log(123456);
+                data[index]["like"] = [userID];
+                console.log(data[index]);
+            }
+            setWishes(data);
+        }
+    }
     function renderWishes() {
         return (
             <WishContainer>
                 {wishes &&
                     usersInfo &&
-                    wishes.map(wish => {
+                    wishes.map((wish, index) => {
                         return (
                             <CourseCard key={wish.id}>
                                 <UserPhoto
@@ -231,6 +318,29 @@ export const WishingWell = ({ userID }) => {
                                 </InfoArea>
                                 <ContentArea>
                                     <TeacherName>{wish.content}</TeacherName>
+                                    <HeartBox
+                                        onClick={() => {
+                                            handleAddLike(
+                                                wish.id,
+                                                index,
+                                                wish.like?.some(
+                                                    uid => uid === userID,
+                                                ),
+                                            );
+                                        }}
+                                    >
+                                        {wish.like?.some(
+                                            uid => uid === userID,
+                                        ) ? (
+                                            <NewBsHeartFill />
+                                        ) : (
+                                            <NewBsHeart />
+                                        )}
+
+                                        <LikeNumber>
+                                            {wish.like ? wish.like.length : 0}
+                                        </LikeNumber>
+                                    </HeartBox>
                                 </ContentArea>
                             </CourseCard>
                         );
@@ -239,33 +349,55 @@ export const WishingWell = ({ userID }) => {
         );
     }
 
-    console.log(lasWishSnapshotRef.current);
-
     return (
-        <Container>
+        <>
             {!usersInfo || !wishes ? (
-                "loading..."
+                <Loading />
             ) : (
                 <>
-                    <InputArea>
-                        <TextInput
-                            value={wishingContent}
-                            handleChange={handleChange}
-                            name="content"
-                            placeholder={"請輸入你/妳的願望..."}
+                    <Container>
+                        <InputArea>
+                            <TextInput
+                                value={wishingContent}
+                                handleChange={handleChange}
+                                name="content"
+                                placeholder={"請輸入你/妳的願望..."}
+                            />
+                            <Button onClick={makeWish}>我要許願</Button>
+                        </InputArea>
+                        <DirectionBox>
+                            <Title>
+                                <span>
+                                    <BsHeart viewBox="0 -3 18 18" />
+                                </span>{" "}
+                                許願成真
+                            </Title>
+                            <WishDirection>
+                                如果願望累積到{" "}
+                                <WishDirectionSpan>10個 </WishDirectionSpan>
+                                <WishDirectionSpan>
+                                    <BsHeartFill viewBox="0 -2 18 18" />
+                                </WishDirectionSpan>
+                                ，將為大家找老師來開課!
+                            </WishDirection>
+                        </DirectionBox>
+                        {renderWishes()}
+                        {/* {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"} */}
+                        <Waypoint
+                            onEnter={() =>
+                                loadingNextWishes(lasWishSnapshotRef.current)
+                            }
                         />
-                        <Button onClick={makeWish}>我要許願</Button>
-                    </InputArea>
-                    <Title>許願池</Title>
-                    {renderWishes()}
-                    {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"}
-                    <Waypoint
-                        onEnter={() =>
-                            loadingNextWishes(lasWishSnapshotRef.current)
-                        }
-                    />
+                    </Container>
+                    <Footer />
                 </>
             )}
-        </Container>
+
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

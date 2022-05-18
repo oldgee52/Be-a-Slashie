@@ -7,6 +7,12 @@ import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { NoDataTitle } from "../Component/NoDataTitle";
+import { AlertModal } from "../Component/AlertModal";
+import { useAlertModal } from "../customHooks/useAlertModal";
+import { Loading } from "../Component/Loading";
+import { MyRadioButton } from "../Component/MyRadioButton";
+import { HoverInfo } from "../Component/HoverInfo";
+import { NoDataBox } from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -35,12 +41,15 @@ const CourseCard = styled.div`
 `;
 
 const CourseTitle = styled.h3`
-    font-size: 16px;
+    font-size: 18px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #505050;
     line-height: 1.2;
 
     word-break: break-all;
+    @media ${breakPoint.desktop} {
+        font-size: 22px;
+    }
 `;
 
 const StudentInfoBoc = styled.div`
@@ -79,37 +88,44 @@ const InputArea = styled.div`
     }
 `;
 
-const InputLabel = styled.label`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-
-    cursor: pointer;
-`;
-
-const Agreement = styled.div`
-    margin-left: 5px;
-`;
-
 const ButtonArea = styled.div`
     @media ${breakPoint.desktop} {
         align-self: center;
     }
 `;
 
-const NewFiInfo = styled(FiInfo)`
+const IconBox = styled.span`
     cursor: pointer;
-`;
-const NoShow = styled.div`
-    margin-top: 10px;
-    font-size: 16px;
-    font-weight: 700;
+    margin-right: 5px;
+    margin-left: 5px;
+
+    &::before {
+        content: "${props => props.content}";
+        position: absolute;
+        transform: translateY(0px) translateX(-40%);
+        background-color: #e9e9e9;
+        color: #7f7f7f;
+        font-size: 12px;
+        width: max-content;
+        overflow: hidden;
+        padding: 5px;
+        border-radius: 5px;
+        z-index: -1;
+        opacity: 0;
+        transition-duration: 0.2s;
+    }
+    &:hover::before {
+        opacity: 1;
+        z-index: 10;
+        transform: translateY(20px) translateX(-40%);
+    }
 `;
 
 export const TeacherConfirmRegistration = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
+    const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
+        useAlertModal();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -145,7 +161,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
             .some(value => value === 0);
 
         if (checkRegistrationStatus)
-            return window.alert(`課程:${courseArray[0].title}
+            return handleAlertModal(`課程：${courseArray[0].title}\n
         請確認所有學生是否同意上課`);
 
         try {
@@ -172,85 +188,103 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                     });
                 }),
             ]);
-            window.alert("開始上課囉!!!");
+            handleAlertModal("開始上課囉!!!");
             const NewCourse = courses.filter(
                 course => course.courseID !== courseID,
             );
             setCourses(NewCourse);
         } catch (error) {
-            window.alert("開課失敗");
+            handleAlertModal("開課失敗");
             console.log(error);
         }
     };
-    return (
-        <Container>
-            {courses?.length === 0 ? (
-                <NoDataTitle title="目前沒有課程喔" />
-            ) : (
-                courses &&
-                courses.map(course => (
-                    <CourseCard key={course.courseID}>
-                        <CourseTitle>{course.title}</CourseTitle>
-                        {course.students.length === 0 ? (
-                            <NoShow>還沒有人報名喔!</NoShow>
-                        ) : (
-                            course.students.map((student, index) => (
-                                <StudentInfoBoc key={index}>
-                                    <Name>
-                                        {student.name}{" "}
-                                        <a href={`mailto: ${student.email}`}>
-                                            <FiMail />
-                                        </a>{" "}
-                                        <NewFiInfo
-                                            onClick={() =>
-                                                navigate(
-                                                    `/personal-introduction?uid=${student.studentID}`,
-                                                )
-                                            }
-                                        />
-                                    </Name>
-                                    <InputArea>
-                                        <InputLabel
-                                            htmlFor={`${course.courseID}_${student.studentID}_agree`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                id={`${course.courseID}_${student.studentID}_agree`}
-                                                name={`${course.courseID}_${student.studentID}`}
-                                                value={1}
-                                                onChange={handleChange}
-                                            />
-                                            <Agreement>同意</Agreement>
-                                        </InputLabel>{" "}
-                                        <InputLabel
-                                            htmlFor={`${course.courseID}_${student.studentID}_disagree`}
-                                        >
-                                            <input
-                                                type="radio"
-                                                id={`${course.courseID}_${student.studentID}_disagree`}
-                                                name={`${course.courseID}_${student.studentID}`}
-                                                value={2}
-                                                onChange={handleChange}
-                                            />
 
-                                            <Agreement>不同意</Agreement>
-                                        </InputLabel>
-                                    </InputArea>
-                                </StudentInfoBoc>
-                            ))
-                        )}
-                        {course.students.length === 0 || (
-                            <ButtonArea>
-                                <MyButton
-                                    buttonWord="準備來開課"
-                                    buttonId={course.courseID}
-                                    clickFunction={confirmRegistration}
-                                />
-                            </ButtonArea>
-                        )}
-                    </CourseCard>
-                ))
+    return (
+        <>
+            {!courses ? (
+                <Loading />
+            ) : (
+                <Container>
+                    {courses?.length === 0 ? (
+                        <NoDataBox
+                            marginTop="35px"
+                            marginLeft="140px"
+                            title="尚未有課程喔，可以去看看開課方式！"
+                            buttonWord="來去看看"
+                            path="/personal/teacher-upload-course"
+                        />
+                    ) : (
+                        courses &&
+                        courses.map(course => (
+                            <CourseCard key={course.courseID}>
+                                <CourseTitle>{course.title}</CourseTitle>
+                                {course.students.length === 0 ? (
+                                    <NoDataTitle title="還沒有人報名喔" />
+                                ) : (
+                                    course.students.map((student, index) => (
+                                        <StudentInfoBoc key={index}>
+                                            <Name>
+                                                <span> {student.name} </span>
+                                                <a
+                                                    href={`mailto: ${student.email}`}
+                                                >
+                                                    <HoverInfo content="發送E-mail">
+                                                        <FiMail viewBox="-1 -1 24 24" />
+                                                    </HoverInfo>
+                                                </a>{" "}
+                                                <IconBox
+                                                    content="查看個人資料"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/personal-introduction?uid=${student.studentID}`,
+                                                        )
+                                                    }
+                                                >
+                                                    <FiInfo viewBox="-1 -1 24 24" />
+                                                </IconBox>
+                                            </Name>
+                                            <InputArea>
+                                                <MyRadioButton
+                                                    title="同意"
+                                                    inputId={`${course.courseID}_${student.studentID}_agree`}
+                                                    inputName={`${course.courseID}_${student.studentID}`}
+                                                    inputValue={1}
+                                                    changeFunction={
+                                                        handleChange
+                                                    }
+                                                />
+                                                <MyRadioButton
+                                                    title="不同意"
+                                                    inputId={`${course.courseID}_${student.studentID}_disagree`}
+                                                    inputName={`${course.courseID}_${student.studentID}`}
+                                                    inputValue={2}
+                                                    changeFunction={
+                                                        handleChange
+                                                    }
+                                                />
+                                            </InputArea>
+                                        </StudentInfoBoc>
+                                    ))
+                                )}
+                                {course.students.length === 0 || (
+                                    <ButtonArea>
+                                        <MyButton
+                                            buttonWord="準備來開課"
+                                            buttonId={course.courseID}
+                                            clickFunction={confirmRegistration}
+                                        />
+                                    </ButtonArea>
+                                )}
+                            </CourseCard>
+                        ))
+                    )}
+                </Container>
             )}
-        </Container>
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+            />
+        </>
     );
 };

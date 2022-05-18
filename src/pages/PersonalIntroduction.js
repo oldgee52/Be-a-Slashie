@@ -5,6 +5,10 @@ import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
 import { CourseInfo } from "../Component/CourseInfo";
+import { Loading } from "../Component/Loading";
+import { Footer } from "../Component/Footer";
+import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { HoverInfo } from "../Component/HoverInfo";
 
 const Container = styled.div`
     display: flex;
@@ -14,17 +18,14 @@ const Container = styled.div`
     width: 100%;
 
     padding: 80px 10px 80px 10px;
+    /* min-height: calc(100vh - 100px); */
 
     @media ${breakPoint.desktop} {
         margin: auto;
         max-width: 1200px;
+        min-height: calc(100vh - 55px);
+        justify-content: flex-start;
     }
-`;
-
-const Background = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
 `;
 
 const InfoArea = styled.div`
@@ -32,8 +33,8 @@ const InfoArea = styled.div`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    background-color: gray;
-    border: 1px solid white;
+    /* background: linear-gradient(rgb(2, 170, 176), rgb(0, 205, 172)); */
+    background: linear-gradient(#ff8f08, #ff6700);
     border-radius: 5px;
     color: white;
 
@@ -52,12 +53,16 @@ const UserPhoto = styled.img`
     left: 20px;
 
     border: 2px solid white;
+    object-fit: cover;
 `;
 
 const UserName = styled.div`
     padding-top: 10px;
     font-weight: 700;
     font-size: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const UserIntroduction = styled.div`
@@ -70,20 +75,20 @@ const UserSkills = styled.div`
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-
-    background-color: white;
-    min-height: 200px;
     padding: 10px;
-
     margin-top: 35px;
-
-    border: 1px solid white;
     border-radius: 5px;
 `;
 const SkillTitle = styled.div`
     font-size: 20px;
     width: 100%;
     font-weight: 700;
+    border-bottom: 1px solid #7f7f7f;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    @media ${breakPoint.desktop} {
+        font-size: 24px;
+    }
 `;
 
 const SkillBox = styled.div`
@@ -110,7 +115,6 @@ const CourseBox = styled.div`
 
 const CourseDiv = styled.div`
     width: 100%;
-    /* margin-top: 20px; */
 
     @media ${breakPoint.desktop} {
         width: calc(33.3% - 30px);
@@ -121,7 +125,7 @@ export const PersonalIntroduction = () => {
     const [userInfo, setUserInfo] = useState();
     const [userSkills, setUserSkills] = useState();
     const [userFinishCourses, setUserFinishCourses] = useState();
-
+    const customDateDisplay = useCustomDateDisplay();
     const uid = new URLSearchParams(window.location.search).get("uid");
     useEffect(() => {
         firebaseInit.getCollectionData("users", uid).then(data => {
@@ -144,7 +148,6 @@ export const PersonalIntroduction = () => {
     }, [uid]);
     useEffect(() => {
         firebaseInit.getStudentRegisteredCourseDetails(uid).then(data => {
-            // console.log(data)
             const finishedCourse = data.filter(course => {
                 return (
                     course.registrationStatus === 1 && course.courseStatus === 2
@@ -163,12 +166,12 @@ export const PersonalIntroduction = () => {
     console.log(userFinishCourses);
 
     return (
-        <Background>
-            <Container>
-                {!userInfo || !userSkills || !userFinishCourses ? (
-                    "loading..."
-                ) : (
-                    <>
+        <>
+            {!userInfo || !userSkills || !userFinishCourses ? (
+                <Loading />
+            ) : (
+                <>
+                    <Container>
                         <InfoArea>
                             <UserPhoto
                                 src={userInfo.photo}
@@ -177,7 +180,9 @@ export const PersonalIntroduction = () => {
                             <UserName>
                                 {userInfo.name}{" "}
                                 <a href={`mailto: ${userInfo.email}`}>
-                                    <FiMail />
+                                    <HoverInfo content="發送E-mail">
+                                        <FiMail viewBox="-1 -1 24 24" />
+                                    </HoverInfo>
                                 </a>
                             </UserName>{" "}
                             <UserIntroduction>
@@ -203,18 +208,19 @@ export const PersonalIntroduction = () => {
                                                   teacherName={
                                                       course.teacherName
                                                   }
-                                                  closedDate={new Date(
+                                                  closedDate={customDateDisplay(
                                                       course?.courseClosedDate
                                                           .seconds * 1000,
-                                                  ).toLocaleDateString()}
+                                                  )}
                                               />
                                           </CourseDiv>
                                       ))}
                             </CourseBox>
                         </UserSkills>
-                    </>
-                )}
-            </Container>
-        </Background>
+                    </Container>
+                    <Footer />
+                </>
+            )}
+        </>
     );
 };

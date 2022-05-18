@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FiEye } from "react-icons/fi";
@@ -14,20 +14,32 @@ const CourseCard = styled.div`
     padding: 10px;
 
     padding-bottom: 20px;
-    border-bottom: 2px solid black;
+    border-bottom: 5px solid #ff6700;
 
     background-color: whitesmoke;
+
+    box-shadow: rgb(0 0 0 / 24%) 0px 4px 4px 0px;
+    border-radius: 5px;
 
     cursor: ${props => (props.isLink ? "pointer" : "default")};
 
     @media ${breakPoint.desktop} {
         flex-direction: column;
         align-items: center;
-        border: 2px solid black;
         padding: 0;
         padding-bottom: 20px;
-        border-radius: 5px;
-        border-bottom: 10px solid black;
+
+        border-bottom: 10px solid #ff6700;
+    }
+`;
+const ImgBox = styled.div`
+    width: 100px;
+    height: 80px;
+    @media ${breakPoint.desktop} {
+        width: 100%;
+        height: 200px;
+
+        overflow: hidden;
     }
 `;
 
@@ -35,10 +47,14 @@ const CourseImg = styled.img`
     width: 100px;
     height: 80px;
     object-fit: cover;
+
     @media ${breakPoint.desktop} {
         width: 100%;
         height: 200px;
         object-fit: cover;
+        overflow: hidden;
+        transform: ${props => (props.mouseEnter ? "scale(1.2)" : "scale(1)")};
+        transition: transform 0.28s ease-in-out;
     }
 `;
 const CourseTitle = styled.div`
@@ -56,6 +72,8 @@ const CourseName = styled.h4`
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
+    height: 72px;
+    overflow: hidden;
     word-wrap: break-word;
 
     margin-bottom: 10px;
@@ -64,15 +82,13 @@ const CourseName = styled.h4`
         width: 100%;
         font-size: 24px;
         padding-top: 40px;
-        height: 120px;
-        word-wrap: break-word;
-        overflow: hidden;
+        height: 130px;
     }
 `;
 
 const TeacherName = styled.p`
     color: #7f7f7f;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 20px;
     margin-top: 5px;
 
@@ -86,9 +102,11 @@ const View = styled.p`
     font-size: 12px;
     width: 50px;
     text-align: right;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
     @media ${breakPoint.desktop} {
         align-self: flex-end;
-        font-size: 16px;
         margin-top: -20px;
         margin-right: 30px;
     }
@@ -111,26 +129,30 @@ const TeacherPhoto = styled.img`
     }
 `;
 
-// const Label = styled.div`
-//     display: none;
-//     @media ${breakPoint.desktop} {
-//         display: block;
-//         position: absolute;
-//         width: 120px;
-//         height: 30px;
-//         line-height: 30px;
+const ViewSpan = styled.span`
+    margin-left: 5px;
+`;
 
-//         text-align: center;
+const Label = styled.div`
+    display: none;
+    @media ${breakPoint.desktop} {
+        display: block;
+        position: absolute;
+        width: 120px;
+        height: 30px;
+        line-height: 30px;
 
-//         z-index: 2;
-//         background-color: black;
-//         color: white;
-//         right: -30px;
-//         top: 12px;
+        text-align: center;
 
-//         transform: rotate(45deg);
-//     }
-// `;
+        z-index: 2;
+        background-color: #ff6100;
+        color: whitesmoke;
+        letter-spacing: 5px;
+        right: -30px;
+        top: 12px;
+        transform: rotate(45deg);
+    }
+`;
 
 export const CourseInfo = ({
     courseID,
@@ -142,25 +164,38 @@ export const CourseInfo = ({
     image,
     teacherPhoto,
     closedDate,
+    label,
 }) => {
+    const [isMouseEnter, setIsMouseEnter] = useState(false);
     const navigate = useNavigate();
     return (
         <>
-            {/* <TeacherPhoto src={image} alt={title}></TeacherPhoto> */}
             <CourseCard
                 onClick={() => {
                     if (courseID) navigate(`/course?courseID=${courseID}`);
                 }}
                 isLink={courseID}
+                onMouseEnter={() => {
+                    setIsMouseEnter(true);
+                }}
+                onMouseLeave={() => {
+                    setIsMouseEnter(false);
+                }}
             >
-                {/* <Label>New</Label> */}
                 {teacherPhoto && (
                     <TeacherPhoto
                         src={teacherPhoto}
                         alt={teacherName}
                     ></TeacherPhoto>
                 )}
-                <CourseImg src={image} alt={title} />
+                <ImgBox>
+                    {label && <Label>{label}</Label>}
+                    <CourseImg
+                        alt={title}
+                        src={image}
+                        mouseEnter={isMouseEnter}
+                    />
+                </ImgBox>
                 <CourseTitle>
                     <CourseName>{title}</CourseName>
                     <TeacherName>{teacherName}</TeacherName>
@@ -174,9 +209,12 @@ export const CourseInfo = ({
                         <TeacherName>完課日期 {closedDate}</TeacherName>
                     )}
                 </CourseTitle>
-                {view && (
+                {view === undefined ? (
+                    ""
+                ) : (
                     <View>
-                        <FiEye viewBox="0 -3 24 24 " /> {view}
+                        <FiEye viewBox="0 -3 24 24 " />
+                        <ViewSpan>{view}</ViewSpan>
                     </View>
                 )}
             </CourseCard>
