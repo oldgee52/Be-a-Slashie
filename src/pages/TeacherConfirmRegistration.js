@@ -13,6 +13,7 @@ import { Loading } from "../Component/Loading";
 import { MyRadioButton } from "../Component/MyRadioButton";
 import { HoverInfo } from "../Component/HoverInfo";
 import { NoDataBox } from "../Component/NoDataBox";
+import { useHandleValueChangeForDeepCopy } from "../customHooks/useHandleValueChangeForDeepCopy";
 
 const Container = styled.div`
     display: flex;
@@ -126,6 +127,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     const [registrationStatus, setRegistrationStatus] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const handleChangeForDeepCopy = useHandleValueChangeForDeepCopy();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -138,16 +140,14 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     }, [userID]);
 
     const handleChange = e => {
-        const stateCopy = JSON.parse(JSON.stringify(registrationStatus));
-        stateCopy.forEach(card => {
-            card.students.forEach(student => {
-                if (e.target.name === `${card.courseID}_${student.studentID}`)
-                    student.registrationStatus = +e.target.value;
-            });
-        });
-        console.log(stateCopy);
-
-        setRegistrationStatus(stateCopy);
+        const dataChange = {
+            data: registrationStatus,
+            targetName: e.target.name,
+            dataKey: "registrationStatus",
+            dataValue: +e.target.value,
+            callback: setRegistrationStatus,
+        };
+        handleChangeForDeepCopy(dataChange);
     };
 
     const confirmRegistration = async e => {

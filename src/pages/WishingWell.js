@@ -18,6 +18,7 @@ import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
+import { useUserInfo } from "../customHooks/useUserInfo";
 
 const Container = styled.div`
     display: flex;
@@ -205,9 +206,10 @@ const WishDirectionSpan = styled.span`
 export const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
-    const [usersInfo, setUsersInfo] = useState();
+    // const [usersInfo, setUsersInfo] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [findUserInfo, usersInfo] = useUserInfo();
     const lasWishSnapshotRef = useRef();
 
     useEffect(() => {
@@ -218,14 +220,6 @@ export const WishingWell = ({ userID }) => {
         });
     }, []);
 
-    useEffect(() => {
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "users"))
-            .then(data => {
-                setUsersInfo(data);
-            });
-    }, []);
-
     async function loadingNextWishes(key) {
         if (key) {
             firebaseInit.getNextBatchWishes(key).then(data => {
@@ -234,12 +228,6 @@ export const WishingWell = ({ userID }) => {
                 console.log(data);
             });
         }
-    }
-
-    function findUserInfo(userID, info) {
-        const result = usersInfo.filter(array => array.uid === userID);
-
-        return result[0][info];
     }
 
     function handleChange(e) {
@@ -303,7 +291,6 @@ export const WishingWell = ({ userID }) => {
         return (
             <WishContainer>
                 {wishes &&
-                    usersInfo &&
                     wishes.map((wish, index) => {
                         return (
                             <CourseCard key={wish.id}>
@@ -351,7 +338,7 @@ export const WishingWell = ({ userID }) => {
 
     return (
         <>
-            {!usersInfo || !wishes ? (
+            {!wishes || !usersInfo ? (
                 <Loading />
             ) : (
                 <>

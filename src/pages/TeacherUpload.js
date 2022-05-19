@@ -9,7 +9,6 @@ import {
     updateDoc,
     arrayUnion,
 } from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
@@ -187,7 +186,6 @@ const SkillsBox = styled.div`
     }
 `;
 const DirectionBox = styled.div`
-    /* padding: 5px; */
     font-size: 12px;
     line-height: 1.5;
     margin-bottom: 5px;

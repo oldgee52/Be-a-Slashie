@@ -22,6 +22,8 @@ import { LoadingForPost } from "../Component/LoadingForPost";
 import { MyRadioButton } from "../Component/MyRadioButton";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { NoDataBox } from "../Component/NoDataBox";
+import { useHandleValueChangeForArray } from "../customHooks/useHandleValueChangeForArray";
+import { useHandleValueChangeForDeepCopy } from "../customHooks/useHandleValueChangeForDeepCopy";
 
 const Container = styled.div`
     display: flex;
@@ -118,19 +120,6 @@ const InputArea = styled.div`
         margin-top: 0;
         order: -1;
     }
-`;
-
-const InputLabel = styled.label`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-
-    cursor: pointer;
-`;
-
-const Agreement = styled.div`
-    margin-left: 5px;
 `;
 
 const StudentUploadHomework = styled.div`
@@ -250,6 +239,8 @@ export const TeacherOpeningCourse = ({ userID }) => {
     const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const handleChange = useHandleValueChangeForArray();
+    const handleChangeForDeepCopy = useHandleValueChangeForDeepCopy();
 
     useEffect(() => {
         if (userID)
@@ -441,41 +432,20 @@ export const TeacherOpeningCourse = ({ userID }) => {
         }
     };
 
-    const handleTitleChange = (index, event) => {
-        let data = [...courses];
-        data[index][event.target.name] = event.target.value;
-
-        setCourses(data);
-    };
-
-    const handleFileChange = (index, event) => {
-        let data = [...courses];
-        data[index][event.target.name] = event.target;
-        console.log(data);
-
-        setCourses(data);
-    };
-
     const handleSkillChange = e => {
-        const stateCopy = JSON.parse(JSON.stringify(courses));
-        stateCopy.forEach(courses => {
-            courses.students.forEach(student => {
-                if (
-                    e.target.name === `${courses.courseID}_${student.studentID}`
-                ) {
-                    student.getSkillsStatus = +e.target.value;
-                }
-            });
-        });
-        console.log(stateCopy);
-
-        setCourses(stateCopy);
+        const dataChange = {
+            data: courses,
+            targetName: e.target.name,
+            dataKey: "getSkillsStatus",
+            dataValue: +e.target.value,
+            callback: setCourses,
+        };
+        handleChangeForDeepCopy(dataChange);
     };
 
-    const handleIsShow = index => {
-        let data = [...courses];
-        data[index]["isShow"] = !data[index]["isShow"];
-        setCourses(data);
+    const changeData = {
+        data: courses,
+        callback: setCourses,
     };
 
     return (
@@ -496,7 +466,13 @@ export const TeacherOpeningCourse = ({ userID }) => {
                         courses?.map((course, index) => (
                             <CourseCard key={index} show={course.isShow}>
                                 <CourseTitle
-                                    onClick={() => handleIsShow(index)}
+                                    onClick={() =>
+                                        handleChange({
+                                            ...changeData,
+                                            indexOfFirstData: index,
+                                            dataKey: "isShow",
+                                        })
+                                    }
                                 >
                                     {course.isShow ? (
                                         <MdKeyboardArrowDown viewBox="0 -4 24 24" />
@@ -622,7 +598,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                             name="materialsFile"
                                             id={`${course.courseID}`}
                                             onChange={e =>
-                                                handleFileChange(index, e)
+                                                handleChange({
+                                                    ...changeData,
+                                                    indexOfFirstData: index,
+                                                    dataKey: e.target.name,
+                                                    dataValue: e.target,
+                                                })
                                             }
                                         />
                                         {course.materialsFile ? (
@@ -638,7 +619,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.materialsTitle}
                                         name="materialsTitle"
                                         handleChange={e =>
-                                            handleTitleChange(index, e)
+                                            handleChange({
+                                                ...changeData,
+                                                indexOfFirstData: index,
+                                                dataKey: e.target.name,
+                                                dataValue: e.target.value,
+                                            })
                                         }
                                     />
                                     <ButtonArea>
@@ -688,7 +674,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.homeworkTitle}
                                         name="homeworkTitle"
                                         handleChange={e =>
-                                            handleTitleChange(index, e)
+                                            handleChange({
+                                                ...changeData,
+                                                indexOfFirstData: index,
+                                                dataKey: e.target.name,
+                                                dataValue: e.target.value,
+                                            })
                                         }
                                     />
                                     <ButtonArea>

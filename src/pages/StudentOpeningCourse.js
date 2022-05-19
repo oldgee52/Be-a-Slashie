@@ -14,6 +14,7 @@ import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { NoDataBox } from "../Component/NoDataBox";
+import { useHandleValueChangeForArray } from "../customHooks/useHandleValueChangeForArray";
 
 const Container = styled.div`
     display: flex;
@@ -187,11 +188,11 @@ const SubTitle = styled(Title)`
 export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
-    const [isShow, setIsShow] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const handleChange = useHandleValueChangeForArray();
     useEffect(() => {
         let isMounted = true;
         if (userID) {
@@ -201,13 +202,11 @@ export const StudentOpeningCourse = ({ userID }) => {
                     console.log(data);
 
                     if (isMounted) {
-                        setCourseDetails(data);
-                        setIsShow(
-                            Array(data.length || 0)
-                                .fill()
-                                .map(() => false),
-                        );
-
+                        const newCoursesArray = data.map(course => ({
+                            ...course,
+                            isShow: false,
+                        }));
+                        setCourseDetails(newCoursesArray);
                         SetInputFields(
                             data.map(item =>
                                 Array(item.allHomework?.length || 0)
@@ -301,9 +300,17 @@ export const StudentOpeningCourse = ({ userID }) => {
                                 <FileInput
                                     type="file"
                                     id={`${homework.creatDate.seconds}`}
-                                    onChange={e =>
-                                        handleFileChange(e, index, i)
-                                    }
+                                    onChange={e => {
+                                        const changeData = {
+                                            data: inputFields,
+                                            indexOfFirstData: index,
+                                            indexOfSecondData: i,
+                                            dataKey: "file",
+                                            dataValue: e.target,
+                                            callback: SetInputFields,
+                                        };
+                                        handleChange(changeData);
+                                    }}
                                 />{" "}
                                 {inputFields[index]?.[i]["file"] ? (
                                     `已選擇檔案`
@@ -328,13 +335,6 @@ export const StudentOpeningCourse = ({ userID }) => {
                 )}
             </StudentUploadHomework>
         );
-    };
-
-    const handleFileChange = (e, indexOfAllCourse, indexOfAllHomework) => {
-        let newInputFields = [...inputFields];
-        newInputFields[indexOfAllCourse][indexOfAllHomework]["file"] = e.target;
-        console.log(newInputFields);
-        SetInputFields(newInputFields);
     };
 
     const handleUploadHomework = (e, indexOfAllCourse, indexOfAllHomework) => {
@@ -426,13 +426,6 @@ export const StudentOpeningCourse = ({ userID }) => {
         );
     };
 
-    const handleIsShow = index => {
-        let data = [...isShow];
-        data[index] = !data[index];
-        console.log(data);
-        setIsShow(data);
-    };
-
     return (
         <>
             {!courseDetails ? (
@@ -450,16 +443,21 @@ export const StudentOpeningCourse = ({ userID }) => {
             ) : (
                 <Container>
                     {courseDetails.map((detail, indexOfAllCourse) => (
-                        <CourseCard
-                            key={detail.courseID}
-                            show={isShow?.[indexOfAllCourse]}
-                        >
+                        <CourseCard key={detail.courseID} show={detail.isShow}>
                             <CourseTitle
-                                onClick={() => handleIsShow(indexOfAllCourse)}
+                                onClick={() => {
+                                    const changeData = {
+                                        data: courseDetails,
+                                        indexOfFirstData: indexOfAllCourse,
+                                        dataKey: "isShow",
+                                        callback: setCourseDetails,
+                                    };
+                                    handleChange(changeData);
+                                }}
                             >
                                 {" "}
                                 <span>
-                                    {isShow?.[indexOfAllCourse] ? (
+                                    {detail.isShow ? (
                                         <MdKeyboardArrowDown viewBox="0 -4 24 24" />
                                     ) : (
                                         <MdKeyboardArrowRight viewBox="0 -4 24 24" />

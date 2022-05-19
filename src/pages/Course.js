@@ -10,7 +10,6 @@ import {
     increment,
     arrayRemove,
     onSnapshot,
-    collection,
 } from "firebase/firestore";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
@@ -27,6 +26,7 @@ import CourseDetailInfo from "../Component/CourseDetailInfo";
 import { CourseHeadersInfo } from "../Component/CourseHeadersInfo";
 import { MessageArea } from "../Component/MessageArea";
 import { BlurBackgroundArea } from "../Component/BlurBackgroundArea";
+import { useUserInfo } from "../customHooks/useUserInfo";
 
 const AlignCenter = css`
     display: flex;
@@ -89,13 +89,13 @@ export const Course = ({ userID }) => {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
     const [inputFields, setInputFields] = useState([]);
-    const [usersInfo, setUsersInfo] = useState();
     const [skillsInfo, setSkillsInfo] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [findUserInfo, usersInfo] = useUserInfo();
     const courseID = new URLSearchParams(window.location.search).get(
         "courseID",
     );
@@ -156,25 +156,6 @@ export const Course = ({ userID }) => {
         };
     }, [courseID]);
 
-    useEffect(() => {
-        let isMounted = true;
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "users"))
-            .then(data => {
-                console.log(data);
-                if (isMounted) setUsersInfo(data);
-            });
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
-
-    function findUserInfo(userID, info) {
-        const result = usersInfo?.filter(array => array.uid === userID);
-        return result && result[0][info];
-    }
-
     async function handleCollection() {
         if (userCollection) {
             await updateDoc(doc(firebaseInit.db, "users", userID), {
@@ -190,9 +171,15 @@ export const Course = ({ userID }) => {
         }
     }
 
-    const teacherPhoto = findUserInfo(courseData?.teacherUserID, "photo");
-    const teacherEmail = findUserInfo(courseData?.teacherUserID, "email");
-    const teacherName = findUserInfo(courseData?.teacherUserID, "name");
+    const teacherPhoto =
+        courseData?.teacherUserID &&
+        findUserInfo(courseData.teacherUserID, "photo");
+    const teacherEmail =
+        courseData?.teacherUserID &&
+        findUserInfo(courseData?.teacherUserID, "email");
+    const teacherName =
+        courseData?.teacherUserID &&
+        findUserInfo(courseData?.teacherUserID, "name");
 
     async function handleRegistration(e) {
         e.preventDefault();
@@ -203,6 +190,7 @@ export const Course = ({ userID }) => {
             courseData.openingDate.seconds * 1000,
         );
         const courseTitle = courseData.title;
+        const courseID = courseData.courseID;
 
         const teacherEmailContent = {
             email: teacherEmail,
@@ -232,31 +220,28 @@ export const Course = ({ userID }) => {
                     doc(
                         firebaseInit.db,
                         "courses",
-                        courseData.courseID,
+                        courseID,
                         "students",
                         userID,
                     ),
                     {
                         teacherUserID: courseData.teacherUserID,
-                        courseID: courseData.courseID,
+                        courseID,
                         studentUserID: userID,
                         registrationStatus: 0,
                     },
                 ),
                 updateDoc(doc(firebaseInit.db, "users", userID), {
-                    studentsCourses: arrayUnion(courseData.courseID),
+                    studentsCourses: arrayUnion(courseID),
                 }),
-                updateDoc(
-                    doc(firebaseInit.db, "courses", courseData.courseID),
-                    {
-                        registrationNumber: increment(1),
-                    },
-                ),
+                updateDoc(doc(firebaseInit.db, "courses", courseID), {
+                    registrationNumber: increment(1),
+                }),
                 email.sendEmail(studentEmailContent),
                 email.sendEmail(teacherEmailContent),
             ]).then(() => {
                 setIsLoading(false);
-                navigate(`/finished-Registered-Course/${courseData.courseID}`);
+                navigate(`/finished-Registered-Course/${courseID}`);
             });
         } catch (error) {
             setIsLoading(false);
@@ -324,7 +309,7 @@ export const Course = ({ userID }) => {
 
     return (
         <>
-            {!courseData || !usersInfo || !skillsInfo ? (
+            {!courseData || !skillsInfo || !usersInfo ? (
                 <Loading />
             ) : (
                 <>

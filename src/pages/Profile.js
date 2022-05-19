@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { updateDoc, doc } from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";

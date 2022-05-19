@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { collection } from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { NoDataBox } from "../Component/NoDataBox";
+import { useUserInfo } from "../customHooks/useUserInfo";
 const Container = styled.div`
     display: flex;
     justify-content: center;
@@ -54,7 +54,7 @@ const CourseDiv = styled.div`
 
 export const StudentCollectionCourse = ({ userID }) => {
     const [collectionCourses, SetCollectionCourses] = useState();
-    const [usersInfo, setUsersInfo] = useState();
+    const [findUserInfo, usersInfo] = useUserInfo();
     const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
@@ -74,21 +74,6 @@ export const StudentCollectionCourse = ({ userID }) => {
                 SetCollectionCourses(validCollectionCourses);
             });
     }, [userID]);
-
-    useEffect(() => {
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "users"))
-            .then(data => {
-                console.log(data);
-                setUsersInfo(data);
-            });
-    }, []);
-
-    function findUserInfo(userID, info) {
-        const result = usersInfo.filter(array => array.uid === userID);
-
-        return result[0][info];
-    }
 
     return (
         <>

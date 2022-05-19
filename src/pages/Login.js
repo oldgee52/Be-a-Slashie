@@ -14,6 +14,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
+import { useHandleValueChangeForObject } from "../customHooks/useHandleValueChangeForObject";
 
 const Box = styled.div`
     min-height: calc(100vh - 150px);
@@ -86,6 +87,7 @@ export const Login = ({ userLogin }) => {
     const location = useLocation();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const handleChange = useHandleValueChangeForObject();
 
     const from = location.state?.from || "/";
 
@@ -152,12 +154,8 @@ export const Login = ({ userLogin }) => {
                 if (errorCode === "auth/user-not-found") setIsLogin(false);
             });
     }
-
-    function handleChange(e) {
-        let data = { ...info };
-        data[e.target.name] = e.target.value;
-        setInfo(data);
-    }
+    const handleInputChange = e =>
+        handleChange(info, e.target.name, e.target.value, setInfo);
 
     return (
         <>
@@ -195,13 +193,13 @@ export const Login = ({ userLogin }) => {
 
                         <TextInput
                             value={info.email}
-                            handleChange={handleChange}
+                            handleChange={handleInputChange}
                             name="email"
                             placeholder="請輸入信箱"
                         />
                         <TextInput
                             value={info.password}
-                            handleChange={handleChange}
+                            handleChange={handleInputChange}
                             name="password"
                             type="password"
                             placeholder="請輸入密碼"
@@ -209,7 +207,7 @@ export const Login = ({ userLogin }) => {
                         {!isLogin && (
                             <TextInput
                                 value={info.name}
-                                handleChange={handleChange}
+                                handleChange={handleInputChange}
                                 name="name"
                                 placeholder="請輸入姓名"
                             />

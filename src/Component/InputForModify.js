@@ -4,6 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { BsPencil } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
+import { useHandleValueChangeForObject } from "../customHooks/useHandleValueChangeForObject";
 
 const Container = styled.div`
     width: 80%;
@@ -135,16 +136,25 @@ export const InputForModify = ({
     inputText,
 }) => {
     const inputElement = useRef(null);
+    const handleChange = useHandleValueChangeForObject();
 
     useEffect(() => {
         if (!handleDisable) inputElement.current.focus();
     }, [inputElement, handleDisable]);
 
-    function handleInputChange(e) {
-        let data = { ...inputFields };
-        data[e.target.name] = e.target.value;
-        SetInputFields(data);
-    }
+    const handleInputChange = e =>
+        handleChange(
+            inputFields,
+            e.target.name,
+            e.target.value,
+            SetInputFields,
+        );
+
+    // function handleInputChange(e) {
+    //     let data = { ...inputFields };
+    //     data[e.target.name] = e.target.value;
+    //     SetInputFields(data);
+    // }
 
     async function handleModifyClick(state, modifyCallback, modifyContent) {
         if (state) {
@@ -179,7 +189,7 @@ export const InputForModify = ({
                 <Input
                     value={inputFields[targetName]}
                     name={targetName}
-                    onChange={e => handleInputChange(e)}
+                    onChange={handleInputChange}
                     disabled={handleDisable}
                     ref={inputElement}
                 />
@@ -187,7 +197,7 @@ export const InputForModify = ({
                 <InputText
                     value={inputFields[targetName]}
                     name={targetName}
-                    onChange={e => handleInputChange(e)}
+                    onChange={handleInputChange}
                     disabled={handleDisable}
                     onFocus={e => {
                         const value = e.target.value;
