@@ -94,6 +94,21 @@ export const Login = ({ userLogin }) => {
             navigate(from, { replace: true });
     }, [isAutoNavigate, userLogin]);
 
+    function handleErrorMessage(errorCode) {
+        const errorStatus = {
+            "auth/invalid-email": "輸入信箱格式有誤",
+            "auth/weak-password": "密碼規格不符(至少6字元)",
+            "auth/wrong-password": `輸入密碼有誤`,
+            "auth/email-already-in-use": "已經註冊過囉，直接登入就好",
+            "auth/too-many-requests": "試太多次囉，請等五分鐘後作業",
+            "auth/user-not-found": `我不認得您，請先註冊`,
+        };
+        return (
+            errorStatus[errorCode] ||
+            `${errorCode}-請將此畫面截圖並mail給我們，謝謝！`
+        );
+    }
+
     function singUp() {
         setIsAutoNavigate(false);
         createUserWithEmailAndPassword(
@@ -119,23 +134,8 @@ export const Login = ({ userLogin }) => {
             .catch(error => {
                 const errorCode = error.code;
                 console.log(errorCode);
-                switch (errorCode) {
-                    case "auth/invalid-email":
-                        handleAlertModal(`輸入信箱格式有誤`);
-                        break;
-                    case "auth/weak-password":
-                        handleAlertModal(`密碼規格不符(至少6字元)`);
-                        break;
-                    case "auth/email-already-in-use":
-                        handleAlertModal(`已經註冊過囉，直接登入就好`);
-                        setIsLogin(true);
-                        break;
-                    case "auth/too-many-requests":
-                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
-                        break;
-                    default:
-                        handleAlertModal(errorCode);
-                }
+                handleAlertModal(handleErrorMessage(errorCode));
+                if (errorCode === "auth/email-already-in-use") setIsLogin(true);
             });
     }
 
@@ -148,24 +148,8 @@ export const Login = ({ userLogin }) => {
             })
             .catch(error => {
                 const errorCode = error.code;
-
-                switch (errorCode) {
-                    case "auth/invalid-email":
-                        handleAlertModal(`輸入信箱格式有誤`);
-                        break;
-                    case "auth/wrong-password":
-                        handleAlertModal(`輸入密碼有誤`);
-                        break;
-                    case "auth/user-not-found":
-                        handleAlertModal(`我不認得您，請先註冊`);
-                        setIsLogin(false);
-                        break;
-                    case "auth/too-many-requests":
-                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
-                        break;
-                    default:
-                        handleAlertModal(errorCode);
-                }
+                handleAlertModal(handleErrorMessage(errorCode));
+                if (errorCode === "auth/user-not-found") setIsLogin(false);
             });
     }
 
