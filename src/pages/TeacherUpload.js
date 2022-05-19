@@ -17,6 +17,7 @@ import { MyButton } from "../Component/MyButton";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { LoadingForPost } from "../Component/LoadingForPost";
+import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -210,7 +211,6 @@ const initState = {
     courseIntroduction: "",
     teacherIntroduction: "",
     getSkills: [],
-    image: "",
     minOpeningNumber: 1,
     openingDate: "",
     registrationDeadline: "",
@@ -258,11 +258,6 @@ function reducer(state, action) {
                 ...state,
                 getSkills: action.payload.getSkills,
             };
-        case "setImageURL":
-            return {
-                ...state,
-                image: action.payload.image,
-            };
         default:
             return state;
     }
@@ -276,6 +271,8 @@ export const TeacherUpload = ({ userID }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [{ fileURL, UploadIsLoading, isError }, setFile, setFileName] =
+        useFirebaseUploadFile();
 
     useEffect(() => {
         (async function (db) {
@@ -286,6 +283,12 @@ export const TeacherUpload = ({ userID }) => {
             setAllSkills(skillList);
         })(firebaseInit.db);
     }, []);
+
+    useEffect(() => {
+        if (!fileURL) return;
+        setImage(fileURL);
+        handleAlertModal("上傳成功");
+    }, [fileURL]);
 
     const handleSkillChange = e => {
         const { value, checked } = e.target;
@@ -307,51 +310,9 @@ export const TeacherUpload = ({ userID }) => {
     };
 
     const uploadImage = e => {
-        e.preventDefault();
-        if (!e.target.value) return;
-        console.log(e.target.value);
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            `image-${e.target.value}`,
-        );
-        const uploadTask = uploadBytesResumable(
-            mountainImagesRef,
-            e.target.files[0],
-        );
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                setIsLoading(false);
-                console.log(error);
-                handleAlertModal("發生錯誤，請再試一次");
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                    dispatch({
-                        type: "setImageURL",
-                        payload: { image: downloadURL },
-                    });
-                    setIsLoading(false);
-                    setImage(downloadURL);
-                });
-            },
-        );
+        setFile(e.target.files[0]);
+        setFileName(e.target.value);
+        if (isError) return handleAlertModal("發生錯誤，請再試一次");
     };
 
     const uploadCourse = async e => {
@@ -365,7 +326,8 @@ export const TeacherUpload = ({ userID }) => {
 
         if (
             Object.values(state).some(value => !value) ||
-            state.getSkills.length === 0
+            state.getSkills.length === 0 ||
+            !fileURL
         )
             return handleAlertModal("請輸入完整資料");
 
@@ -375,6 +337,7 @@ export const TeacherUpload = ({ userID }) => {
         const docRef = doc(coursesRef);
         const coursesInfo = {
             ...state,
+            image,
             openingDate: new Date(
                 `${state.openingDate.replace(/-/g, "/")} 23:59:59`,
             ),
@@ -419,7 +382,7 @@ export const TeacherUpload = ({ userID }) => {
         }
         setCourseID(docRef.id);
     };
-    console.log(state.getSkills);
+    console.log(fileURL);
 
     return (
         <>
@@ -578,7 +541,7 @@ export const TeacherUpload = ({ userID }) => {
                 setAlertIsOpen={setAlertIsOpen}
                 courseID={courseID}
             />
-            {isLoading ? <LoadingForPost /> : ""}
+            {isLoading || UploadIsLoading ? <LoadingForPost /> : ""}
         </>
     );
 };
