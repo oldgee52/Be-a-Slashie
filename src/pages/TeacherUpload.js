@@ -277,7 +277,6 @@ export const TeacherUpload = ({ userID }) => {
             const skillsCol = collection(db, "skills");
             const skillsSnapshot = await getDocs(skillsCol);
             const skillList = skillsSnapshot.docs.map(doc => doc.data());
-            console.log(skillList);
             setAllSkills(skillList);
         })(firebaseInit.db);
     }, []);
@@ -380,7 +379,6 @@ export const TeacherUpload = ({ userID }) => {
         }
         setCourseID(docRef.id);
     };
-    console.log(fileURL);
 
     return (
         <>
@@ -469,7 +467,6 @@ export const TeacherUpload = ({ userID }) => {
                             value={state.openingDate}
                             min={new Date().toLocaleDateString("en-ca")}
                             onChange={e => {
-                                console.log(e.target.value.replace(/-/g, "/"));
                                 dispatch({
                                     type: "setOpeningDate",
                                     payload: { openingDate: e.target.value },

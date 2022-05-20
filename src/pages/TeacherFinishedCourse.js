@@ -62,7 +62,6 @@ export const TeacherFinishedCourse = ({ userID }) => {
                 const finishedCourses = data.sort(
                     (a, b) => b.closedDate.seconds - a.closedDate.seconds,
                 );
-                console.log(finishedCourses);
 
                 if (isMounted) setFinishedCourses(finishedCourses);
             });

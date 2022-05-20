@@ -161,8 +161,6 @@ export const PersonalIntroduction = () => {
         });
     }, [uid]);
 
-    console.log(userFinishCourses);
-
     return (
         <>
             {!userInfo || !userSkills || !userFinishCourses ? (

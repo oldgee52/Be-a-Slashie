@@ -34,7 +34,6 @@ const NewBsCheck = styled(BsCheck)`
 
 export const CheckSkills = ({ skillID, handleSkillChange, title }) => {
     const [isChecked, setIsChecked] = useState(false);
-    console.log(isChecked);
     return (
         <SkillName
             htmlFor={skillID}

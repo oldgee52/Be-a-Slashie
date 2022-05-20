@@ -199,8 +199,6 @@ export const StudentOpeningCourse = ({ userID }) => {
             firebaseInit
                 .getStudentOpeningCourseDetails(userID, 1)
                 .then(data => {
-                    console.log(data);
-
                     if (isMounted) {
                         const newCoursesArray = data.map(course => ({
                             ...course,
@@ -349,8 +347,6 @@ export const StudentOpeningCourse = ({ userID }) => {
                 .files[0],
         );
 
-        console.log(courseDetails[indexOfAllCourse].courseID);
-
         const mountainImagesRef = ref(
             firebaseInit.storage,
             e.target.id +
@@ -368,9 +364,6 @@ export const StudentOpeningCourse = ({ userID }) => {
         uploadTask.on(
             "state_changed",
             snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
                 switch (snapshot.state) {
                     case "paused":
                         console.log("Upload is paused");

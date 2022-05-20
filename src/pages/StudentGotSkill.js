@@ -29,7 +29,6 @@ export const StudentGotSkill = ({ userID }) => {
     useEffect(() => {
         if (userID)
             firebaseInit.getStudentSkills(userID).then(data => {
-                console.log(data);
                 const rankDecreasingByDate = data.sort(
                     (a, b) => a.getDate.seconds - b.getDate.seconds,
                 );

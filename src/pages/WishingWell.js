@@ -215,7 +215,6 @@ export const WishingWell = ({ userID }) => {
     useEffect(() => {
         firebaseInit.getFirstBatchWishes().then(data => {
             lasWishSnapshotRef.current = data.lastKey;
-            console.log(data);
             setWishes(data.wishes);
         });
     }, []);
@@ -225,7 +224,6 @@ export const WishingWell = ({ userID }) => {
             firebaseInit.getNextBatchWishes(key).then(data => {
                 lasWishSnapshotRef.current = data.lastKey;
                 setWishes([...wishes, ...data.wishes]);
-                console.log(data);
             });
         }
     }
@@ -266,7 +264,6 @@ export const WishingWell = ({ userID }) => {
                 user => user !== userID,
             );
             data[index]["like"] = newLikeList;
-            console.log(data[index]);
             return setWishes(data);
         }
         if (!condition) {
@@ -277,12 +274,10 @@ export const WishingWell = ({ userID }) => {
             let data = [...wishes];
             if (data[index]["like"]) {
                 data[index]["like"] = [...data[index]["like"], userID];
-                console.log(data[index]["like"]);
             }
+
             if (!data[index]["like"]) {
-                console.log(123456);
                 data[index]["like"] = [userID];
-                console.log(data[index]);
             }
             setWishes(data);
         }

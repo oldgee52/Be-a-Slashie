@@ -88,7 +88,6 @@ export const StudentRegisteredCourse = ({ userID }) => {
             firebaseInit
                 .getStudentRegisteredCourseDetails(userID)
                 .then(data => {
-                    console.log(data);
                     if (isMounted) setRegisteredCourse(data);
                 });
 
@@ -98,7 +97,6 @@ export const StudentRegisteredCourse = ({ userID }) => {
     function handleIsShow(i) {
         let data = [...isShow];
         data[i] = !data[i];
-        console.log(data);
         setIsShow(data);
     }
 
@@ -109,7 +107,6 @@ export const StudentRegisteredCourse = ({ userID }) => {
                 (a, b) =>
                     b.courseOpeningDate.seconds - a.courseOpeningDate.seconds,
             );
-        console.log(showCourses);
 
         return showCourses.length === 0 ? (
             <CourseDiv>

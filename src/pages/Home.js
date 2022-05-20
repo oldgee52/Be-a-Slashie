@@ -157,7 +157,6 @@ export const Home = () => {
         let isMounted = true;
 
         firebaseInit.getRegisteringCourse().then(data => {
-            console.log(data);
             const orderByCreatTimeTopThree = data
                 .sort((a, b) => b.creatTime.seconds - a.creatTime.seconds)
                 .slice(0, 3);
@@ -165,8 +164,7 @@ export const Home = () => {
             const orderByViewTopThree = data
                 .sort((a, b) => b.view - a.view)
                 .slice(0, 3);
-            console.log("時間排序", orderByCreatTimeTopThree);
-            console.log("觀看次數排序", orderByViewTopThree);
+
             if (isMounted) {
                 setLatestCourse(orderByCreatTimeTopThree);
                 setPopularCourse(orderByViewTopThree);

@@ -57,7 +57,6 @@ export const AlertModal = ({
     const navigate = useNavigate();
     function toggleModal() {
         setAlertIsOpen(false);
-        console.log(isNavigateToOtherRouter);
         if (courseID) {
             navigate(`/course?courseID=${courseID}`);
         }

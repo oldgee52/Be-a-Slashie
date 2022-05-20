@@ -13,7 +13,6 @@ export const useHandleValueChangeForDeepCopy = () => {
                     student[dataKey] = dataValue;
             });
         });
-        console.log(stateCopy);
         callback(stateCopy);
     }
     return handleChangeForDeepCopy;

@@ -186,7 +186,6 @@ export const TalentedPersonSearch = () => {
 
     useEffect(() => {
         firebaseInit.getUsersInfoIncludeSkill().then(data => {
-            console.log(data);
             setSearchUsers(data);
             setAllUsers(data);
         });
@@ -196,7 +195,6 @@ export const TalentedPersonSearch = () => {
         firebaseInit
             .getCollection(collection(firebaseInit.db, "skills"))
             .then(data => {
-                console.log(data);
                 setSkills(data);
             });
     }, []);

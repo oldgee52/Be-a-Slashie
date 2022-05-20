@@ -160,18 +160,10 @@ const HomeworkDate = styled.div`
     }
 `;
 const HomeworkDownload = styled.div`
-    /* font-size: 12px; */
     width: 30%;
     text-align: right;
     color: #ff6100;
-    /* height: 15px;
-    padding: 2px;
 
-    text-align: center;
-    background-color: rgb(0 190 164);
-    color: whitesmoke;
-    border-radius: 10px;
-    cursor: pointer; */
     @media ${breakPoint.desktop} {
         width: 10%;
     }
@@ -254,7 +246,6 @@ export const TeacherOpeningCourse = ({ userID }) => {
                 }));
 
                 setCourses(newCoursesArray);
-                console.log(newCoursesArray);
             });
     }, [userID]);
 
@@ -300,7 +291,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
         const materialsTitle = thisCourse[0].materialsTitle.trim();
 
         const file = thisCourse[0].materialsFile.files?.[0];
-        console.log(file);
+
         if (!materialsTitle || !file)
             return handleAlertModal("請上傳檔案並輸入教材名稱");
 
@@ -313,9 +304,6 @@ export const TeacherOpeningCourse = ({ userID }) => {
         uploadTask.on(
             "state_changed",
             snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
                 switch (snapshot.state) {
                     case "paused":
                         console.log("Upload is paused");
@@ -377,8 +365,6 @@ export const TeacherOpeningCourse = ({ userID }) => {
 
     const handleFinishCourse = async e => {
         const courseID = e.target.id;
-        console.log(courseID);
-
         const courseArray = courses.filter(item => item.courseID === courseID);
         const checkGetSkillsStatus = courseArray[0].students
             .map(student => student.getSkillsStatus)

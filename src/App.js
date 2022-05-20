@@ -36,7 +36,6 @@ function App() {
             if (user) {
                 setUserLogin("in");
                 setUserID(user.uid);
-                console.log(user.uid);
             } else {
                 setUserLogin("out");
                 setUserID("");

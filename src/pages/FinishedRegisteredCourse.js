@@ -52,7 +52,6 @@ export const FinishedRegisteredCourse = () => {
 
     useEffect(() => {
         firebaseInit.getCourseDetail(courseID).then(data => {
-            console.log(data);
             setCourse(data);
         });
     }, [courseID]);

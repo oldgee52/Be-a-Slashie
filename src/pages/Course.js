@@ -130,7 +130,6 @@ export const Course = ({ userID }) => {
                 doc(firebaseInit.db, "courses", courseID),
                 snapshot => {
                     const courseDate = snapshot.data();
-                    console.log(courseDate);
                     setCourseData(courseDate);
                     setInputFields(
                         Array(courseDate.askedQuestions?.length || 0)
@@ -245,7 +244,6 @@ export const Course = ({ userID }) => {
             });
         } catch (error) {
             setIsLoading(false);
-            console.log(error);
             handleAlertModal("發生錯誤，請重新試一次");
         }
     }

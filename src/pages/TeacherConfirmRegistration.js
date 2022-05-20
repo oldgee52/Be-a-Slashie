@@ -133,7 +133,6 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     useEffect(() => {
         if (userID)
             firebaseInit.getRegistrationStudent(userID).then(data => {
-                console.log(data);
                 setCourses(data);
                 setRegistrationStatus(data);
             });

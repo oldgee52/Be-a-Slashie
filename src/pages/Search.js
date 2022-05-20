@@ -57,15 +57,12 @@ export const Search = () => {
         firebaseInit
             .getRegisteringCourse()
             .then(data => {
-                console.log(data);
                 let copyForOrderByCreatTimeData = [...data];
                 const orderByCreatTime = copyForOrderByCreatTimeData.sort(
                     (a, b) => b.creatTime.seconds - a.creatTime.seconds,
                 );
-                console.log("排序時間", orderByCreatTime);
 
                 const orderByView = data.sort((a, b) => b.view - a.view);
-                console.log("排序次數", orderByView);
 
                 if (isMounted) {
                     window.scrollTo({ top: 0 });
@@ -86,7 +83,7 @@ export const Search = () => {
                                 );
                             },
                         );
-                        console.log(filteredCourses);
+
                         if (filteredCourses.length === 0) {
                             handleAlertModal("暫無此類課程，提供您熱門課程！");
                             return navigate("/search?q=popular");
