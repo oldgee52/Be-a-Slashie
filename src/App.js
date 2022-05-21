@@ -19,7 +19,6 @@ import { WishingWell } from "./pages/WishingWell";
 import firebaseInit from "./utils/firebase";
 import GlobalStyle from "./globalStyles";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
 import { Login } from "./pages/Login";
 import { Personal } from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
@@ -32,17 +31,14 @@ function App() {
     const [userLogin, setUserLogin] = useState("check");
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(firebaseInit.auth, user => {
+        firebaseInit.listenToAuthStatus(user => {
             if (user) {
                 setUserLogin("in");
                 setUserID(user.uid);
-            } else {
-                setUserLogin("out");
-                setUserID("");
+                return;
             }
+            setUserLogin("out");
         });
-
-        return unsubscribe;
     }, [userID]);
     return (
         <>

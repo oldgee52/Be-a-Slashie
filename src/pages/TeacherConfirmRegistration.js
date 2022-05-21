@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MyButton } from "../Component/MyButton";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { doc, updateDoc } from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -165,27 +164,11 @@ export const TeacherConfirmRegistration = ({ userID }) => {
 
         try {
             await Promise.all([
-                updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                    status: 1,
-                }),
-                courseArray.forEach(element => {
-                    element.students.forEach(student => {
-                        const studentID = student.studentID;
-                        const registrationStatus = student.registrationStatus;
-                        updateDoc(
-                            doc(
-                                firebaseInit.db,
-                                "courses",
-                                courseID,
-                                "students",
-                                studentID,
-                            ),
-                            {
-                                registrationStatus,
-                            },
-                        );
-                    });
-                }),
+                firebaseInit.updateDocForTeacherOpeningCourse(courseID),
+                firebaseInit.updateDocForStudentsCourseRegistrationStatus(
+                    courseArray,
+                    courseID,
+                ),
             ]);
             handleAlertModal("開始上課囉!!!");
             const NewCourse = courses.filter(

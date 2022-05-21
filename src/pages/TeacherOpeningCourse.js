@@ -1,14 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import {
-    updateDoc,
-    doc,
-    addDoc,
-    collection,
-    arrayUnion,
-    Timestamp,
-} from "firebase/firestore";
+import { updateDoc, doc, arrayUnion, Timestamp } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
 import { MyButton } from "../Component/MyButton";
@@ -258,23 +251,15 @@ export const TeacherOpeningCourse = ({ userID }) => {
 
         if (!homeworkTitle) return handleAlertModal("請輸入作業名稱");
         try {
-            await updateDoc(
-                doc(firebaseInit.db, "courses", courseID, "teacher", "info"),
-                {
-                    homework: arrayUnion({
-                        title: homeworkTitle,
-                        creatDate: Timestamp.now(),
-                    }),
-                },
-            );
+            const homeworkInfo =
+                await firebaseInit.updateDocForTeacherAddHomework(
+                    courseID,
+                    homeworkTitle,
+                );
 
             let data = [...courses];
-            data[index].homework = [
-                ...data[index].homework,
-                { title: homeworkTitle, creatDate: Timestamp.now() },
-            ];
+            data[index].homework = [...data[index].homework, homeworkInfo];
             data[index].homeworkTitle = "";
-
             setCourses(data);
             return handleAlertModal("設定作業成功囉!!!");
         } catch (error) {
@@ -377,31 +362,8 @@ export const TeacherOpeningCourse = ({ userID }) => {
         try {
             setIsLoading(true);
             await Promise.all([
-                updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                    status: 2,
-                    closedDate: new Date(),
-                }),
-
-                courseArray[0].getSkills.forEach(skill => {
-                    courseArray[0].students.forEach(student => {
-                        const studentID = student.studentID;
-                        const getSkillsStatus = student.getSkillsStatus;
-                        if (getSkillsStatus === 1)
-                            addDoc(
-                                collection(
-                                    firebaseInit.db,
-                                    "users",
-                                    studentID,
-                                    "getSkills",
-                                ),
-                                {
-                                    getDate: new Date(),
-                                    skillID: skill,
-                                    userID: student.studentID,
-                                },
-                            );
-                    });
-                }),
+                firebaseInit.updateDocForTeacherFinishCourse(courseID),
+                firebaseInit.addDocForHandleStudentsGetSkills(courseArray[0]),
             ]).then(() => {
                 const NewCourses = courses.filter(
                     item => item.courseID !== courseID,
@@ -690,7 +652,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     )}
                 </Container>
             )}
-            {isLoading ? <LoadingForPost /> : ""}
+            {isLoading && <LoadingForPost />}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

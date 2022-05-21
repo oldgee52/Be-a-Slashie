@@ -2,15 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import firebaseInit from "../utils/firebase";
-import {
-    doc,
-    setDoc,
-    updateDoc,
-    arrayUnion,
-    increment,
-    arrayRemove,
-    onSnapshot,
-} from "firebase/firestore";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
@@ -105,12 +96,7 @@ export const Course = ({ userID }) => {
     }, [courseID]);
 
     useEffect(() => {
-        async function addView() {
-            await updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                view: increment(1),
-            });
-        }
-        if (courseID) addView();
+        if (courseID) firebaseInit.updateDocForCourseAddView(courseID);
     }, [courseID]);
 
     useEffect(() => {
@@ -124,50 +110,31 @@ export const Course = ({ userID }) => {
     }, [courseID, userID]);
 
     useEffect(() => {
-        let unsubscribe;
         if (courseID)
-            unsubscribe = onSnapshot(
-                doc(firebaseInit.db, "courses", courseID),
-                snapshot => {
-                    const courseDate = snapshot.data();
-                    setCourseData(courseDate);
-                    setInputFields(
-                        Array(courseDate.askedQuestions?.length || 0)
-                            .fill()
-                            .map(() => ({
-                                reply: "",
-                                isShowReplyInput: false,
-                            })),
-                    );
-
-                    const SkillsPromise = courseDate.getSkills.map(skill =>
-                        firebaseInit.getCollectionData("skills", skill),
-                    );
-
-                    Promise.all(SkillsPromise).then(data =>
-                        setSkillsInfo(data),
-                    );
-                },
-            );
-
-        return () => {
-            if (courseID) unsubscribe();
-        };
+            firebaseInit.listenToCourseData(courseID, courseDate => {
+                setCourseData(courseDate);
+                setInputFields(
+                    Array(courseDate.askedQuestions?.length || 0)
+                        .fill()
+                        .map(() => ({
+                            reply: "",
+                            isShowReplyInput: false,
+                        })),
+                );
+                const SkillsPromise = courseDate.getSkills.map(skill =>
+                    firebaseInit.getCollectionData("skills", skill),
+                );
+                Promise.all(SkillsPromise).then(data => setSkillsInfo(data));
+            });
     }, [courseID]);
 
     async function handleCollection() {
-        if (userCollection) {
-            await updateDoc(doc(firebaseInit.db, "users", userID), {
-                collectCourses: arrayRemove(courseData.courseID),
-            });
-            setUserCollection(false);
-        }
-        if (!userCollection) {
-            await updateDoc(doc(firebaseInit.db, "users", userID), {
-                collectCourses: arrayUnion(courseData.courseID),
-            });
-            setUserCollection(true);
-        }
+        firebaseInit.updateDocForUserCollection(
+            userID,
+            courseData.courseID,
+            userCollection,
+        );
+        setUserCollection(!userCollection);
     }
 
     const teacherPhoto =
@@ -215,27 +182,13 @@ export const Course = ({ userID }) => {
 
         try {
             await Promise.all([
-                setDoc(
-                    doc(
-                        firebaseInit.db,
-                        "courses",
-                        courseID,
-                        "students",
-                        userID,
-                    ),
-                    {
-                        teacherUserID: courseData.teacherUserID,
-                        courseID,
-                        studentUserID: userID,
-                        registrationStatus: 0,
-                    },
+                firebaseInit.setDocToStudentRegisterCourse(
+                    courseID,
+                    userID,
+                    courseData.teacherUserID,
                 ),
-                updateDoc(doc(firebaseInit.db, "users", userID), {
-                    studentsCourses: arrayUnion(courseID),
-                }),
-                updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                    registrationNumber: increment(1),
-                }),
+                firebaseInit.updateDocForUserStudentsCourses(userID, courseID),
+                firebaseInit.updateDocForCourseRegistrationNumber(courseID),
                 email.sendEmail(studentEmailContent),
                 email.sendEmail(teacherEmailContent),
             ]).then(() => {
@@ -361,7 +314,7 @@ export const Course = ({ userID }) => {
                         </RegisterArea>
                         <Footer />
                     </>
-                    {isLoading ? <LoadingForPost /> : null}
+                    {isLoading && <LoadingForPost />}
                     <AlertModal
                         content={alertMessage}
                         alertIsOpen={alertIsOpen}

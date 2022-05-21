@@ -9,7 +9,6 @@ export const useUserInfo = () => {
         firebaseInit
             .getCollection(collection(firebaseInit.db, "users"))
             .then(data => {
-                console.log(data);
                 if (isMounted) setUsersInfo(data);
             });
 

@@ -110,11 +110,15 @@ export const Personal = () => {
     const pathname = location.pathname;
 
     useEffect(() => {
-        if (pathname.indexOf("student") !== -1)
-            return setIsActiveArea("student");
-        if (pathname.indexOf("teacher") !== -1)
-            return setIsActiveArea("teacher");
-        setIsActiveArea("profile");
+        let isMounted = true;
+        if (isMounted) {
+            if (pathname.indexOf("student") !== -1)
+                return setIsActiveArea("student");
+            if (pathname.indexOf("teacher") !== -1)
+                return setIsActiveArea("teacher");
+            setIsActiveArea("profile");
+        }
+        return () => (isMounted = false);
     }, [pathname]);
 
     function handleRoleChange(role) {

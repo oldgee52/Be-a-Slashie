@@ -3,7 +3,6 @@ import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import {
     collection,
-    getDocs,
     doc,
     setDoc,
     updateDoc,
@@ -273,12 +272,7 @@ export const TeacherUpload = ({ userID }) => {
         useFirebaseUploadFile();
 
     useEffect(() => {
-        (async function (db) {
-            const skillsCol = collection(db, "skills");
-            const skillsSnapshot = await getDocs(skillsCol);
-            const skillList = skillsSnapshot.docs.map(doc => doc.data());
-            setAllSkills(skillList);
-        })(firebaseInit.db);
+        firebaseInit.getSkillsInfo().then(data => setAllSkills(data));
     }, []);
 
     useEffect(() => {

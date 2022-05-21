@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { TextInput } from "../Component/TextInput";
-import { doc, setDoc } from "firebase/firestore";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-} from "firebase/auth";
 import { MyButton } from "../Component/MyButton";
 import { AlertModal } from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
@@ -113,29 +108,15 @@ export const Login = ({ userLogin }) => {
 
     function singUp() {
         setIsAutoNavigate(false);
-        createUserWithEmailAndPassword(
-            firebaseInit.auth,
-            info.email,
-            info.password,
-        )
-            .then(async userCredential => {
-                const user = userCredential.user;
-
-                await setDoc(doc(firebaseInit.db, "users", user.uid), {
-                    email: user.email,
-                    uid: user.uid,
-                    name: info.name,
-                    photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
-                    selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
-                });
-            })
+        const { email, password, name } = info;
+        firebaseInit
+            .handleEmailSingUp(email, password, name)
             .then(() => {
                 setIsNavigate(true);
                 handleAlertModal("註冊成功，可以去個人修改大頭照跟自我介紹喔");
             })
             .catch(error => {
                 const errorCode = error.code;
-                console.log(errorCode);
                 handleAlertModal(handleErrorMessage(errorCode));
                 if (errorCode === "auth/email-already-in-use") setIsLogin(true);
             });
@@ -143,7 +124,8 @@ export const Login = ({ userLogin }) => {
 
     function signIn() {
         setIsAutoNavigate(false);
-        signInWithEmailAndPassword(firebaseInit.auth, info.email, info.password)
+        firebaseInit
+            .handleSingInWithEmail(info.email, info.password)
             .then(() => {
                 setIsNavigate(true);
                 handleAlertModal("登入成功");

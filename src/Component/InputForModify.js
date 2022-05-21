@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { doc, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { BsPencil } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
@@ -34,7 +33,6 @@ const Title = styled.div`
 
 const Input = styled.input`
     width: 50%;
-    /* height: 50px; */
     padding: 5px;
     font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
     font-size: 16px;
@@ -150,27 +148,21 @@ export const InputForModify = ({
             SetInputFields,
         );
 
-    // function handleInputChange(e) {
-    //     let data = { ...inputFields };
-    //     data[e.target.name] = e.target.value;
-    //     SetInputFields(data);
-    // }
-
     async function handleModifyClick(state, modifyCallback, modifyContent) {
         if (state) {
             modifyCallback(false);
         }
         if (!state) {
-            const modifyData = {
-                [`${modifyContent}`]: inputFields[modifyContent],
-            };
-            console.log(modifyData);
-            await updateDoc(doc(firebaseInit.db, "users", userID), modifyData);
-            setUserInfo(prve => ({
-                ...prve,
-                [`${modifyContent}`]: inputFields[modifyContent],
-            }));
-            modifyCallback(true);
+            firebaseInit
+                .handleProfileInfoChange(modifyContent, inputFields, userID)
+                .then(() => {
+                    setUserInfo(prve => ({
+                        ...prve,
+                        [`${modifyContent}`]: inputFields[modifyContent],
+                    }));
+                    modifyCallback(true);
+                })
+                .catch(error => console.log(error));
         }
     }
 

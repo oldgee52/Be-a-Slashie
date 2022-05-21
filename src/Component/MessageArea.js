@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
 import { MessageInputArea } from "./MessageInputArea";
 import { MessageReplyArea } from "./MessageReplyArea";
-import { doc, Timestamp, updateDoc } from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 
 const MessageBox = styled.div`
@@ -58,21 +57,12 @@ const MessageArea = ({
     const handleSendReplyMessage = async index => {
         if (!inputFields[index].reply.trim())
             return handleAlertModal("請輸入訊息");
-        const stateCopy = JSON.parse(JSON.stringify(courseData));
-
-        stateCopy.askedQuestions.forEach((question, i) => {
-            if (i === index) {
-                question.replies.push({
-                    repliedContent: inputFields[index].reply,
-                    repliedDate: Timestamp.now(),
-                    repliedUserID: userID,
-                });
-            }
-        });
-
-        await updateDoc(doc(firebaseInit.db, "courses", courseData.courseID), {
-            askedQuestions: stateCopy.askedQuestions,
-        });
+        await firebaseInit.updateDocForReplyMessage(
+            courseData,
+            index,
+            inputFields,
+            userID,
+        );
 
         return handleAlertModal("回覆已送出");
     };

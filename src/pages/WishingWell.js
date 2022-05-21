@@ -1,15 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TextInput } from "../Component/TextInput";
 import styled from "styled-components";
-import {
-    arrayRemove,
-    arrayUnion,
-    collection,
-    doc,
-    setDoc,
-    Timestamp,
-    updateDoc,
-} from "firebase/firestore";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
@@ -206,7 +197,6 @@ const WishDirectionSpan = styled.span`
 export const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
-    // const [usersInfo, setUsersInfo] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     const [findUserInfo, usersInfo] = useUserInfo();
@@ -235,53 +225,51 @@ export const WishingWell = ({ userID }) => {
     async function makeWish() {
         if (!wishingContent.trim()) return handleAlertModal("請輸入內容");
         try {
-            const coursesRef = collection(firebaseInit.db, "wishingWells");
-            const docRef = doc(coursesRef);
-
-            const data = {
-                content: wishingContent,
-                creatDate: Timestamp.now(),
-                userID: userID,
-                id: docRef.id,
-            };
-            await setDoc(docRef, data);
-
+            const wishData = await firebaseInit.setDocForMakeWish(
+                wishingContent,
+                userID,
+            );
             setWishingContent("");
-            setWishes([data, ...wishes]);
+            setWishes([wishData, ...wishes]);
             handleAlertModal("許願成功");
         } catch (error) {
             handleAlertModal("許願失敗，請再試一次");
             console.log("錯誤", error);
         }
     }
+
     async function handleAddLike(wishId, index, condition) {
-        if (condition) {
-            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
-                like: arrayRemove(userID),
+        firebaseInit
+            .updateDocForHandleWishLike(wishId, userID, condition)
+            .then(() => {
+                let data = [...wishes];
+                if (condition) {
+                    const newLikeList = data[index]["like"].filter(
+                        user => user !== userID,
+                    );
+                    data[index]["like"] = newLikeList;
+                    return setWishes(data);
+                }
+                if (!condition) {
+                    if (data[index]["like"]) {
+                        data[index]["like"] = [...data[index]["like"], userID];
+                    }
+                    if (!data[index]["like"]) {
+                        data[index]["like"] = [userID];
+                    }
+                    setWishes(data);
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                handleAlertModal("發生錯誤，請再試一次");
             });
-            let data = [...wishes];
-            const newLikeList = data[index]["like"].filter(
-                user => user !== userID,
-            );
-            data[index]["like"] = newLikeList;
-            return setWishes(data);
-        }
-        if (!condition) {
-            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
-                like: arrayUnion(userID),
-            });
-
-            let data = [...wishes];
-            if (data[index]["like"]) {
-                data[index]["like"] = [...data[index]["like"], userID];
-            }
-
-            if (!data[index]["like"]) {
-                data[index]["like"] = [userID];
-            }
-            setWishes(data);
-        }
     }
+
+    function isUserLikeThisWish(likes) {
+        return likes?.some(uid => uid === userID);
+    }
+
     function renderWishes() {
         return (
             <WishContainer>
@@ -305,15 +293,11 @@ export const WishingWell = ({ userID }) => {
                                             handleAddLike(
                                                 wish.id,
                                                 index,
-                                                wish.like?.some(
-                                                    uid => uid === userID,
-                                                ),
+                                                isUserLikeThisWish(wish.like),
                                             );
                                         }}
                                     >
-                                        {wish.like?.some(
-                                            uid => uid === userID,
-                                        ) ? (
+                                        {isUserLikeThisWish(wish.like) ? (
                                             <NewBsHeartFill />
                                         ) : (
                                             <NewBsHeart />
@@ -364,7 +348,6 @@ export const WishingWell = ({ userID }) => {
                             </WishDirection>
                         </DirectionBox>
                         {renderWishes()}
-                        {/* {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"} */}
                         <Waypoint
                             onEnter={() =>
                                 loadingNextWishes(lasWishSnapshotRef.current)

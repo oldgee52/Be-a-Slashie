@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { CheckSkills } from "../Component/CheckSkills";
@@ -7,7 +6,6 @@ import { Footer } from "../Component/Footer";
 import { Loading } from "../Component/Loading";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { SearchInput } from "../Component/SearchInput";
-
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 
@@ -192,11 +190,7 @@ export const TalentedPersonSearch = () => {
     }, []);
 
     useEffect(() => {
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "skills"))
-            .then(data => {
-                setSkills(data);
-            });
+        firebaseInit.getSkillsInfo().then(data => setSkills(data));
     }, []);
 
     function filterOutcome(searchValue, checkedSkillsArray) {
@@ -291,7 +285,6 @@ export const TalentedPersonSearch = () => {
             setSearchUsers(filterRepeatSearchOutcome);
         }
     };
-    console.log(searchField);
 
     return (
         <>

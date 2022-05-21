@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
-import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const MessageInputBox = styled.div`
     display: flex;
@@ -42,18 +41,11 @@ const MessageInputArea = ({ courseID, userID, handleAlertModal }) => {
     async function handSendMessage() {
         if (!message.trim()) return handleAlertModal("請輸入訊息");
 
-        await updateDoc(doc(firebaseInit.db, "courses", courseID), {
-            askedQuestions: arrayUnion({
-                askedContent: message,
-                askedDate: new Date(),
-                askedUserID: userID,
-                replies: [],
-            }),
-        });
+        await firebaseInit.updateDocForSendMessage(courseID, message, userID);
         setMessage("");
-
-        return handleAlertModal("留言已送出");
+        handleAlertModal("留言已送出");
     }
+
     return (
         <MessageInputBox>
             <Input value={message} onChange={e => setMessage(e.target.value)} />

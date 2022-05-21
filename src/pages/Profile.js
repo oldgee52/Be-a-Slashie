@@ -67,14 +67,20 @@ export const Profile = ({ userID }) => {
     const [{ fileURL, UploadIsLoading, isError }, setFile, setFileName] =
         useFirebaseUploadFile();
     useEffect(() => {
-        if (userID)
+        let isMounted = true;
+        if (userID && isMounted)
             firebaseInit.getCollectionData("users", userID).then(data => {
-                setUserInfo(data);
-                SetInputFields({
-                    name: data.name,
-                    selfIntroduction: data.selfIntroduction,
-                });
+                if (isMounted) {
+                    setUserInfo(data);
+                    SetInputFields({
+                        name: data.name,
+                        selfIntroduction: data.selfIntroduction,
+                    });
+                }
             });
+        return () => {
+            isMounted = false;
+        };
     }, [userID]);
 
     useEffect(() => {

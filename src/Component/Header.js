@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { NavLink, useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
 import firebaseInit from "../utils/firebase";
 import { breakPoint } from "../utils/breakPoint";
 import logo from "../images/logo.png";
@@ -203,7 +202,8 @@ function Header({ userID }) {
     }
 
     function handleSignOut() {
-        signOut(firebaseInit.auth)
+        firebaseInit
+            .handleSingOut()
             .then(() => {
                 handleAlertModal("已登出成功");
                 navigate("/");

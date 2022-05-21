@@ -11,9 +11,22 @@ import {
     limit,
     startAfter,
     Timestamp,
+    updateDoc,
+    arrayRemove,
+    arrayUnion,
+    onSnapshot,
+    setDoc,
+    increment,
+    addDoc,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAuth } from "firebase/auth";
+import {
+    createUserWithEmailAndPassword,
+    getAuth,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCJUou9zUfb6A9XJTQgohPz5PPdMvZxybA",
@@ -247,7 +260,12 @@ const firebaseInit = {
 
         return data;
     },
-
+    async getSkillsInfo() {
+        const skillsInfo = await this.getCollection(
+            collection(this.db, "skills"),
+        );
+        return skillsInfo;
+    },
     async getStudentAllCourse(studentID) {
         const studentDoc = doc(this.db, "users", studentID);
         const studentSnapShot = await getDoc(studentDoc);
@@ -414,8 +432,173 @@ const firebaseInit = {
         });
 
         const data = Promise.all(courseWithTeacherInfo);
+        return data;
+    },
+    listenToCourseData(courseID, callback) {
+        onSnapshot(doc(this.db, "courses", courseID), snapshot => {
+            const courseDate = snapshot.data();
+            callback(courseDate);
+        });
+    },
+    listenToAuthStatus(callback) {
+        onAuthStateChanged(this.auth, user => {
+            callback(user);
+        });
+    },
+    updateDocForUserCollection(userID, courseID, userCollection) {
+        updateDoc(doc(this.db, "users", userID), {
+            collectCourses: userCollection
+                ? arrayRemove(courseID)
+                : arrayUnion(courseID),
+        });
+    },
+    setDocToStudentRegisterCourse(courseID, userID, teacherUserID) {
+        setDoc(doc(this.db, "courses", courseID, "students", userID), {
+            teacherUserID,
+            courseID,
+            studentUserID: userID,
+            registrationStatus: 0,
+        });
+    },
+    updateDocForUserStudentsCourses(userID, courseID) {
+        updateDoc(doc(this.db, "users", userID), {
+            studentsCourses: arrayUnion(courseID),
+        });
+    },
+    updateDocForCourseRegistrationNumber(courseID) {
+        updateDoc(doc(this.db, "courses", courseID), {
+            registrationNumber: increment(1),
+        });
+    },
+    updateDocForCourseAddView(courseID) {
+        updateDoc(doc(this.db, "courses", courseID), {
+            view: increment(1),
+        });
+    },
+    async handleEmailSingUp(email, password, name) {
+        const userCredential = await createUserWithEmailAndPassword(
+            this.auth,
+            email,
+            password,
+        );
+        const uid = userCredential.user.uid;
+        setDoc(doc(this.db, "users", uid), {
+            email,
+            uid,
+            name,
+            photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
+            selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
+        });
+    },
+    async handleSingInWithEmail(email, password) {
+        await signInWithEmailAndPassword(this.auth, email, password);
+    },
+    async handleSingOut() {
+        await signOut(this.auth);
+    },
+    async handleProfileInfoChange(modifyContent, inputFields, userID) {
+        const modifyData = {
+            [`${modifyContent}`]: inputFields[modifyContent],
+        };
+        await updateDoc(doc(this.db, "users", userID), modifyData);
+    },
+    async setDocForMakeWish(content, userID) {
+        const coursesRef = collection(this.db, "wishingWells");
+        const docRef = doc(coursesRef);
+        const id = docRef.id;
+        const data = {
+            content,
+            creatDate: Timestamp.now(),
+            userID,
+            id,
+        };
+        await setDoc(docRef, data);
+        return data;
+    },
+    async updateDocForHandleWishLike(wishId, userID, condition) {
+        await updateDoc(doc(this.db, "wishingWells", wishId), {
+            like: condition ? arrayRemove(userID) : arrayUnion(userID),
+        });
+    },
+    async updateDocForTeacherAddHomework(courseID, homeworkTitle) {
+        const data = {
+            title: homeworkTitle,
+            creatDate: Timestamp.now(),
+        };
+
+        await updateDoc(doc(this.db, "courses", courseID, "teacher", "info"), {
+            homework: arrayUnion(data),
+        });
 
         return data;
+    },
+    async updateDocForTeacherFinishCourse(courseID) {
+        updateDoc(doc(this.db, "courses", courseID), {
+            status: 2,
+            closedDate: Timestamp.now(),
+        });
+    },
+    async addDocForHandleStudentsGetSkills(CourseArray) {
+        CourseArray.getSkills.forEach(skill => {
+            CourseArray.students.forEach(student => {
+                const studentID = student.studentID;
+                const getSkillsStatus = student.getSkillsStatus;
+                if (getSkillsStatus === 1)
+                    addDoc(
+                        collection(this.db, "users", studentID, "getSkills"),
+                        {
+                            getDate: Timestamp.now(),
+                            skillID: skill,
+                            userID: studentID,
+                        },
+                    );
+            });
+        });
+    },
+    async updateDocForTeacherOpeningCourse(courseID) {
+        await updateDoc(doc(this.db, "courses", courseID), {
+            status: 1,
+        });
+    },
+    async updateDocForStudentsCourseRegistrationStatus(CourseArray, courseID) {
+        CourseArray.forEach(element => {
+            element.students.forEach(async student => {
+                const studentID = student.studentID;
+                const registrationStatus = student.registrationStatus;
+                await updateDoc(
+                    doc(this.db, "courses", courseID, "students", studentID),
+                    {
+                        registrationStatus,
+                    },
+                );
+            });
+        });
+    },
+    async updateDocForReplyMessage(courseArray, index, inputFields, userID) {
+        const stateCopy = JSON.parse(JSON.stringify(courseArray));
+        stateCopy.askedQuestions.forEach((question, i) => {
+            if (i === index) {
+                question.replies.push({
+                    repliedContent: inputFields[index].reply,
+                    repliedDate: Timestamp.now(),
+                    repliedUserID: userID,
+                });
+            }
+        });
+
+        await updateDoc(doc(this.db, "courses", courseArray.courseID), {
+            askedQuestions: stateCopy.askedQuestions,
+        });
+    },
+    async updateDocForSendMessage(courseID, message, userID) {
+        await updateDoc(doc(this.db, "courses", courseID), {
+            askedQuestions: arrayUnion({
+                askedContent: message,
+                askedDate: Timestamp.now(),
+                askedUserID: userID,
+                replies: [],
+            }),
+        });
     },
 };
 
