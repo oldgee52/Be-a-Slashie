@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { updateDoc, doc } from "firebase/firestore";
 import { InputForModify } from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
@@ -64,8 +63,7 @@ export const Profile = ({ userID }) => {
     const [inputFields, SetInputFields] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const [{ fileURL, UploadIsLoading, isError }, setFile, setFileName] =
-        useFirebaseUploadFile();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     useEffect(() => {
         let isMounted = true;
         if (userID && isMounted)
@@ -83,24 +81,18 @@ export const Profile = ({ userID }) => {
         };
     }, [userID]);
 
-    useEffect(() => {
-        if (!fileURL) return;
-        updateDoc(doc(firebaseInit.db, "users", userID), {
-            photo: fileURL,
-        });
+    const handleUploadImage = async (fileName, file) => {
+        if (!fileName || !file) return;
 
+        const fileURL = await uploadFile(fileName, file);
+        await firebaseInit.updateDocForProfilePhoto(userID, fileURL);
         setUserInfo(prve => ({
             ...prve,
             photo: fileURL,
         }));
         handleAlertModal("上傳成功");
-    }, [fileURL]);
-
-    const uploadImage = e => {
-        setFile(e.target.files[0]);
-        setFileName(e.target.value);
-        if (isError) return handleAlertModal("發生錯誤，請再試一次");
     };
+
     return (
         <>
             {!userInfo ? (
@@ -114,7 +106,10 @@ export const Profile = ({ userID }) => {
                             accept="image/*"
                             id="photo"
                             onChange={e => {
-                                uploadImage(e);
+                                handleUploadImage(
+                                    e.target.value,
+                                    e.target.files[0],
+                                );
                             }}
                         />
                         <UploadIcon viewBox="-5 -1 30 30" />
@@ -155,7 +150,7 @@ export const Profile = ({ userID }) => {
                 alertIsOpen={alertIsOpen}
                 setAlertIsOpen={setAlertIsOpen}
             />
-            {UploadIsLoading ? <LoadingForPost /> : null}
+            {uploadIsLoading ? <LoadingForPost /> : null}
         </>
     );
 };

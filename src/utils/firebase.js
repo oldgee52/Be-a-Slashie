@@ -600,6 +600,69 @@ const firebaseInit = {
             }),
         });
     },
+    async updateDocForProfilePhoto(userID, fileURL) {
+        await updateDoc(doc(this.db, "users", userID), {
+            photo: fileURL,
+        });
+    },
+    async setDocForNewCourse(state, userID) {
+        const coursesRef = collection(this.db, "courses");
+        const docRef = doc(coursesRef);
+        const coursesInfo = {
+            ...state,
+            openingDate: new Date(
+                `${state.openingDate.replace(/-/g, "/")} 23:59:59`,
+            ),
+            registrationDeadline: new Date(
+                `${state.registrationDeadline.replace(/-/g, "/")} 23:59:59`,
+            ),
+            creatTime: Timestamp.now(),
+            courseID: docRef.id,
+            view: 0,
+            teacherUserID: userID,
+            status: 0,
+            askedQuestions: [],
+            registrationNumber: 0,
+        };
+        setDoc(docRef, coursesInfo);
+        return docRef.id;
+    },
+    async setDocForCourseAddTeacherInfo(courseID, userID) {
+        setDoc(doc(this.db, "courses", courseID, "teacher", "info"), {
+            teacherUserID: userID,
+            courseID,
+        });
+    },
+    async updateDocForUserTeachersCourses(courseID, userID) {
+        updateDoc(doc(this.db, "users", userID), {
+            teachersCourses: arrayUnion(courseID),
+        });
+    },
+    async updateDocForCourseMaterials(materialsTitle, fileURL, courseID) {
+        const materialData = {
+            title: materialsTitle,
+            creatDate: Timestamp.now(),
+            fileURL,
+        };
+        await updateDoc(doc(this.db, "courses", courseID, "teacher", "info"), {
+            materials: arrayUnion(materialData),
+        });
+        return materialData;
+    },
+    async updateDocForStudentsHomework(title, fileURL, courseID, userID) {
+        const homeworkData = {
+            title,
+            fileURL,
+            uploadDate: Timestamp.now(),
+        };
+        await updateDoc(
+            doc(firebaseInit.db, "courses", courseID, "students", userID),
+            {
+                homework: arrayUnion(homeworkData),
+            },
+        );
+        return homeworkData;
+    },
 };
 
 export default firebaseInit;

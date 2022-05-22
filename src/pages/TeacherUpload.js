@@ -1,13 +1,6 @@
 import React, { useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
-import {
-    collection,
-    doc,
-    setDoc,
-    updateDoc,
-    arrayUnion,
-} from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
 import { CheckSkills } from "../Component/CheckSkills";
@@ -208,6 +201,7 @@ const initState = {
     courseIntroduction: "",
     teacherIntroduction: "",
     getSkills: [],
+    image: "",
     minOpeningNumber: 1,
     openingDate: "",
     registrationDeadline: "",
@@ -245,6 +239,11 @@ function reducer(state, action) {
                 ...state,
                 registrationDeadline: action.payload.registrationDeadline,
             };
+        case "setImage":
+            return {
+                ...state,
+                image: action.payload.image,
+            };
         case "setGetSkills":
             return {
                 ...state,
@@ -268,18 +267,11 @@ export const TeacherUpload = ({ userID }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const [{ fileURL, UploadIsLoading, isError }, setFile, setFileName] =
-        useFirebaseUploadFile();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
 
     useEffect(() => {
         firebaseInit.getSkillsInfo().then(data => setAllSkills(data));
     }, []);
-
-    useEffect(() => {
-        if (!fileURL) return;
-        setImage(fileURL);
-        handleAlertModal("上傳成功");
-    }, [fileURL]);
 
     const handleSkillChange = e => {
         const { value, checked } = e.target;
@@ -300,10 +292,15 @@ export const TeacherUpload = ({ userID }) => {
         }
     };
 
-    const uploadImage = e => {
-        setFile(e.target.files[0]);
-        setFileName(e.target.value);
-        if (isError) return handleAlertModal("發生錯誤，請再試一次");
+    const uploadImage = async (fileName, file) => {
+        if (!fileName || !file) return;
+        const fileURL = await uploadFile(fileName, file);
+        dispatch({
+            type: "setImage",
+            payload: { image: fileURL },
+        });
+        setImage(fileURL);
+        handleAlertModal("上傳成功");
     };
 
     const uploadCourse = async e => {
@@ -315,63 +312,29 @@ export const TeacherUpload = ({ userID }) => {
         if (new Date(state.openingDate) < new Date(state.registrationDeadline))
             return handleAlertModal("開課日不得早於報名截止日");
 
-        if (
-            Object.values(state).some(value => !value) ||
-            state.getSkills.length === 0 ||
-            !fileURL
-        )
-            return handleAlertModal("請輸入完整資料");
-
         setIsLoading(true);
 
-        const coursesRef = collection(firebaseInit.db, "courses");
-        const docRef = doc(coursesRef);
-        const coursesInfo = {
-            ...state,
-            image,
-            openingDate: new Date(
-                `${state.openingDate.replace(/-/g, "/")} 23:59:59`,
-            ),
-            registrationDeadline: new Date(
-                `${state.registrationDeadline.replace(/-/g, "/")} 23:59:59`,
-            ),
-            creatTime: new Date(),
-            courseID: docRef.id,
-            view: 0,
-            teacherUserID: userID,
-            status: 0,
-            askedQuestions: [],
-            registrationNumber: 0,
-        };
         try {
-            await Promise.all([
-                setDoc(docRef, coursesInfo),
-                setDoc(
-                    doc(
-                        firebaseInit.db,
-                        "courses",
-                        docRef.id,
-                        "teacher",
-                        "info",
-                    ),
-                    {
-                        teacherUserID: userID,
-                        courseID: docRef.id,
-                    },
-                ),
-                updateDoc(doc(firebaseInit.db, "users", userID), {
-                    teachersCourses: arrayUnion(docRef.id),
-                }),
-            ]).then(() => {
-                setIsLoading(false);
-                handleAlertModal("上架成功，來看看課程資訊吧！");
-            });
+            const newCourseID = await firebaseInit.setDocForNewCourse(
+                state,
+                userID,
+            );
+            await firebaseInit.setDocForCourseAddTeacherInfo(
+                newCourseID,
+                userID,
+            );
+            await firebaseInit.updateDocForUserTeachersCourses(
+                newCourseID,
+                userID,
+            );
+            setCourseID(newCourseID);
+            setIsLoading(false);
+            handleAlertModal("上架成功，來看看課程資訊吧！");
         } catch (error) {
             console.log(error);
             setIsLoading(false);
-            return handleAlertModal("發送錯誤，請再試一次");
+            handleAlertModal("發送錯誤，請再試一次");
         }
-        setCourseID(docRef.id);
     };
 
     return (
@@ -509,7 +472,9 @@ export const TeacherUpload = ({ userID }) => {
                         <FileInput
                             type="file"
                             accept="image/*"
-                            onChange={e => uploadImage(e)}
+                            onChange={e =>
+                                uploadImage(e.target.value, e.target.files[0])
+                            }
                         />
 
                         <PreviewImg img={image}>
@@ -530,7 +495,7 @@ export const TeacherUpload = ({ userID }) => {
                 setAlertIsOpen={setAlertIsOpen}
                 courseID={courseID}
             />
-            {isLoading || UploadIsLoading ? <LoadingForPost /> : ""}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
         </>
     );
 };

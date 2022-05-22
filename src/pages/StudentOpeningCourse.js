@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import styled from "styled-components";
-import { updateDoc, doc, arrayUnion, Timestamp } from "firebase/firestore";
 import { breakPoint } from "../utils/breakPoint";
 import { NoDataTitle } from "../Component/NoDataTitle";
 import { MyButton } from "../Component/MyButton";
@@ -19,6 +17,7 @@ import {
     getTheSameTitleArray,
     handleChangeChangeForArray,
 } from "../utils/functions";
+import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -193,6 +192,7 @@ export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     useEffect(() => {
@@ -321,88 +321,43 @@ export const StudentOpeningCourse = ({ userID }) => {
         );
     };
 
-    const handleUploadHomework = (e, indexOfAllCourse, indexOfAllHomework) => {
-        if (
-            !inputFields?.[`${indexOfAllCourse}`]?.[`${indexOfAllHomework}`][
+    const handleUploadHomework = async (
+        e,
+        indexOfAllCourse,
+        indexOfAllHomework,
+    ) => {
+        const fileInfo =
+            inputFields?.[`${indexOfAllCourse}`]?.[`${indexOfAllHomework}`][
                 "file"
-            ]
-        )
-            return handleAlertModal("請選擇檔案");
-        console.log(
-            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
-                .files[0],
-        );
+            ];
+        if (!fileInfo) return handleAlertModal("請選擇檔案");
+        const courseID = courseDetails[indexOfAllCourse].courseID;
+        setIsLoading(true);
 
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            e.target.id +
-                inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`][
-                    "file"
-                ].value,
-        );
+        try {
+            const fileURL = await uploadFile(fileInfo.value, fileInfo.files[0]);
+            const homeworkData =
+                await firebaseInit.updateDocForStudentsHomework(
+                    e.target.id,
+                    fileURL,
+                    courseID,
+                    userID,
+                );
 
-        const uploadTask = uploadBytesResumable(
-            mountainImagesRef,
-            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
-                .files[0],
-        );
+            let data = [...courseDetails];
+            data[indexOfAllCourse].myHomework = [
+                ...data[indexOfAllCourse].myHomework,
+                homeworkData,
+            ];
 
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                console.log(error);
-                handleAlertModal("上傳失敗");
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                    .then(async downloadURL => {
-                        const homeworkData = {
-                            title: e.target.id,
-                            fileURL: downloadURL,
-                            uploadDate: Timestamp.now(),
-                        };
-                        await updateDoc(
-                            doc(
-                                firebaseInit.db,
-                                "courses",
-                                courseDetails[indexOfAllCourse].courseID,
-                                "students",
-                                userID,
-                            ),
-                            {
-                                homework: arrayUnion(homeworkData),
-                            },
-                        );
-                        let data = [...courseDetails];
-                        data[indexOfAllCourse].myHomework = [
-                            ...data[indexOfAllCourse].myHomework,
-                            homeworkData,
-                        ];
-
-                        setCourseDetails(data);
-                        setIsLoading(false);
-                        return handleAlertModal("上傳成功");
-                    })
-                    .catch(error => {
-                        setIsLoading(false);
-                        console.log(error);
-                        handleAlertModal("上傳失敗");
-                    });
-            },
-        );
+            setCourseDetails(data);
+            setIsLoading(false);
+            return handleAlertModal("上傳成功");
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+            handleAlertModal("上傳失敗");
+        }
     };
 
     return (
@@ -496,7 +451,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                     ))}
                 </Container>
             )}
-            {isLoading ? <LoadingForPost /> : ""}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}

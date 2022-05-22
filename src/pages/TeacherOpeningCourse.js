@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { updateDoc, doc, arrayUnion, Timestamp } from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { breakPoint } from "../utils/breakPoint";
 import { MyButton } from "../Component/MyButton";
 import { TextInput } from "../Component/TextInput";
@@ -19,6 +17,7 @@ import {
     handleChangeChangeForArray,
     handleChangeForDeepCopy,
 } from "../utils/functions";
+import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -223,6 +222,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
 
@@ -275,76 +275,31 @@ export const TeacherOpeningCourse = ({ userID }) => {
         const materialsTitle = thisCourse[0].materialsTitle.trim();
 
         const file = thisCourse[0].materialsFile.files?.[0];
+        const fileName = `${materialsTitle}_${thisCourse[0].materialsFile.value}`;
 
         if (!materialsTitle || !file)
             return handleAlertModal("請上傳檔案並輸入教材名稱");
 
         console.log(courseID);
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            thisCourse[0].materialsFile.value,
-        );
-        const uploadTask = uploadBytesResumable(mountainImagesRef, file);
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(
-                    async downloadURL => {
-                        const materialData = {
-                            title: materialsTitle,
-                            creatDate: Timestamp.now(),
-                            fileURL: downloadURL,
-                        };
-                        try {
-                            await updateDoc(
-                                doc(
-                                    firebaseInit.db,
-                                    "courses",
-                                    courseID,
-                                    "teacher",
-                                    "info",
-                                ),
-                                {
-                                    materials: arrayUnion(materialData),
-                                },
-                            );
-
-                            let data = [...courses];
-                            data[index].materials = [
-                                ...data[index].materials,
-                                materialData,
-                            ];
-                            data[index].materialsTitle = "";
-                            data[index].materialsFile = "";
-
-                            setCourses(data);
-                            setIsLoading(false);
-                            return handleAlertModal("上傳教材成功囉");
-                        } catch (error) {
-                            setIsLoading(false);
-                            handleAlertModal("上傳教材失敗");
-                            console.log(error);
-                        }
-                    },
-                );
-            },
-        );
+        try {
+            const fileURL = await uploadFile(fileName, file);
+            const materialData = await firebaseInit.updateDocForCourseMaterials(
+                materialsTitle,
+                fileURL,
+                courseID,
+            );
+            let data = [...courses];
+            data[index].materials = [...data[index].materials, materialData];
+            data[index].materialsTitle = "";
+            data[index].materialsFile = "";
+            setCourses(data);
+            setIsLoading(false);
+            return handleAlertModal("上傳教材成功囉");
+        } catch (error) {
+            setIsLoading(false);
+            handleAlertModal("上傳教材失敗");
+            console.log(error);
+        }
     };
 
     const handleFinishCourse = async e => {
@@ -651,7 +606,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     )}
                 </Container>
             )}
-            {isLoading && <LoadingForPost />}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
