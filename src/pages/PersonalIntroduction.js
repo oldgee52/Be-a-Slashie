@@ -7,8 +7,8 @@ import { FiMail } from "react-icons/fi";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { HoverInfo } from "../Component/HoverInfo";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -123,7 +123,6 @@ export const PersonalIntroduction = () => {
     const [userInfo, setUserInfo] = useState();
     const [userSkills, setUserSkills] = useState();
     const [userFinishCourses, setUserFinishCourses] = useState();
-    const customDateDisplay = useCustomDateDisplay();
     const uid = new URLSearchParams(window.location.search).get("uid");
     useEffect(() => {
         firebaseInit.getCollectionData("users", uid).then(data => {

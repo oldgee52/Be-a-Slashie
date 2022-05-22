@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 
 const SkillsBox = styled.div`
     display: flex;
@@ -27,7 +27,6 @@ const SkillDate = styled.div`
 `;
 
 export const Skills = ({ skills }) => {
-    const customDateDisplay = useCustomDateDisplay();
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (

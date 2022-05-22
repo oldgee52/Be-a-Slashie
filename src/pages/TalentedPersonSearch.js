@@ -8,6 +8,7 @@ import { NoDataTitle } from "../Component/NoDataTitle";
 import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { findUniqueOutcomeWithUid } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -224,12 +225,6 @@ export const TalentedPersonSearch = () => {
 
         return { allSearchOutcome, filteredUserByKeyword, filteredUserBySkill };
     }
-    function findUniqueOutcome(array) {
-        return array.filter(
-            (item, index, self) =>
-                index !== self.findIndex(t => t.uid === item.uid),
-        );
-    }
 
     function searchUsersByKeyword(e) {
         if (!e.target.value.trim() && checkedSkills.length === 0)
@@ -241,7 +236,7 @@ export const TalentedPersonSearch = () => {
                 ? outcome.filteredUserByKeyword
                 : outcome.filteredUserByKeyword.length !== 0 &&
                   outcome.filteredUserBySkill.length !== 0
-                ? findUniqueOutcome(outcome.allSearchOutcome)
+                ? findUniqueOutcomeWithUid(outcome.allSearchOutcome)
                 : outcome.filteredUserBySkill.length === 0 &&
                   outcome.filteredUserByKeyword.length !== 0
                 ? outcome.filteredUserByKeyword
@@ -263,7 +258,7 @@ export const TalentedPersonSearch = () => {
             const filterRepeatSearchOutcome =
                 outcome.filteredUserByKeyword.length === 0
                     ? outcome.filteredUserBySkill
-                    : findUniqueOutcome(outcome.allSearchOutcome);
+                    : findUniqueOutcomeWithUid(outcome.allSearchOutcome);
 
             setSearchUsers(filterRepeatSearchOutcome);
         }
@@ -280,7 +275,7 @@ export const TalentedPersonSearch = () => {
                     ? outcome.filteredUserByKeyword
                     : outcome.filteredUserByKeyword.length === 0
                     ? outcome.filteredUserBySkill
-                    : findUniqueOutcome(outcome.allSearchOutcome);
+                    : findUniqueOutcomeWithUid(outcome.allSearchOutcome);
 
             setSearchUsers(filterRepeatSearchOutcome);
         }

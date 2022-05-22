@@ -3,7 +3,7 @@ import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { BsPencil } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
-import { useHandleValueChangeForObject } from "../customHooks/useHandleValueChangeForObject";
+import { handleChangeForObject } from "../utils/functions";
 
 const Container = styled.div`
     width: 80%;
@@ -134,14 +134,13 @@ export const InputForModify = ({
     inputText,
 }) => {
     const inputElement = useRef(null);
-    const handleChange = useHandleValueChangeForObject();
 
     useEffect(() => {
         if (!handleDisable) inputElement.current.focus();
     }, [inputElement, handleDisable]);
 
     const handleInputChange = e =>
-        handleChange(
+        handleChangeForObject(
             inputFields,
             e.target.name,
             e.target.value,

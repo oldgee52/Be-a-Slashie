@@ -9,7 +9,7 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
-import { useHandleValueChangeForObject } from "../customHooks/useHandleValueChangeForObject";
+import { handleChangeForObject } from "../utils/functions";
 
 const Box = styled.div`
     min-height: calc(100vh - 150px);
@@ -82,7 +82,6 @@ export const Login = ({ userLogin }) => {
     const location = useLocation();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const handleChange = useHandleValueChangeForObject();
 
     const from = location.state?.from || "/";
 
@@ -137,7 +136,7 @@ export const Login = ({ userLogin }) => {
             });
     }
     const handleInputChange = e =>
-        handleChange(info, e.target.name, e.target.value, setInfo);
+        handleChangeForObject(info, e.target.name, e.target.value, setInfo);
 
     return (
         <>

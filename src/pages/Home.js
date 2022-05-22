@@ -7,10 +7,10 @@ import { SearchInput } from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import banner from "../images/banner.png";
 import { FaArrowRight } from "react-icons/fa";
 import { keyframes } from "styled-components";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -152,7 +152,6 @@ export const Home = () => {
     const [popularCourse, setPopularCourse] = useState();
     const [searchField, setSearchField] = useState("");
     const navigate = useNavigate();
-    const customDateDisplay = useCustomDateDisplay();
     useEffect(() => {
         let isMounted = true;
 

@@ -13,10 +13,12 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { MyRadioButton } from "../Component/MyRadioButton";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { NoDataBox } from "../Component/NoDataBox";
-import { useHandleValueChangeForArray } from "../customHooks/useHandleValueChangeForArray";
-import { useHandleValueChangeForDeepCopy } from "../customHooks/useHandleValueChangeForDeepCopy";
+import {
+    customDateDisplay,
+    handleChangeChangeForArray,
+    handleChangeForDeepCopy,
+} from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -221,11 +223,8 @@ export const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
-    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const handleChange = useHandleValueChangeForArray();
-    const handleChangeForDeepCopy = useHandleValueChangeForDeepCopy();
 
     useEffect(() => {
         if (userID)
@@ -415,7 +414,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                             <CourseCard key={index} show={course.isShow}>
                                 <CourseTitle
                                     onClick={() =>
-                                        handleChange({
+                                        handleChangeChangeForArray({
                                             ...changeData,
                                             indexOfFirstData: index,
                                             dataKey: "isShow",
@@ -546,7 +545,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                             name="materialsFile"
                                             id={`${course.courseID}`}
                                             onChange={e =>
-                                                handleChange({
+                                                handleChangeChangeForArray({
                                                     ...changeData,
                                                     indexOfFirstData: index,
                                                     dataKey: e.target.name,
@@ -567,7 +566,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.materialsTitle}
                                         name="materialsTitle"
                                         handleChange={e =>
-                                            handleChange({
+                                            handleChangeChangeForArray({
                                                 ...changeData,
                                                 indexOfFirstData: index,
                                                 dataKey: e.target.name,
@@ -622,7 +621,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.homeworkTitle}
                                         name="homeworkTitle"
                                         handleChange={e =>
-                                            handleChange({
+                                            handleChangeChangeForArray({
                                                 ...changeData,
                                                 indexOfFirstData: index,
                                                 dataKey: e.target.name,

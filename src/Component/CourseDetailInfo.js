@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
 import { Skills } from "./Skills";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 const AboutCourse = styled.div`
     display: flex;
     flex-direction: column;
@@ -107,7 +107,6 @@ const CourseDetailInfo = ({
     skillsInfo,
     courseIntroduction,
 }) => {
-    const customDateDisplay = useCustomDateDisplay();
     return (
         <AboutCourse>
             <AboutTitle>關於課程</AboutTitle>

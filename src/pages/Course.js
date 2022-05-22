@@ -5,7 +5,7 @@ import firebaseInit from "../utils/firebase";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
@@ -83,7 +83,6 @@ export const Course = ({ userID }) => {
     const [skillsInfo, setSkillsInfo] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     const [findUserInfo, usersInfo] = useUserInfo();

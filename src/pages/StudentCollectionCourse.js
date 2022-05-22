@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 import { NoDataBox } from "../Component/NoDataBox";
 import { useUserInfo } from "../customHooks/useUserInfo";
 const Container = styled.div`
@@ -55,7 +55,6 @@ const CourseDiv = styled.div`
 export const StudentCollectionCourse = ({ userID }) => {
     const [collectionCourses, SetCollectionCourses] = useState();
     const [findUserInfo, usersInfo] = useUserInfo();
-    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         if (userID)

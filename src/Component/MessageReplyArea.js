@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { BsReply } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 const MessageInputArea = styled.div`
     display: flex;
     flex-direction: column;
@@ -121,8 +121,6 @@ const MessageReplyArea = ({
     handleReplyMessage,
     handleSendReplyMessage,
 }) => {
-    const customDateDisplay = useCustomDateDisplay();
-
     return (
         askedQuestions &&
         askedQuestions

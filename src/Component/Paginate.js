@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { CourseInfo } from "./CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { breakPoint } from "../utils/breakPoint";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import { customDateDisplay } from "../utils/functions";
 
 const MyPaginate = styled(ReactPaginate).attrs({
     activeClassName: "active",
@@ -77,9 +77,7 @@ const CourseDiv = styled.div`
 function PaginatedItems({ itemsPerPage, searchData }) {
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
-
     const [itemOffset, setItemOffset] = useState(0);
-    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         const endOffset = itemOffset + itemsPerPage;

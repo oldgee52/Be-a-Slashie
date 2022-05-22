@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { CourseInfo } from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 import { NoDataBox } from "../Component/NoDataBox";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -51,7 +51,7 @@ const CourseDiv = styled.div`
 `;
 export const StudentFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
-    const customDateDisplay = useCustomDateDisplay();
+
     useEffect(() => {
         if (userID)
             firebaseInit

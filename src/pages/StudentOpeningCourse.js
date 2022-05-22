@@ -12,9 +12,13 @@ import { useAlertModal } from "../customHooks/useAlertModal";
 import { AlertModal } from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
 import { NoDataBox } from "../Component/NoDataBox";
-import { useHandleValueChangeForArray } from "../customHooks/useHandleValueChangeForArray";
+import {
+    customDateDisplay,
+    getNotMatchTitleArray,
+    getTheSameTitleArray,
+    handleChangeChangeForArray,
+} from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -189,10 +193,8 @@ export const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const customDateDisplay = useCustomDateDisplay();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
-    const handleChange = useHandleValueChangeForArray();
     useEffect(() => {
         let isMounted = true;
         if (userID) {
@@ -220,26 +222,10 @@ export const StudentOpeningCourse = ({ userID }) => {
         };
     }, [userID]);
 
-    function getUploadedHomework(array1, array2) {
-        return array1?.filter(object1 => {
-            return array2.some(object2 => {
-                return object1.title === object2.title;
-            });
-        });
-    }
-
-    function getNotUploadedHomework(array1, array2) {
-        return array1.filter(object1 => {
-            return !array2.some(object2 => {
-                return object1.title === object2.title;
-            });
-        });
-    }
-
     const renderUploadedHomework = index => {
         const allHomework = courseDetails.map(detail => detail.allHomework);
         const myHomework = courseDetails.map(detail => detail.myHomework);
-        const uploadedHomework = getUploadedHomework(
+        const uploadedHomework = getTheSameTitleArray(
             myHomework[index],
             allHomework[index],
         );
@@ -277,7 +263,7 @@ export const StudentOpeningCourse = ({ userID }) => {
     const renderNotUploadedHomework = index => {
         const allHomework = courseDetails.map(detail => detail.allHomework);
         const myHomework = courseDetails.map(detail => detail.myHomework);
-        const notUploadedHomework = getNotUploadedHomework(
+        const notUploadedHomework = getNotMatchTitleArray(
             allHomework[index],
             myHomework[index],
         );
@@ -307,7 +293,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                                             dataValue: e.target,
                                             callback: SetInputFields,
                                         };
-                                        handleChange(changeData);
+                                        handleChangeChangeForArray(changeData);
                                     }}
                                 />{" "}
                                 {inputFields[index]?.[i]["file"] ? (
@@ -445,7 +431,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                                         dataKey: "isShow",
                                         callback: setCourseDetails,
                                     };
-                                    handleChange(changeData);
+                                    handleChangeChangeForArray(changeData);
                                 }}
                             >
                                 {" "}
