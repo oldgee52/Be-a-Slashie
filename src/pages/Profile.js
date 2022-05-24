@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { InputForModify } from "../Component/InputForModify";
+import PropTypes from "prop-types";
+import InputForModify from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
@@ -56,7 +57,7 @@ const UploadIcon = styled(FiUpload)`
     border-radius: 100%;
 `;
 
-export const Profile = ({ userID }) => {
+const Profile = ({ userID }) => {
     const [userInfo, setUserInfo] = useState();
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
@@ -154,3 +155,9 @@ export const Profile = ({ userID }) => {
         </>
     );
 };
+
+Profile.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default Profile;

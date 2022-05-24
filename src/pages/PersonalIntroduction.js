@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Skills } from "../Component/Skills";
+import Skills from "../Component/Skills";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
-import { CourseInfo } from "../Component/CourseInfo";
+import CourseInfo from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
-import { HoverInfo } from "../Component/HoverInfo";
+import HoverInfo from "../Component/HoverInfo";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
@@ -119,7 +119,7 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const PersonalIntroduction = () => {
+const PersonalIntroduction = () => {
     const [userInfo, setUserInfo] = useState();
     const [userSkills, setUserSkills] = useState();
     const [userFinishCourses, setUserFinishCourses] = useState();
@@ -219,3 +219,5 @@ export const PersonalIntroduction = () => {
         </>
     );
 };
+
+export default PersonalIntroduction;

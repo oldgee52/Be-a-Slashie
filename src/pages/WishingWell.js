@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TextInput } from "../Component/TextInput";
+import TextInput from "../Component/TextInput";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useUserInfo } from "../customHooks/useUserInfo";
+import PropTypes from "prop-types";
 
 const Container = styled.div`
     display: flex;
@@ -194,7 +195,7 @@ const WishDirectionSpan = styled.span`
     color: #ff6100;
 `;
 
-export const WishingWell = ({ userID }) => {
+const WishingWell = ({ userID }) => {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -366,3 +367,9 @@ export const WishingWell = ({ userID }) => {
         </>
     );
 };
+
+WishingWell.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default WishingWell;

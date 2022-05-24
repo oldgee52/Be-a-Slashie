@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 import { Loading } from "./Loading";
 
 function RequireAuth({ children, userLogin }) {
@@ -9,11 +10,15 @@ function RequireAuth({ children, userLogin }) {
         return <Loading />;
     }
     if (userLogin === "out") {
-        console.log(location);
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     return children;
 }
+
+RequireAuth.propTypes = {
+    children: PropTypes.element.isRequired,
+    userLogin: PropTypes.string.isRequired,
+};
 
 export default RequireAuth;

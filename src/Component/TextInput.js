@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
 
 const Label = styled.label`
@@ -35,19 +36,11 @@ const Input = styled.input`
         outline: none;
     }
     @media ${breakPoint.desktop} {
-        /* width: 80%; */
         flex: 1 0;
     }
 `;
 
-export const TextInput = ({
-    title,
-    value,
-    handleChange,
-    name,
-    type,
-    placeholder,
-}) => {
+const TextInput = ({ title, value, handleChange, name, type, placeholder }) => {
     return (
         <Label>
             {title && <FormDiv>{title}</FormDiv>}
@@ -61,3 +54,14 @@ export const TextInput = ({
         </Label>
     );
 };
+
+TextInput.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired,
+    type: PropTypes.string,
+    placeholder: PropTypes.string,
+};
+
+export default TextInput;

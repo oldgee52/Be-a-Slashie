@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { CourseInfo } from "../Component/CourseInfo";
+import PropTypes from "prop-types";
+import CourseInfo from "../Component/CourseInfo";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 import { Loading } from "../Component/Loading";
-import { NoDataBox } from "../Component/NoDataBox";
+import NoDataBox from "../Component/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
@@ -50,7 +51,7 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const TeacherFinishedCourse = ({ userID }) => {
+const TeacherFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
 
     useEffect(() => {
@@ -86,7 +87,7 @@ export const TeacherFinishedCourse = ({ userID }) => {
                                 path="/personal/teacher-upload-course"
                             />
                         ) : (
-                            finishedCourses.map((course, index) => (
+                            finishedCourses.map(course => (
                                 <CourseDiv key={course.courseID}>
                                     <CourseInfo
                                         image={course.image}
@@ -107,3 +108,9 @@ export const TeacherFinishedCourse = ({ userID }) => {
         </>
     );
 };
+
+TeacherFinishedCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default TeacherFinishedCourse;

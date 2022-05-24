@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { BsCheck } from "react-icons/bs";
 
 const SkillName = styled.label`
@@ -32,7 +33,7 @@ const NewBsCheck = styled(BsCheck)`
     color: white;
 `;
 
-export const CheckSkills = ({ skillID, handleSkillChange, title }) => {
+const CheckSkills = ({ skillID, handleSkillChange, title }) => {
     const [isChecked, setIsChecked] = useState(false);
     return (
         <SkillName
@@ -56,3 +57,11 @@ export const CheckSkills = ({ skillID, handleSkillChange, title }) => {
         </SkillName>
     );
 };
+
+CheckSkills.propTypes = {
+    skillID: PropTypes.string.isRequired,
+    handleSkillChange: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+};
+
+export default CheckSkills;

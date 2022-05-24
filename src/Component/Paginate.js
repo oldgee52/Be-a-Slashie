@@ -1,7 +1,8 @@
 import ReactPaginate from "react-paginate";
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
-import { CourseInfo } from "./CourseInfo";
+import CourseInfo from "./CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import { breakPoint } from "../utils/breakPoint";
 import { customDateDisplay } from "../utils/functions";
@@ -126,4 +127,10 @@ function PaginatedItems({ itemsPerPage, searchData }) {
         </>
     );
 }
+
+PaginatedItems.propTypes = {
+    itemsPerPage: PropTypes.number.isRequired,
+    searchData: PropTypes.array.isRequired,
+};
+
 export default PaginatedItems;

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { customDateDisplay } from "../utils/functions";
 
 const SkillsBox = styled.div`
@@ -26,7 +27,7 @@ const SkillDate = styled.div`
     padding: 5px 0;
 `;
 
-export const Skills = ({ skills }) => {
+const Skills = ({ skills }) => {
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (
@@ -42,3 +43,9 @@ export const Skills = ({ skills }) => {
         ))
     );
 };
+
+Skills.propTypes = {
+    skills: PropTypes.array.isRequired,
+};
+
+export default Skills;

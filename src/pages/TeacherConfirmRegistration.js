@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { MyButton } from "../Component/MyButton";
+import PropTypes from "prop-types";
+import MyButton from "../Component/MyButton";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { AlertModal } from "../Component/AlertModal";
+import NoDataTitle from "../Component/NoDataTitle";
+import AlertModal from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
-import { MyRadioButton } from "../Component/MyRadioButton";
-import { HoverInfo } from "../Component/HoverInfo";
-import { NoDataBox } from "../Component/NoDataBox";
+import MyRadioButton from "../Component/MyRadioButton";
+import HoverInfo from "../Component/HoverInfo";
+import NoDataBox from "../Component/NoDataBox";
 import { handleChangeForDeepCopy } from "../utils/functions";
 
 const Container = styled.div`
@@ -121,7 +122,7 @@ const IconBox = styled.span`
     }
 `;
 
-export const TeacherConfirmRegistration = ({ userID }) => {
+const TeacherConfirmRegistration = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -269,3 +270,9 @@ export const TeacherConfirmRegistration = ({ userID }) => {
         </>
     );
 };
+
+TeacherConfirmRegistration.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default TeacherConfirmRegistration;

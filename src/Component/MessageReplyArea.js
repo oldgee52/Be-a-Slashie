@@ -202,4 +202,4 @@ MessageReplyArea.propTypes = {
     handleSendReplyMessage: PropTypes.func.isRequired,
 };
 
-export { MessageReplyArea };
+export default MessageReplyArea;

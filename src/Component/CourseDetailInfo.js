@@ -9,7 +9,7 @@ import {
     BsCardText,
 } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
-import { Skills } from "./Skills";
+import Skills from "./Skills";
 import { customDateDisplay } from "../utils/functions";
 const AboutCourse = styled.div`
     display: flex;

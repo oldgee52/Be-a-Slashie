@@ -48,7 +48,9 @@ const BlurBackgroundArea = ({ img, isWeb, children }) => {
             {isWeb ? (
                 <BlurImageWeb img={img}>{children}</BlurImageWeb>
             ) : (
-                <BlurImage img={img}>{children}</BlurImage>
+                <BlurImage img={img} Web={isWeb}>
+                    {children}
+                </BlurImage>
             )}
         </>
     );
@@ -57,5 +59,6 @@ const BlurBackgroundArea = ({ img, isWeb, children }) => {
 BlurBackgroundArea.propTypes = {
     img: PropTypes.string.isRequired,
     isWeb: PropTypes.bool.isRequired,
+    children: PropTypes.node.isRequired,
 };
-export { BlurBackgroundArea };
+export default BlurBackgroundArea;

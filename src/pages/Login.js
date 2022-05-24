@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { TextInput } from "../Component/TextInput";
+import PropTypes from "prop-types";
+import TextInput from "../Component/TextInput";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MyButton } from "../Component/MyButton";
-import { AlertModal } from "../Component/AlertModal";
+import MyButton from "../Component/MyButton";
+import AlertModal from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
 import { breakPoint } from "../utils/breakPoint";
@@ -69,7 +70,7 @@ const SingUpDiv = styled.div`
     align-self: flex-start;
 `;
 
-export const Login = ({ userLogin }) => {
+const Login = ({ userLogin }) => {
     const [info, setInfo] = useState({
         email: "",
         password: "",
@@ -226,3 +227,9 @@ export const Login = ({ userLogin }) => {
         </>
     );
 };
+
+Login.propTypes = {
+    userLogin: PropTypes.string.isRequired,
+};
+
+export default Login;

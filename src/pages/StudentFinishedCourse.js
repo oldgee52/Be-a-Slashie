@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { CourseInfo } from "../Component/CourseInfo";
+import PropTypes from "prop-types";
+import CourseInfo from "../Component/CourseInfo";
 import { Loading } from "../Component/Loading";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
-import { NoDataBox } from "../Component/NoDataBox";
+import NoDataBox from "../Component/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
@@ -49,7 +50,7 @@ const CourseDiv = styled.div`
         margin-right: 10px;
     }
 `;
-export const StudentFinishedCourse = ({ userID }) => {
+const StudentFinishedCourse = ({ userID }) => {
     const [finishedCourses, setFinishedCourses] = useState();
 
     useEffect(() => {
@@ -91,7 +92,7 @@ export const StudentFinishedCourse = ({ userID }) => {
             ) : (
                 <Container>
                     <CourseArea>
-                        {finishedCourses.map((course, index) => (
+                        {finishedCourses.map(course => (
                             <CourseDiv key={course.courseID}>
                                 <CourseInfo
                                     teacherPhoto={course.teacherPhoto}
@@ -113,3 +114,9 @@ export const StudentFinishedCourse = ({ userID }) => {
         </>
     );
 };
+
+StudentFinishedCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default StudentFinishedCourse;

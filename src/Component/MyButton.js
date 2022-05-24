@@ -54,4 +54,4 @@ MyButton.propTypes = {
     isDisabled: PropTypes.bool,
 };
 
-export { MyButton };
+export default MyButton;

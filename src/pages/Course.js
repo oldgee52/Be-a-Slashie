@@ -2,21 +2,22 @@ import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import firebaseInit from "../utils/firebase";
+import PropTypes from "prop-types";
 import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { customDateDisplay } from "../utils/functions";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { Footer } from "../Component/Footer";
 import TeacherInfoArea from "../Component/TeacherInfoArea";
-import { CollectionButton } from "../Component/CollectionButton";
-import { MyButton } from "../Component/MyButton";
+import CollectionButton from "../Component/CollectionButton";
+import MyButton from "../Component/MyButton";
 import CourseDetailInfo from "../Component/CourseDetailInfo";
-import { CourseHeadersInfo } from "../Component/CourseHeadersInfo";
-import { MessageArea } from "../Component/MessageArea";
-import { BlurBackgroundArea } from "../Component/BlurBackgroundArea";
+import CourseHeadersInfo from "../Component/CourseHeadersInfo";
+import MessageArea from "../Component/MessageArea";
+import BlurBackgroundArea from "../Component/BlurBackgroundArea";
 import { useUserInfo } from "../customHooks/useUserInfo";
 
 const AlignCenter = css`
@@ -325,3 +326,9 @@ export const Course = ({ userID }) => {
         </>
     );
 };
+
+Course.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default Course;

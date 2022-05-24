@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { MyButton } from "../Component/MyButton";
-import { NoDataTitle } from "../Component/NoDataTitle";
+import MyButton from "../Component/MyButton";
+import NoDataTitle from "../Component/NoDataTitle";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import PropTypes from "prop-types";
@@ -31,7 +31,7 @@ const NoDataBox = ({ title, buttonWord, marginTop, marginLeft, path }) => {
         </Box>
     );
 };
-PropTypes.NoDataBox = {
+NoDataBox.propTypes = {
     title: PropTypes.string.isRequired,
     buttonWord: PropTypes.string.isRequired,
     marginTop: PropTypes.string.isRequired,
@@ -39,4 +39,4 @@ PropTypes.NoDataBox = {
     path: PropTypes.string.isRequired,
 };
 
-export { NoDataBox };
+export default NoDataBox;

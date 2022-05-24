@@ -54,7 +54,7 @@ const RadioButton = styled.input`
         }
     }
 `;
-export const MyRadioButton = ({
+const MyRadioButton = ({
     inputId,
     inputName,
     inputValue,
@@ -78,10 +78,12 @@ export const MyRadioButton = ({
     );
 };
 
-MyRadioButton.prototype = {
+MyRadioButton.propTypes = {
     inputId: PropTypes.string.isRequired,
     inputName: PropTypes.string.isRequired,
     inputValue: PropTypes.number.isRequired,
     changeFunction: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
 };
+
+export default MyRadioButton;

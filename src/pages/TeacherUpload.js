@@ -1,11 +1,12 @@
 import React, { useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
+import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
-import { CheckSkills } from "../Component/CheckSkills";
-import { MyButton } from "../Component/MyButton";
-import { AlertModal } from "../Component/AlertModal";
+import CheckSkills from "../Component/CheckSkills";
+import MyButton from "../Component/MyButton";
+import AlertModal from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { LoadingForPost } from "../Component/LoadingForPost";
 import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
@@ -259,7 +260,7 @@ function reducer(state, action) {
     }
 }
 
-export const TeacherUpload = ({ userID }) => {
+const TeacherUpload = ({ userID }) => {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
@@ -499,3 +500,8 @@ export const TeacherUpload = ({ userID }) => {
         </>
     );
 };
+TeacherUpload.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default TeacherUpload;

@@ -59,4 +59,4 @@ CourseHeadersInfo.propTypes = {
     view: PropTypes.number.isRequired,
 };
 
-export { CourseHeadersInfo };
+export default CourseHeadersInfo;

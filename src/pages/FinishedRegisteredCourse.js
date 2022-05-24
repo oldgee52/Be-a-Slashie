@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import check from "../images/check.png";
-import { MyButton } from "../Component/MyButton";
+import MyButton from "../Component/MyButton";
 import { useParams, useNavigate } from "react-router-dom";
 import firebaseInit from "../utils/firebase";
 const Container = styled.div`
@@ -45,7 +45,7 @@ const ButtonBox = styled.div`
     }
 `;
 
-export const FinishedRegisteredCourse = () => {
+const FinishedRegisteredCourse = () => {
     const { courseID } = useParams();
     const [course, setCourse] = useState();
     const navigate = useNavigate();
@@ -77,3 +77,5 @@ export const FinishedRegisteredCourse = () => {
         </Container>
     );
 };
+
+export default FinishedRegisteredCourse;

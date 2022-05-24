@@ -46,7 +46,7 @@ const TextArea = styled.div`
     line-height: 1;
 `;
 
-export const AlertModal = ({
+const AlertModal = ({
     content,
     alertIsOpen,
     setAlertIsOpen,
@@ -79,7 +79,7 @@ export const AlertModal = ({
     );
 };
 
-AlertModal.prototype = {
+AlertModal.propTypes = {
     content: PropTypes.string.isRequired,
     alertIsOpen: PropTypes.bool.isRequired,
     setAlertIsOpen: PropTypes.func.isRequired,
@@ -87,3 +87,5 @@ AlertModal.prototype = {
     pathname: PropTypes.string,
     isNavigateToOtherRouter: PropTypes.bool,
 };
+
+export default AlertModal;

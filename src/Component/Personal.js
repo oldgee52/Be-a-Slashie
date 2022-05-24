@@ -104,7 +104,7 @@ const SubTitle = styled.div`
         }
     }
 `;
-export const Personal = () => {
+const Personal = () => {
     const [isActiveArea, setIsActiveArea] = useState();
     const location = useLocation();
     const pathname = location.pathname;
@@ -213,3 +213,5 @@ export const Personal = () => {
         </>
     );
 };
+
+export default Personal;

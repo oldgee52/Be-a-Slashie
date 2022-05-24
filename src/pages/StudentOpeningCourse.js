@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { MyButton } from "../Component/MyButton";
+import NoDataTitle from "../Component/NoDataTitle";
+import MyButton from "../Component/MyButton";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
-import { NoDataBox } from "../Component/NoDataBox";
+import NoDataBox from "../Component/NoDataBox";
 import {
     customDateDisplay,
     getNotMatchTitleArray,
@@ -188,7 +189,7 @@ const SubTitle = styled(Title)`
     padding-bottom: 0;
 `;
 
-export const StudentOpeningCourse = ({ userID }) => {
+const StudentOpeningCourse = ({ userID }) => {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -460,3 +461,9 @@ export const StudentOpeningCourse = ({ userID }) => {
         </>
     );
 };
+
+StudentOpeningCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default StudentOpeningCourse;

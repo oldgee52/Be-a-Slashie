@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
 
 const NoShow = styled.div`
@@ -10,6 +11,12 @@ const NoShow = styled.div`
     }
 `;
 
-export const NoDataTitle = ({ title }) => {
+const NoDataTitle = ({ title }) => {
     return <NoShow>{title}</NoShow>;
 };
+
+NoDataTitle.propTypes = {
+    title: PropTypes.string.isRequired,
+};
+
+export default NoDataTitle;

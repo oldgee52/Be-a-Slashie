@@ -49,4 +49,4 @@ CollectionButton.propTypes = {
     userCollection: PropTypes.bool.isRequired,
 };
 
-export { CollectionButton };
+export default CollectionButton;

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiMail } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
-import { HoverInfo } from "./HoverInfo";
+import HoverInfo from "./HoverInfo";
 
 const TeacherInfo = styled.div`
     display: flex;

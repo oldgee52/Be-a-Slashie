@@ -60,4 +60,4 @@ MessageInputArea.propTypes = {
     handleAlertModal: PropTypes.func.isRequired,
 };
 
-export { MessageInputArea };
+export default MessageInputArea;

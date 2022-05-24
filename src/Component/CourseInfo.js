@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import { FiEye } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
 
@@ -220,3 +221,18 @@ export const CourseInfo = ({
         </>
     );
 };
+
+CourseInfo.propTypes = {
+    courseID: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    teacherName: PropTypes.string,
+    creatDate: PropTypes.string,
+    openingDate: PropTypes.string,
+    view: PropTypes.number,
+    image: PropTypes.string.isRequired,
+    teacherPhoto: PropTypes.string,
+    closedDate: PropTypes.string,
+    label: PropTypes.string,
+};
+
+export default CourseInfo;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { CourseInfo } from "../Component/CourseInfo";
+import CourseInfo from "../Component/CourseInfo";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { SearchInput } from "../Component/SearchInput";
+import SearchInput from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
@@ -147,7 +147,7 @@ const InputDiv = styled.div`
     }
 `;
 
-export const Home = () => {
+const Home = () => {
     const [latestCourse, setLatestCourse] = useState();
     const [popularCourse, setPopularCourse] = useState();
     const [searchField, setSearchField] = useState("");
@@ -290,3 +290,5 @@ export const Home = () => {
         </>
     );
 };
+
+export default Home;

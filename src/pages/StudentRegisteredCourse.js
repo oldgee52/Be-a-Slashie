@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
-import { CourseInfo } from "../Component/CourseInfo";
+import CourseInfo from "../Component/CourseInfo";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { NoDataTitle } from "../Component/NoDataTitle";
+import NoDataTitle from "../Component/NoDataTitle";
 import { Loading } from "../Component/Loading";
 import { customDateDisplay } from "../utils/functions";
+import PropTypes from "prop-types";
 
 const Container = styled.div`
     display: flex;
@@ -76,7 +77,7 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const StudentRegisteredCourse = ({ userID }) => {
+const StudentRegisteredCourse = ({ userID }) => {
     const [registeredCourse, setRegisteredCourse] = useState();
     const [isShow, setIsShow] = useState([true, false, false]);
 
@@ -168,3 +169,9 @@ export const StudentRegisteredCourse = ({ userID }) => {
         </>
     );
 };
+
+StudentRegisteredCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default StudentRegisteredCourse;

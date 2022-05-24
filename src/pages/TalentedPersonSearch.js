@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { CheckSkills } from "../Component/CheckSkills";
+import CheckSkills from "../Component/CheckSkills";
 import { Footer } from "../Component/Footer";
 import { Loading } from "../Component/Loading";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { SearchInput } from "../Component/SearchInput";
+import NoDataTitle from "../Component/NoDataTitle";
+import SearchInput from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 import { findUniqueOutcomeWithUid } from "../utils/functions";
@@ -175,7 +175,7 @@ const UserSkillName = styled.div`
     }
 `;
 
-export const TalentedPersonSearch = () => {
+const TalentedPersonSearch = () => {
     const [searchField, setSearchField] = useState("");
     const [allUsers, setAllUsers] = useState();
     const [searchUsers, setSearchUsers] = useState([]);
@@ -374,3 +374,5 @@ export const TalentedPersonSearch = () => {
         </>
     );
 };
+
+export default TalentedPersonSearch;

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { FiSearch } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
 
@@ -69,7 +70,7 @@ const DeleteButton = styled.span`
     }
 `;
 
-export const SearchInput = ({
+const SearchInput = ({
     searchField,
     setSearchField,
     changeValueCallback,
@@ -92,3 +93,13 @@ export const SearchInput = ({
         </SearchFrom>
     );
 };
+
+SearchInput.propTypes = {
+    searchField: PropTypes.string.isRequired,
+    setSearchField: PropTypes.func.isRequired,
+    changeValueCallback: PropTypes.func.isRequired,
+    searchCallback: PropTypes.func,
+    placeholderText: PropTypes.string.isRequired,
+};
+
+export default SearchInput;

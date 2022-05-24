@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import firebaseInit from "../utils/firebase";
 import { BsPencil } from "react-icons/bs";
 import { breakPoint } from "../utils/breakPoint";
@@ -121,7 +122,7 @@ const ButtonConfirm = styled.button`
     }
 `;
 
-export const InputForModify = ({
+const InputForModify = ({
     inputFields,
     SetInputFields,
     userID,
@@ -239,3 +240,18 @@ export const InputForModify = ({
         </Container>
     );
 };
+
+InputForModify.propTypes = {
+    inputFields: PropTypes.object.isRequired,
+    SetInputFields: PropTypes.func.isRequired,
+    userID: PropTypes.string.isRequired,
+    userInfo: PropTypes.object.isRequired,
+    setUserInfo: PropTypes.func.isRequired,
+    handleDisable: PropTypes.bool.isRequired,
+    setHandleDisable: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    targetName: PropTypes.string.isRequired,
+    inputText: PropTypes.bool.isRequired,
+};
+
+export default InputForModify;

@@ -2,22 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
-import { MyButton } from "../Component/MyButton";
-import { TextInput } from "../Component/TextInput";
+import MyButton from "../Component/MyButton";
+import TextInput from "../Component/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Loading } from "../Component/Loading";
 import { LoadingForPost } from "../Component/LoadingForPost";
-import { MyRadioButton } from "../Component/MyRadioButton";
-import { NoDataBox } from "../Component/NoDataBox";
+import MyRadioButton from "../Component/MyRadioButton";
+import NoDataBox from "../Component/NoDataBox";
 import {
     customDateDisplay,
     handleChangeChangeForArray,
     handleChangeForDeepCopy,
 } from "../utils/functions";
 import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
+import PropTypes from "prop-types";
 
 const Container = styled.div`
     display: flex;
@@ -218,7 +219,7 @@ const LastButtonArea = styled(ButtonArea)`
     border-bottom: none;
 `;
 
-export const TeacherOpeningCourse = ({ userID }) => {
+const TeacherOpeningCourse = ({ userID }) => {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
@@ -615,3 +616,8 @@ export const TeacherOpeningCourse = ({ userID }) => {
         </>
     );
 };
+TeacherOpeningCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default TeacherOpeningCourse;

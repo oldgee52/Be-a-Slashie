@@ -3,10 +3,10 @@ import PaginatedItems from "../Component/Paginate";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { SearchInput } from "../Component/SearchInput";
+import SearchInput from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
+import AlertModal from "../Component/AlertModal";
 import { Loading } from "../Component/Loading";
 import { Footer } from "../Component/Footer";
 
@@ -38,7 +38,7 @@ const InputDiv = styled.div`
     }
 `;
 
-export const Search = () => {
+const Search = () => {
     const q = new URLSearchParams(window.location.search).get("q");
     const [searchField, setSearchField] = useState(
         q === "latest" || q === "popular" || !q ? "" : q,
@@ -139,3 +139,5 @@ export const Search = () => {
         </>
     );
 };
+
+export default Search;

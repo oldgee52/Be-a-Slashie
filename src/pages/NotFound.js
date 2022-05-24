@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import notFound from "../images/notFound.jpg";
-import { MyButton } from "../Component/MyButton";
+import MyButton from "../Component/MyButton";
 import { useNavigate } from "react-router-dom";
 const Container = styled.div`
     display: flex;
@@ -48,7 +48,7 @@ const ButtonBox = styled.div`
     }
 `;
 
-export const NotFound = () => {
+const NotFound = () => {
     const navigate = useNavigate();
     return (
         <Container>
@@ -65,3 +65,5 @@ export const NotFound = () => {
         </Container>
     );
 };
+
+export default NotFound;

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { Loading } from "../Component/Loading";
-import { Skills } from "../Component/Skills";
+import Skills from "../Component/Skills";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
-import { NoDataBox } from "../Component/NoDataBox";
+import NoDataBox from "../Component/NoDataBox";
 
 const Container = styled.div`
     display: flex;
@@ -23,7 +24,7 @@ const Container = styled.div`
     }
 `;
 
-export const StudentGotSkill = ({ userID }) => {
+const StudentGotSkill = ({ userID }) => {
     const [gotSkills, SetGotSkill] = useState();
 
     useEffect(() => {
@@ -63,3 +64,9 @@ export const StudentGotSkill = ({ userID }) => {
         </>
     );
 };
+
+StudentGotSkill.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
+
+export default StudentGotSkill;
