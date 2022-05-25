@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { customDateDisplay } from "../utils/functions";
+import { customDateDisplay } from "../../utils/functions";
 
 const SkillsBox = styled.div`
     display: flex;

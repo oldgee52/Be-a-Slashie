@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import firebaseInit from "../utils/firebase";
+import firebaseInit from "../../utils/firebase";
 import { BsPencil } from "react-icons/bs";
-import { breakPoint } from "../utils/breakPoint";
-import { handleChangeForObject } from "../utils/functions";
+import { breakPoint } from "../../utils/breakPoint";
+import { handleChangeForObject } from "../../utils/functions";
 
 const Container = styled.div`
     width: 80%;

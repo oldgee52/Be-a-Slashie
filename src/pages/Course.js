@@ -7,17 +7,17 @@ import email from "../utils/email";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { customDateDisplay } from "../utils/functions";
-import AlertModal from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
-import { LoadingForPost } from "../Component/LoadingForPost";
+import AlertModal from "../Component/common/AlertModal";
+import { Loading } from "../Component/loading/Loading";
+import { LoadingForPost } from "../Component/loading/LoadingForPost";
 import { Footer } from "../Component/Footer";
-import TeacherInfoArea from "../Component/TeacherInfoArea";
-import CollectionButton from "../Component/CollectionButton";
-import MyButton from "../Component/MyButton";
-import CourseDetailInfo from "../Component/CourseDetailInfo";
-import CourseHeadersInfo from "../Component/CourseHeadersInfo";
-import MessageArea from "../Component/MessageArea";
-import BlurBackgroundArea from "../Component/BlurBackgroundArea";
+import MyButton from "../Component/common/MyButton";
+import TeacherInfoArea from "../Component/coursePage/TeacherInfoArea";
+import CollectionButton from "../Component/coursePage/CollectionButton";
+import CourseDetailInfo from "../Component/coursePage/CourseDetailInfo";
+import CourseHeadersInfo from "../Component/coursePage/CourseHeadersInfo";
+import MessageArea from "../Component/coursePage/MessageArea";
+import BlurBackgroundArea from "../Component/coursePage/BlurBackgroundArea";
 import { useUserInfo } from "../customHooks/useUserInfo";
 
 const AlignCenter = css`

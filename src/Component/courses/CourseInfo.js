@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { FiEye } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
+import { breakPoint } from "../../utils/breakPoint";
 
 const CourseCard = styled.div`
     width: 100%;

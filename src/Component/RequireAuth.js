@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
-import { Loading } from "./Loading";
+import { Loading } from "./loading/Loading";
 
 function RequireAuth({ children, userLogin }) {
     const location = useLocation();

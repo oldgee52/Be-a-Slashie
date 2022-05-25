@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { Loading } from "../Component/Loading";
-import Skills from "../Component/Skills";
-import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
-import NoDataBox from "../Component/NoDataBox";
+import { breakPoint } from "../utils/breakPoint";
+import { Loading } from "../Component/loading/Loading";
+import Skills from "../Component/skills/Skills";
+import NoDataBox from "../Component/common/NoDataBox";
 
 const Container = styled.div`
     display: flex;

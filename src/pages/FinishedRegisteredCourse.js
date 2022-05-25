@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import check from "../images/check.png";
-import MyButton from "../Component/MyButton";
+import MyButton from "../Component/common/MyButton";
 import { useParams, useNavigate } from "react-router-dom";
 import firebaseInit from "../utils/firebase";
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;

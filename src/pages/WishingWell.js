@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import TextInput from "../Component/TextInput";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
+import PropTypes from "prop-types";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { Waypoint } from "react-waypoint";
 import { breakPoint } from "../utils/breakPoint";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import AlertModal from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
+import TextInput from "../Component/common/TextInput";
+import AlertModal from "../Component/common/AlertModal";
+import { Loading } from "../Component/loading/Loading";
 import { Footer } from "../Component/Footer";
-import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { useUserInfo } from "../customHooks/useUserInfo";
-import PropTypes from "prop-types";
+import { useAlertModal } from "../customHooks/useAlertModal";
 
 const Container = styled.div`
     display: flex;

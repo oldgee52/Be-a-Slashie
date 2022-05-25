@@ -2,16 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
-import MyButton from "../Component/MyButton";
-import TextInput from "../Component/TextInput";
+import MyButton from "../Component/common/MyButton";
+import TextInput from "../Component/common/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import AlertModal from "../Component/AlertModal";
+import AlertModal from "../Component/common/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
-import { LoadingForPost } from "../Component/LoadingForPost";
-import MyRadioButton from "../Component/MyRadioButton";
-import NoDataBox from "../Component/NoDataBox";
+import { Loading } from "../Component/loading/Loading";
+import { LoadingForPost } from "../Component/loading/LoadingForPost";
+import MyRadioButton from "../Component/common/MyRadioButton";
+import NoDataBox from "../Component/common/NoDataBox";
 import {
     customDateDisplay,
     handleChangeChangeForArray,

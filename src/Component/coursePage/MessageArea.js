@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../utils/breakPoint";
+import { breakPoint } from "../../utils/breakPoint";
 import MessageInputArea from "./MessageInputArea";
 import MessageReplyArea from "./MessageReplyArea";
-import firebaseInit from "../utils/firebase";
+import firebaseInit from "../../utils/firebase";
 
 const MessageBox = styled.div`
     width: 100%;

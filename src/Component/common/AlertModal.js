@@ -1,9 +1,9 @@
 import React from "react";
 import Modal from "styled-react-modal";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { breakPoint } from "../../utils/breakPoint";
+import { useNavigate } from "react-router-dom";
 
 const StyledModal = Modal.styled`
   width: 80%;

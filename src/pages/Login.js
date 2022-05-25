@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import TextInput from "../Component/TextInput";
 import { useLocation, useNavigate } from "react-router-dom";
-import MyButton from "../Component/MyButton";
-import AlertModal from "../Component/AlertModal";
+import TextInput from "../Component/common/TextInput";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { Footer } from "../Component/Footer";
+import { Loading } from "../Component/loading/Loading";
 import { breakPoint } from "../utils/breakPoint";
-import { Loading } from "../Component/Loading";
 import { handleChangeForObject } from "../utils/functions";
 
 const Box = styled.div`

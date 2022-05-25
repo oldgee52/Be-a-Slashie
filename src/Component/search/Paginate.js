@@ -2,10 +2,10 @@ import ReactPaginate from "react-paginate";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CourseInfo from "./CourseInfo";
+import CourseInfo from "../courses/CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { breakPoint } from "../utils/breakPoint";
-import { customDateDisplay } from "../utils/functions";
+import { breakPoint } from "../../utils/breakPoint";
+import { customDateDisplay } from "../../utils/functions";
 
 const MyPaginate = styled(ReactPaginate).attrs({
     activeClassName: "active",

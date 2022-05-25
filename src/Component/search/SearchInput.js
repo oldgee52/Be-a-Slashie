@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiSearch } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
+import { breakPoint } from "../../utils/breakPoint";
 
 const SearchFrom = styled.form`
     width: 100%;

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import MyButton from "../Component/MyButton";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import NoDataTitle from "../Component/NoDataTitle";
-import AlertModal from "../Component/AlertModal";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import AlertModal from "../Component/common/AlertModal";
+import { Loading } from "../Component/loading/Loading";
+import MyButton from "../Component/common/MyButton";
+import MyRadioButton from "../Component/common/MyRadioButton";
+import HoverInfo from "../Component/common/HoverInfo";
+import NoDataBox from "../Component/common/NoDataBox";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
-import MyRadioButton from "../Component/MyRadioButton";
-import HoverInfo from "../Component/HoverInfo";
-import NoDataBox from "../Component/NoDataBox";
 import { handleChangeForDeepCopy } from "../utils/functions";
 
 const Container = styled.div`

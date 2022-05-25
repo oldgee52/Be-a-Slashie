@@ -3,10 +3,10 @@ import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
-import CourseInfo from "../Component/CourseInfo";
-import { Loading } from "../Component/Loading";
+import CourseInfo from "../Component/courses/CourseInfo";
+import { Loading } from "../Component/loading/Loading";
+import NoDataBox from "../Component/common/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
-import NoDataBox from "../Component/NoDataBox";
 import { useUserInfo } from "../customHooks/useUserInfo";
 const Container = styled.div`
     display: flex;

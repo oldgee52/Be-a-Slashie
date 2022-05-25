@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
+import firebaseInit from "../../utils/firebase";
 
 const MessageInputBox = styled.div`
     display: flex;

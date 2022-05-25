@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import InputForModify from "../Component/InputForModify";
 import { FiUpload } from "react-icons/fi";
 import { breakPoint } from "../utils/breakPoint";
-import AlertModal from "../Component/AlertModal";
+import AlertModal from "../Component/common/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
+import InputForModify from "../Component/common/InputForModify";
+import { Loading } from "../Component/loading/Loading";
+import { LoadingForPost } from "../Component/loading/LoadingForPost";
 import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
-import { LoadingForPost } from "../Component/LoadingForPost";
 
 const Container = styled.div`
     margin-top: 50px;

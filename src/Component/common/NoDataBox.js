@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import MyButton from "../Component/MyButton";
-import NoDataTitle from "../Component/NoDataTitle";
+import MyButton from "../common/MyButton";
+import NoDataTitle from "./NoDataTitle";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
+import { breakPoint } from "../../utils/breakPoint";
 import PropTypes from "prop-types";
 
 const Box = styled.div`

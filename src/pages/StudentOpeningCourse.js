@@ -3,15 +3,15 @@ import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
-import NoDataTitle from "../Component/NoDataTitle";
-import MyButton from "../Component/MyButton";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import AlertModal from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
-import { LoadingForPost } from "../Component/LoadingForPost";
-import NoDataBox from "../Component/NoDataBox";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
+import NoDataBox from "../Component/common/NoDataBox";
+import { Loading } from "../Component/loading/Loading";
+import { LoadingForPost } from "../Component/loading/LoadingForPost";
 import {
     customDateDisplay,
     getNotMatchTitleArray,

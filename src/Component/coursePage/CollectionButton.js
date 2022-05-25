@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { BsBookmark } from "react-icons/bs";
-import { breakPoint } from "../utils/breakPoint";
+import { breakPoint } from "../../utils/breakPoint";
 
 const Collection = styled.button`
     margin-top: 20px;

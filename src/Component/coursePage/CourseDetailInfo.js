@@ -8,9 +8,9 @@ import {
     BsPatchCheck,
     BsCardText,
 } from "react-icons/bs";
-import { breakPoint } from "../utils/breakPoint";
-import Skills from "./Skills";
-import { customDateDisplay } from "../utils/functions";
+import { breakPoint } from "../../utils/breakPoint";
+import Skills from "../skills/Skills";
+import { customDateDisplay } from "../../utils/functions";
 const AboutCourse = styled.div`
     display: flex;
     flex-direction: column;

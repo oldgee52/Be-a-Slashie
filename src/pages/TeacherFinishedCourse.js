@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import CourseInfo from "../Component/CourseInfo";
 import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
-import { Loading } from "../Component/Loading";
-import NoDataBox from "../Component/NoDataBox";
+import CourseInfo from "../Component/courses/CourseInfo";
+import { Loading } from "../Component/loading/Loading";
+import NoDataBox from "../Component/common/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`

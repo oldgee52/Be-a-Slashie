@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Skills from "../Component/Skills";
 import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
-import CourseInfo from "../Component/CourseInfo";
-import { Loading } from "../Component/Loading";
+import Skills from "../Component/skills/Skills";
+import CourseInfo from "../Component/courses/CourseInfo";
+import { Loading } from "../Component/loading/Loading";
 import { Footer } from "../Component/Footer";
-import HoverInfo from "../Component/HoverInfo";
+import HoverInfo from "../Component/common/HoverInfo";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`

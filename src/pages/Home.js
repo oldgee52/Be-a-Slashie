@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import CourseInfo from "../Component/CourseInfo";
-import styled from "styled-components";
+import CourseInfo from "../Component/courses/CourseInfo";
+import styled, { keyframes } from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import SearchInput from "../Component/SearchInput";
+import SearchInput from "../Component/search/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
-import { Loading } from "../Component/Loading";
+import { Loading } from "../Component/loading/Loading";
 import { Footer } from "../Component/Footer";
 import banner from "../images/banner.png";
 import { FaArrowRight } from "react-icons/fa";
-import { keyframes } from "styled-components";
 import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`

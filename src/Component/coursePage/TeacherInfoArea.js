@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiMail } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
-import HoverInfo from "./HoverInfo";
+import { breakPoint } from "../../utils/breakPoint";
+import HoverInfo from "../common/HoverInfo";
 
 const TeacherInfo = styled.div`
     display: flex;

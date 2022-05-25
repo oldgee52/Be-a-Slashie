@@ -4,11 +4,11 @@ import firebaseInit from "../utils/firebase";
 import PropTypes from "prop-types";
 import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
-import CheckSkills from "../Component/CheckSkills";
-import MyButton from "../Component/MyButton";
-import AlertModal from "../Component/AlertModal";
+import CheckSkills from "../Component/skills/CheckSkills";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import { LoadingForPost } from "../Component/LoadingForPost";
+import { LoadingForPost } from "../Component/loading/LoadingForPost";
 import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`

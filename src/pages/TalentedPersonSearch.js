@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import CheckSkills from "../Component/CheckSkills";
-import { Footer } from "../Component/Footer";
-import { Loading } from "../Component/Loading";
-import NoDataTitle from "../Component/NoDataTitle";
-import SearchInput from "../Component/SearchInput";
-import { breakPoint } from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
+import { breakPoint } from "../utils/breakPoint";
+import CheckSkills from "../Component/skills/CheckSkills";
+import { Loading } from "../Component/loading/Loading";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import { Footer } from "../Component/Footer";
+import SearchInput from "../Component/search/SearchInput";
 import { findUniqueOutcomeWithUid } from "../utils/functions";
 
 const Container = styled.div`

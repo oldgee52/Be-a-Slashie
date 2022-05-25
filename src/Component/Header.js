@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
 import firebaseInit from "../utils/firebase";
 import { breakPoint } from "../utils/breakPoint";
@@ -7,7 +8,7 @@ import logo from "../images/logo.png";
 import hamburger_menu from "../images/hamburger_menu.png";
 import cross from "../images/cross.png";
 import { BiLogOut, BiUser } from "react-icons/bi";
-import AlertModal from "./AlertModal";
+import AlertModal from "./common/AlertModal";
 import { useAlertModal } from "../customHooks/useAlertModal";
 import { keyframes } from "styled-components";
 
@@ -286,5 +287,9 @@ function Header({ userID }) {
         </>
     );
 }
+
+Header.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
 
 export default Header;

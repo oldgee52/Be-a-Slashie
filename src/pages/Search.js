@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import PaginatedItems from "../Component/Paginate";
 import styled from "styled-components";
 import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import SearchInput from "../Component/SearchInput";
 import { breakPoint } from "../utils/breakPoint";
 import { useAlertModal } from "../customHooks/useAlertModal";
-import AlertModal from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
+import PaginatedItems from "../Component/search/Paginate";
+import SearchInput from "../Component/search/SearchInput";
+import AlertModal from "../Component/common/AlertModal";
+import { Loading } from "../Component/loading/Loading";
 import { Footer } from "../Component/Footer";
 
 const Container = styled.div`
