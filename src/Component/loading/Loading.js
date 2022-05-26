@@ -80,7 +80,7 @@ const SecondAreaDotB = styled(Dot)`
     animation-name: ${onOff};
 `;
 
-export const Loading = () => {
+function Loading() {
     return (
         <Container>
             <Box>
@@ -95,4 +95,6 @@ export const Loading = () => {
             </Box>
         </Container>
     );
-};
+}
+
+export default Loading;

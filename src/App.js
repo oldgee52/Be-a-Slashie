@@ -37,6 +37,7 @@ function App() {
                 setUserID(user.uid);
                 return;
             }
+            setUserID("");
             setUserLogin("out");
         });
     }, [userID]);
@@ -151,8 +152,6 @@ function App() {
                             path="finished-registered-course/:courseID"
                             element={<FinishedRegisteredCourse />}
                         />
-
-                        {/* <Route path="course" element={<Course />} /> */}
                         <Route path="search" element={<Search />} />
                         <Route path="/" element={<Home />} />
                         <Route path="*" element={<NotFound />} />

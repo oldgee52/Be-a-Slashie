@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
 import { FiMail, FiInfo } from "react-icons/fi";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
 import NoDataTitle from "../Component/common/NoDataTitle";
 import AlertModal from "../Component/common/AlertModal";
-import { Loading } from "../Component/loading/Loading";
+import Loading from "../Component/loading/Loading";
 import MyButton from "../Component/common/MyButton";
 import MyRadioButton from "../Component/common/MyRadioButton";
 import HoverInfo from "../Component/common/HoverInfo";
 import NoDataBox from "../Component/common/NoDataBox";
-import { useAlertModal } from "../customHooks/useAlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
 import { handleChangeForDeepCopy } from "../utils/functions";
 
 const Container = styled.div`
@@ -122,7 +122,7 @@ const IconBox = styled.span`
     }
 `;
 
-const TeacherConfirmRegistration = ({ userID }) => {
+function TeacherConfirmRegistration({ userID }) {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -176,9 +176,10 @@ const TeacherConfirmRegistration = ({ userID }) => {
             );
             setCourses(NewCourse);
         } catch (error) {
-            handleAlertModal("開課失敗");
-            console.log(error);
+            handleAlertModal(`開課失敗，錯誤訊息：${error}`);
         }
+
+        return null;
     };
 
     return (
@@ -187,7 +188,7 @@ const TeacherConfirmRegistration = ({ userID }) => {
                 <Loading />
             ) : (
                 <Container>
-                    {courses?.length === 0 ? (
+                    {courses.length === 0 ? (
                         <NoDataBox
                             marginTop="35px"
                             marginLeft="140px"
@@ -196,15 +197,14 @@ const TeacherConfirmRegistration = ({ userID }) => {
                             path="/personal/teacher-upload-course"
                         />
                     ) : (
-                        courses &&
                         courses.map(course => (
                             <CourseCard key={course.courseID}>
                                 <CourseTitle>{course.title}</CourseTitle>
                                 {course.students.length === 0 ? (
                                     <NoDataTitle title="還沒有人報名喔" />
                                 ) : (
-                                    course.students.map((student, index) => (
-                                        <StudentInfoBoc key={index}>
+                                    course.students.map(student => (
+                                        <StudentInfoBoc key={student.name}>
                                             <Name>
                                                 <span> {student.name} </span>
                                                 <a
@@ -269,7 +269,7 @@ const TeacherConfirmRegistration = ({ userID }) => {
             />
         </>
     );
-};
+}
 
 TeacherConfirmRegistration.propTypes = {
     userID: PropTypes.string.isRequired,

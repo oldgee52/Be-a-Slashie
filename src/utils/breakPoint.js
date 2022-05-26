@@ -2,6 +2,8 @@ const size = {
     desktop: "992px",
 };
 
-export const breakPoint = {
+const breakPoint = {
     desktop: `(min-width: ${size.desktop})`,
 };
+
+export default breakPoint;

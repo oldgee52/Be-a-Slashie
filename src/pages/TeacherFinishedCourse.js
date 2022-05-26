@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../utils/breakPoint";
+import breakPoint from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
 import CourseInfo from "../Component/courses/CourseInfo";
-import { Loading } from "../Component/loading/Loading";
+import Loading from "../Component/loading/Loading";
 import NoDataBox from "../Component/common/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
 
@@ -51,7 +51,7 @@ const CourseDiv = styled.div`
     }
 `;
 
-const TeacherFinishedCourse = ({ userID }) => {
+function TeacherFinishedCourse({ userID }) {
     const [finishedCourses, setFinishedCourses] = useState();
 
     useEffect(() => {
@@ -59,11 +59,11 @@ const TeacherFinishedCourse = ({ userID }) => {
 
         if (userID) {
             firebaseInit.getTeachersStatusCourses(userID, 2).then(data => {
-                const finishedCourses = data.sort(
+                const finishedCoursesRankByDate = data.sort(
                     (a, b) => b.closedDate.seconds - a.closedDate.seconds,
                 );
 
-                if (isMounted) setFinishedCourses(finishedCourses);
+                if (isMounted) setFinishedCourses(finishedCoursesRankByDate);
             });
         }
 
@@ -71,43 +71,40 @@ const TeacherFinishedCourse = ({ userID }) => {
             isMounted = false;
         };
     }, [userID]);
-    return (
-        <>
-            {!finishedCourses ? (
-                <Loading />
-            ) : (
-                <Container>
-                    <CourseArea>
-                        {finishedCourses.length === 0 ? (
-                            <NoDataBox
-                                marginTop="35px"
-                                marginLeft="100px"
-                                title="尚未有課程喔，可以去看看開課方式！"
-                                buttonWord="來去看看"
-                                path="/personal/teacher-upload-course"
+
+    return !finishedCourses ? (
+        <Loading />
+    ) : (
+        <Container>
+            <CourseArea>
+                {finishedCourses.length === 0 ? (
+                    <NoDataBox
+                        marginTop="35px"
+                        marginLeft="100px"
+                        title="尚未有課程喔，可以去看看開課方式！"
+                        buttonWord="來去看看"
+                        path="/personal/teacher-upload-course"
+                    />
+                ) : (
+                    finishedCourses.map(course => (
+                        <CourseDiv key={course.courseID}>
+                            <CourseInfo
+                                image={course.image}
+                                title={course.title}
+                                openingDate={customDateDisplay(
+                                    course.openingDate.seconds * 1000,
+                                )}
+                                closedDate={customDateDisplay(
+                                    course.closedDate.seconds * 1000,
+                                )}
                             />
-                        ) : (
-                            finishedCourses.map(course => (
-                                <CourseDiv key={course.courseID}>
-                                    <CourseInfo
-                                        image={course.image}
-                                        title={course.title}
-                                        openingDate={customDateDisplay(
-                                            course.openingDate.seconds * 1000,
-                                        )}
-                                        closedDate={customDateDisplay(
-                                            course?.closedDate.seconds * 1000,
-                                        )}
-                                    />
-                                </CourseDiv>
-                            ))
-                        )}
-                    </CourseArea>
-                </Container>
-            )}
-        </>
+                        </CourseDiv>
+                    ))
+                )}
+            </CourseArea>
+        </Container>
     );
-};
+}
 
 TeacherFinishedCourse.propTypes = {
     userID: PropTypes.string.isRequired,

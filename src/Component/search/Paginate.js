@@ -2,9 +2,9 @@ import ReactPaginate from "react-paginate";
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CourseInfo from "../courses/CourseInfo";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
-import { breakPoint } from "../../utils/breakPoint";
+import CourseInfo from "../courses/CourseInfo";
+import breakPoint from "../../utils/breakPoint";
 import { customDateDisplay } from "../../utils/functions";
 
 const MyPaginate = styled(ReactPaginate).attrs({
@@ -81,9 +81,11 @@ function PaginatedItems({ itemsPerPage, searchData }) {
     const [itemOffset, setItemOffset] = useState(0);
 
     useEffect(() => {
-        const endOffset = itemOffset + itemsPerPage;
-        setCurrentItems(searchData.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(searchData?.length / itemsPerPage));
+        if (searchData) {
+            const endOffset = itemOffset + itemsPerPage;
+            setCurrentItems(searchData.slice(itemOffset, endOffset));
+            setPageCount(Math.ceil(searchData.length / itemsPerPage));
+        }
     }, [itemOffset, itemsPerPage, searchData]);
 
     const handlePageClick = event => {
@@ -130,7 +132,16 @@ function PaginatedItems({ itemsPerPage, searchData }) {
 
 PaginatedItems.propTypes = {
     itemsPerPage: PropTypes.number.isRequired,
-    searchData: PropTypes.array.isRequired,
+    searchData: PropTypes.arrayOf(
+        PropTypes.shape({
+            courseID: PropTypes.string.isRequired,
+            teacherInfo: PropTypes.shape({
+                name: PropTypes.string.isRequired,
+                photo: PropTypes.string.isRequired,
+            }).isRequired,
+            title: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
 };
 
 export default PaginatedItems;

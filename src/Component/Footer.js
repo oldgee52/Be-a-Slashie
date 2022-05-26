@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
+import breakPoint from "../utils/breakPoint";
 
 const FooterContainer = styled.footer`
     width: 100%;
@@ -43,7 +43,7 @@ const Contact = styled.a`
     }
 `;
 
-export const Footer = () => {
+function Footer() {
     return (
         <FooterContainer>
             <Title>Be a Slashie</Title>
@@ -53,4 +53,6 @@ export const Footer = () => {
             </Contact>
         </FooterContainer>
     );
-};
+}
+
+export default Footer;

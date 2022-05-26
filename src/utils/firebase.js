@@ -256,7 +256,7 @@ const firebaseInit = {
     },
     async getCollection(colRef) {
         const collectionSnapshot = await getDocs(colRef);
-        const data = collectionSnapshot.docs.map(doc => doc.data());
+        const data = collectionSnapshot.docs.map(docData => docData.data());
 
         return data;
     },
@@ -418,7 +418,7 @@ const firebaseInit = {
         );
 
         const courseSnapshot = await getDocs(q);
-        const course = courseSnapshot.docs.map(course => course.data());
+        const course = courseSnapshot.docs.map(courseDoc => courseDoc.data());
         const courseWithTeacherInfo = course.map(async item => {
             const teacherInfo = await this.getCollectionData(
                 "users",
@@ -481,7 +481,7 @@ const firebaseInit = {
             email,
             password,
         );
-        const uid = userCredential.user.uid;
+        const { uid } = userCredential.user;
         setDoc(doc(this.db, "users", uid), {
             email,
             uid,
@@ -505,7 +505,7 @@ const firebaseInit = {
     async setDocForMakeWish(content, userID) {
         const coursesRef = collection(this.db, "wishingWells");
         const docRef = doc(coursesRef);
-        const id = docRef.id;
+        const { id } = docRef;
         const data = {
             content,
             creatDate: Timestamp.now(),
@@ -541,8 +541,8 @@ const firebaseInit = {
     async addDocForHandleStudentsGetSkills(CourseArray) {
         CourseArray.getSkills.forEach(skill => {
             CourseArray.students.forEach(student => {
-                const studentID = student.studentID;
-                const getSkillsStatus = student.getSkillsStatus;
+                const { studentID } = student;
+                const { getSkillsStatus } = student;
                 if (getSkillsStatus === 1)
                     addDoc(
                         collection(this.db, "users", studentID, "getSkills"),
@@ -563,8 +563,8 @@ const firebaseInit = {
     async updateDocForStudentsCourseRegistrationStatus(CourseArray, courseID) {
         CourseArray.forEach(element => {
             element.students.forEach(async student => {
-                const studentID = student.studentID;
-                const registrationStatus = student.registrationStatus;
+                const { studentID } = student;
+                const { registrationStatus } = student;
                 await updateDoc(
                     doc(this.db, "courses", courseID, "students", studentID),
                     {

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const InputLabel = styled.label`
     display: flex;
@@ -54,13 +54,13 @@ const RadioButton = styled.input`
         }
     }
 `;
-const MyRadioButton = ({
+function MyRadioButton({
     inputId,
     inputName,
     inputValue,
     changeFunction,
     title,
-}) => {
+}) {
     return (
         <InputLabel htmlFor={inputId}>
             <RadioButton
@@ -76,7 +76,7 @@ const MyRadioButton = ({
             <Agreement>{title}</Agreement>
         </InputLabel>
     );
-};
+}
 
 MyRadioButton.propTypes = {
     inputId: PropTypes.string.isRequired,

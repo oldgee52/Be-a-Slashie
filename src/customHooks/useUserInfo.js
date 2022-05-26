@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import { collection } from "firebase/firestore";
-export const useUserInfo = () => {
+import firebaseInit from "../utils/firebase";
+
+const useUserInfo = () => {
     const [usersInfo, setUsersInfo] = useState();
 
     useEffect(() => {
@@ -23,3 +24,5 @@ export const useUserInfo = () => {
     }
     return [findUserInfo, usersInfo];
 };
+
+export default useUserInfo;

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiUpload } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
 import AlertModal from "../Component/common/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
 import InputForModify from "../Component/common/InputForModify";
-import { Loading } from "../Component/loading/Loading";
-import { LoadingForPost } from "../Component/loading/LoadingForPost";
-import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -57,7 +57,7 @@ const UploadIcon = styled(FiUpload)`
     border-radius: 100%;
 `;
 
-const Profile = ({ userID }) => {
+function Profile({ userID }) {
     const [userInfo, setUserInfo] = useState();
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
@@ -126,6 +126,7 @@ const Profile = ({ userID }) => {
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserName}
                                 setHandleDisable={setModifyUserName}
+                                handleAlertModal={handleAlertModal}
                                 title="姓名"
                                 targetName="name"
                                 inputText
@@ -138,6 +139,7 @@ const Profile = ({ userID }) => {
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserIntroduction}
                                 setHandleDisable={setModifyUserIntroduction}
+                                handleAlertModal={handleAlertModal}
                                 title="自我介紹"
                                 targetName="selfIntroduction"
                                 inputText={false}
@@ -154,7 +156,7 @@ const Profile = ({ userID }) => {
             {uploadIsLoading ? <LoadingForPost /> : null}
         </>
     );
-};
+}
 
 Profile.propTypes = {
     userID: PropTypes.string.isRequired,

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiMail } from "react-icons/fi";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 import HoverInfo from "../common/HoverInfo";
 
 const TeacherInfo = styled.div`
@@ -44,22 +44,25 @@ const NewFiMail = styled(FiMail)`
     color: rgba(0, 0, 0, 0.3);
 `;
 
-const TeacherInfoArea = props => {
+function TeacherInfoArea({
+    teacherPhoto,
+    teacherEmail,
+    teacherName,
+    teacherIntroduction,
+}) {
     return (
         <TeacherInfo>
-            <TeacherImg src={props.teacherPhoto} />
-            <a href={`mailto:${props.teacherEmail}`}>
+            <TeacherImg src={teacherPhoto} />
+            <a href={`mailto:${teacherEmail}`}>
                 <HoverInfo content="發送E-mail">
                     <NewFiMail />
                 </HoverInfo>
             </a>
-            <TeacherName>{props.teacherName}</TeacherName>
-            <TeacherIntroduction>
-                {props.teacherIntroduction}
-            </TeacherIntroduction>
+            <TeacherName>{teacherName}</TeacherName>
+            <TeacherIntroduction>{teacherIntroduction}</TeacherIntroduction>
         </TeacherInfo>
     );
-};
+}
 
 TeacherInfoArea.propTypes = {
     teacherPhoto: PropTypes.string.isRequired,

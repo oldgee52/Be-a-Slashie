@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 import MessageInputArea from "./MessageInputArea";
 import MessageReplyArea from "./MessageReplyArea";
 import firebaseInit from "../../utils/firebase";
@@ -34,23 +34,23 @@ const MessageHeader = styled.div`
     }
 `;
 
-const MessageArea = ({
+function MessageArea({
     courseData,
     setInputFields,
     inputFields,
     handleAlertModal,
     userID,
     findUserInfo,
-}) => {
+}) {
     const handleReplyMessage = (e, index) => {
-        let data = [...inputFields];
+        const data = [...inputFields];
         data[index][e.target.name] = e.target.value;
         setInputFields(data);
     };
 
     const handleShowReplyInput = index => {
-        let data = [...inputFields];
-        data[index]["isShowReplyInput"] = !data[index]["isShowReplyInput"];
+        const data = [...inputFields];
+        data[index].isShowReplyInput = !data[index].isShowReplyInput;
         setInputFields(data);
     };
 
@@ -66,6 +66,7 @@ const MessageArea = ({
 
         return handleAlertModal("回覆已送出");
     };
+
     return (
         <MessageBox>
             <MessageContainer>
@@ -86,12 +87,26 @@ const MessageArea = ({
             </MessageContainer>
         </MessageBox>
     );
-};
+}
 
 MessageArea.propTypes = {
-    courseData: PropTypes.object.isRequired,
+    courseData: PropTypes.shape({
+        courseID: PropTypes.string,
+        askedQuestions: PropTypes.arrayOf(
+            PropTypes.shape({
+                askedContent: PropTypes.string,
+                askedDate: PropTypes.objectOf(PropTypes.number),
+                askedUserID: PropTypes.string.isRequired,
+            }),
+        ),
+    }).isRequired,
     setInputFields: PropTypes.func.isRequired,
-    inputFields: PropTypes.array.isRequired,
+    inputFields: PropTypes.arrayOf(
+        PropTypes.shape({
+            reply: PropTypes.string,
+            isShowReplyInput: PropTypes.bool,
+        }),
+    ).isRequired,
     handleAlertModal: PropTypes.func.isRequired,
     userID: PropTypes.string.isRequired,
     findUserInfo: PropTypes.func.isRequired,

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { FiSearch } from "react-icons/fi";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const SearchFrom = styled.form`
     width: 100%;
@@ -70,13 +70,13 @@ const DeleteButton = styled.span`
     }
 `;
 
-const SearchInput = ({
+function SearchInput({
     searchField,
     setSearchField,
     changeValueCallback,
     searchCallback,
     placeholderText,
-}) => {
+}) {
     return (
         <SearchFrom onSubmit={searchCallback}>
             <Search viewBox="-5 -5 35 35" onClick={searchCallback} />
@@ -92,13 +92,13 @@ const SearchInput = ({
             />
         </SearchFrom>
     );
-};
+}
 
 SearchInput.propTypes = {
     searchField: PropTypes.string.isRequired,
     setSearchField: PropTypes.func.isRequired,
     changeValueCallback: PropTypes.func.isRequired,
-    searchCallback: PropTypes.func,
+    searchCallback: PropTypes.func.isRequired,
     placeholderText: PropTypes.string.isRequired,
 };
 

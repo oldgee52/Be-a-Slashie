@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { breakPoint } from "../utils/breakPoint";
-import { useAlertModal } from "../customHooks/useAlertModal";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import useAlertModal from "../customHooks/useAlertModal";
 import PaginatedItems from "../Component/search/Paginate";
 import SearchInput from "../Component/search/SearchInput";
 import AlertModal from "../Component/common/AlertModal";
-import { Loading } from "../Component/loading/Loading";
-import { Footer } from "../Component/Footer";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -38,7 +38,7 @@ const InputDiv = styled.div`
     }
 `;
 
-const Search = () => {
+function Search() {
     const q = new URLSearchParams(window.location.search).get("q");
     const [searchField, setSearchField] = useState(
         q === "latest" || q === "popular" || !q ? "" : q,
@@ -57,7 +57,7 @@ const Search = () => {
         firebaseInit
             .getRegisteringCourse()
             .then(data => {
-                let copyForOrderByCreatTimeData = [...data];
+                const copyForOrderByCreatTimeData = [...data];
                 const orderByCreatTime = copyForOrderByCreatTimeData.sort(
                     (a, b) => b.creatTime.seconds - a.creatTime.seconds,
                 );
@@ -72,12 +72,12 @@ const Search = () => {
                     if (q === "popular") return setSearchCourses(orderByView);
                     if (q) {
                         const filteredCourses = orderByCreatTime.filter(
-                            data => {
+                            course => {
                                 return (
-                                    data.title
+                                    course.title
                                         .toLowerCase()
                                         .includes(q.toLowerCase().trim()) ||
-                                    data.courseIntroduction
+                                    course.courseIntroduction
                                         .toLowerCase()
                                         .includes(q.toLowerCase().trim())
                                 );
@@ -91,10 +91,13 @@ const Search = () => {
                         setSearchCourses(filteredCourses);
                     }
                 }
+                return null;
             })
             .then(() => setIsLoading(false));
 
-        return () => (isMounted = false);
+        return () => {
+            isMounted = false;
+        };
     }, [q]);
 
     const handleChange = e => {
@@ -138,6 +141,6 @@ const Search = () => {
             <Footer />
         </>
     );
-};
+}
 
 export default Search;

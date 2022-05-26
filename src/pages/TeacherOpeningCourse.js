@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import MyButton from "../Component/common/MyButton";
-import TextInput from "../Component/common/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
+import PropTypes from "prop-types";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import MyButton from "../Component/common/MyButton";
+import TextInput from "../Component/common/TextInput";
 import AlertModal from "../Component/common/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/loading/Loading";
-import { LoadingForPost } from "../Component/loading/LoadingForPost";
+import useAlertModal from "../customHooks/useAlertModal";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
 import MyRadioButton from "../Component/common/MyRadioButton";
 import NoDataBox from "../Component/common/NoDataBox";
 import {
@@ -17,8 +18,7 @@ import {
     handleChangeChangeForArray,
     handleChangeForDeepCopy,
 } from "../utils/functions";
-import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
-import PropTypes from "prop-types";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -219,7 +219,7 @@ const LastButtonArea = styled(ButtonArea)`
     border-bottom: none;
 `;
 
-const TeacherOpeningCourse = ({ userID }) => {
+function TeacherOpeningCourse({ userID }) {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
@@ -257,15 +257,15 @@ const TeacherOpeningCourse = ({ userID }) => {
                     homeworkTitle,
                 );
 
-            let data = [...courses];
+            const data = [...courses];
             data[index].homework = [...data[index].homework, homeworkInfo];
             data[index].homeworkTitle = "";
             setCourses(data);
             return handleAlertModal("設定作業成功囉!!!");
         } catch (error) {
-            handleAlertModal("設定作業失敗");
-            console.log(error);
+            handleAlertModal(`設定作業失敗，錯誤訊息：${error}`);
         }
+        return null;
     };
     const handleAddMaterials = async (e, index) => {
         const courseID = e.target.id;
@@ -274,14 +274,12 @@ const TeacherOpeningCourse = ({ userID }) => {
         );
 
         const materialsTitle = thisCourse[0].materialsTitle.trim();
-
         const file = thisCourse[0].materialsFile.files?.[0];
         const fileName = `${materialsTitle}_${thisCourse[0].materialsFile.value}`;
 
         if (!materialsTitle || !file)
             return handleAlertModal("請上傳檔案並輸入教材名稱");
 
-        console.log(courseID);
         try {
             const fileURL = await uploadFile(fileName, file);
             const materialData = await firebaseInit.updateDocForCourseMaterials(
@@ -289,7 +287,7 @@ const TeacherOpeningCourse = ({ userID }) => {
                 fileURL,
                 courseID,
             );
-            let data = [...courses];
+            const data = [...courses];
             data[index].materials = [...data[index].materials, materialData];
             data[index].materialsTitle = "";
             data[index].materialsFile = "";
@@ -298,9 +296,10 @@ const TeacherOpeningCourse = ({ userID }) => {
             return handleAlertModal("上傳教材成功囉");
         } catch (error) {
             setIsLoading(false);
-            handleAlertModal("上傳教材失敗");
-            console.log(error);
+            handleAlertModal(`上傳教材失敗，錯誤訊息：${error}`);
         }
+
+        return null;
     };
 
     const handleFinishCourse = async e => {
@@ -330,9 +329,9 @@ const TeacherOpeningCourse = ({ userID }) => {
             return handleAlertModal("結束上課囉!!!");
         } catch (error) {
             setIsLoading(false);
-            handleAlertModal("結束上課失敗");
-            console.log(error);
+            handleAlertModal(`結束上課失敗，錯誤訊息：${error}`);
         }
+        return null;
     };
 
     const handleSkillChange = e => {
@@ -367,7 +366,10 @@ const TeacherOpeningCourse = ({ userID }) => {
                         />
                     ) : (
                         courses?.map((course, index) => (
-                            <CourseCard key={index} show={course.isShow}>
+                            <CourseCard
+                                key={course.courseID}
+                                show={course.isShow}
+                            >
                                 <CourseTitle
                                     onClick={() =>
                                         handleChangeChangeForArray({
@@ -384,8 +386,10 @@ const TeacherOpeningCourse = ({ userID }) => {
                                     )}{" "}
                                     {course.title}
                                 </CourseTitle>
-                                {course.students.map((student, index) => (
-                                    <StudentInfoBoc key={index}>
+                                {course.students.map(student => (
+                                    <StudentInfoBoc
+                                        key={course.courseID + student.name}
+                                    >
                                         <Name>{student.name}</Name>
                                         <StudentUploadHomework>
                                             <Title>上傳作業</Title>
@@ -615,7 +619,7 @@ const TeacherOpeningCourse = ({ userID }) => {
             />
         </>
     );
-};
+}
 TeacherOpeningCourse.propTypes = {
     userID: PropTypes.string.isRequired,
 };

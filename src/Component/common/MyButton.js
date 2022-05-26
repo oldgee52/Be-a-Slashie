@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const Button = styled.button`
     width: ${props => props.width || "100%"};
@@ -27,13 +27,7 @@ const Button = styled.button`
     }
 `;
 
-const MyButton = ({
-    buttonWord,
-    buttonId,
-    clickFunction,
-    width,
-    isDisabled,
-}) => {
+function MyButton({ buttonWord, buttonId, clickFunction, width, isDisabled }) {
     return (
         <Button
             onClick={clickFunction}
@@ -44,7 +38,7 @@ const MyButton = ({
             {buttonWord}
         </Button>
     );
-};
+}
 
 MyButton.propTypes = {
     buttonWord: PropTypes.string.isRequired,
@@ -52,6 +46,12 @@ MyButton.propTypes = {
     clickFunction: PropTypes.func.isRequired,
     width: PropTypes.string,
     isDisabled: PropTypes.bool,
+};
+
+MyButton.defaultProps = {
+    buttonId: "",
+    width: null,
+    isDisabled: false,
 };
 
 export default MyButton;

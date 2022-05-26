@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import firebaseInit from "../utils/firebase";
-import { breakPoint } from "../utils/breakPoint";
+import breakPoint from "../utils/breakPoint";
 import CourseInfo from "../Component/courses/CourseInfo";
-import { Loading } from "../Component/loading/Loading";
+import Loading from "../Component/loading/Loading";
 import NoDataBox from "../Component/common/NoDataBox";
 import { customDateDisplay } from "../utils/functions";
 
@@ -50,7 +50,7 @@ const CourseDiv = styled.div`
         margin-right: 10px;
     }
 `;
-const StudentFinishedCourse = ({ userID }) => {
+function StudentFinishedCourse({ userID }) {
     const [finishedCourses, setFinishedCourses] = useState();
 
     useEffect(() => {
@@ -70,50 +70,46 @@ const StudentFinishedCourse = ({ userID }) => {
                                 b.courseClosedDate.seconds -
                                 a.courseClosedDate.seconds,
                         );
-                    console.log(finishedCourse);
+
                     setFinishedCourses(finishedCourse);
                 });
     }, [userID]);
 
-    return (
-        <>
-            {!finishedCourses ? (
-                <Loading />
-            ) : finishedCourses.length === 0 ? (
-                <Container>
-                    <NoDataBox
-                        marginTop="15px"
-                        marginLeft="150px"
-                        title="還沒有完成的課程喔，快去逛逛！"
-                        buttonWord="來去逛逛"
-                        path="/search?q=latest"
-                    />
-                </Container>
+    return !finishedCourses ? (
+        <Loading />
+    ) : (
+        <Container>
+            {finishedCourses.length === 0 ? (
+                <NoDataBox
+                    marginTop="15px"
+                    marginLeft="150px"
+                    title="還沒有完成的課程喔，快去逛逛！"
+                    buttonWord="來去逛逛"
+                    path="/search?q=latest"
+                />
             ) : (
-                <Container>
-                    <CourseArea>
-                        {finishedCourses.map(course => (
-                            <CourseDiv key={course.courseID}>
-                                <CourseInfo
-                                    teacherPhoto={course.teacherPhoto}
-                                    image={course.image}
-                                    title={course.title}
-                                    teacherName={course.teacherName}
-                                    openingDate={customDateDisplay(
-                                        course.courseOpeningDate.seconds * 1000,
-                                    )}
-                                    closedDate={customDateDisplay(
-                                        course?.courseClosedDate.seconds * 1000,
-                                    )}
-                                />
-                            </CourseDiv>
-                        ))}
-                    </CourseArea>
-                </Container>
+                <CourseArea>
+                    {finishedCourses.map(course => (
+                        <CourseDiv key={course.courseID}>
+                            <CourseInfo
+                                teacherPhoto={course.teacherPhoto}
+                                image={course.image}
+                                title={course.title}
+                                teacherName={course.teacherName}
+                                openingDate={customDateDisplay(
+                                    course.courseOpeningDate.seconds * 1000,
+                                )}
+                                closedDate={customDateDisplay(
+                                    course.courseClosedDate.seconds * 1000,
+                                )}
+                            />
+                        </CourseDiv>
+                    ))}
+                </CourseArea>
             )}
-        </>
+        </Container>
     );
-};
+}
 
 StudentFinishedCourse.propTypes = {
     userID: PropTypes.string.isRequired,

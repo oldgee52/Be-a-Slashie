@@ -91,7 +91,7 @@ const Word = styled.div`
     color: whitesmoke;
 `;
 
-export const LoadingForPost = () => {
+function LoadingForPost() {
     return (
         <Container>
             <Box>
@@ -107,4 +107,6 @@ export const LoadingForPost = () => {
             <Word>資料處理中，請稍後</Word>
         </Container>
     );
-};
+}
+
+export default LoadingForPost;

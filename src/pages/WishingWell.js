@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
 import PropTypes from "prop-types";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { Waypoint } from "react-waypoint";
-import { breakPoint } from "../utils/breakPoint";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
 import TextInput from "../Component/common/TextInput";
 import AlertModal from "../Component/common/AlertModal";
-import { Loading } from "../Component/loading/Loading";
-import { Footer } from "../Component/Footer";
-import { useUserInfo } from "../customHooks/useUserInfo";
-import { useAlertModal } from "../customHooks/useAlertModal";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
+import useUserInfo from "../customHooks/useUserInfo";
+import useAlertModal from "../customHooks/useAlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -195,7 +195,7 @@ const WishDirectionSpan = styled.span`
     color: #ff6100;
 `;
 
-const WishingWell = ({ userID }) => {
+function WishingWell({ userID }) {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -234,36 +234,36 @@ const WishingWell = ({ userID }) => {
             setWishes([wishData, ...wishes]);
             handleAlertModal("許願成功");
         } catch (error) {
-            handleAlertModal("許願失敗，請再試一次");
-            console.log("錯誤", error);
+            handleAlertModal(`許願失敗，請再試一次-錯誤內容:${error}`);
         }
+        return null;
     }
 
     async function handleAddLike(wishId, index, condition) {
         firebaseInit
             .updateDocForHandleWishLike(wishId, userID, condition)
             .then(() => {
-                let data = [...wishes];
+                const data = [...wishes];
                 if (condition) {
-                    const newLikeList = data[index]["like"].filter(
+                    const newLikeList = data[index].like.filter(
                         user => user !== userID,
                     );
-                    data[index]["like"] = newLikeList;
+                    data[index].like = newLikeList;
                     return setWishes(data);
                 }
                 if (!condition) {
-                    if (data[index]["like"]) {
-                        data[index]["like"] = [...data[index]["like"], userID];
+                    if (data[index].like) {
+                        data[index].like = [...data[index].like, userID];
                     }
-                    if (!data[index]["like"]) {
-                        data[index]["like"] = [userID];
+                    if (!data[index].like) {
+                        data[index].like = [userID];
                     }
                     setWishes(data);
                 }
+                return null;
             })
             .catch(error => {
-                console.log(error);
-                handleAlertModal("發生錯誤，請再試一次");
+                handleAlertModal(`發生錯誤-錯誤內容:${error}`);
             });
     }
 
@@ -326,11 +326,11 @@ const WishingWell = ({ userID }) => {
                         <InputArea>
                             <TextInput
                                 value={wishingContent}
-                                handleChange={handleChange}
+                                handleChange={e => handleChange(e)}
                                 name="content"
-                                placeholder={"請輸入你/妳的願望..."}
+                                placeholder="請輸入你/妳的願望..."
                             />
-                            <Button onClick={makeWish}>我要許願</Button>
+                            <Button onClick={() => makeWish()}>我要許願</Button>
                         </InputArea>
                         <DirectionBox>
                             <Title>
@@ -366,7 +366,7 @@ const WishingWell = ({ userID }) => {
             />
         </>
     );
-};
+}
 
 WishingWell.propTypes = {
     userID: PropTypes.string.isRequired,

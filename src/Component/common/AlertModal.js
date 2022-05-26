@@ -2,8 +2,8 @@ import React from "react";
 import Modal from "styled-react-modal";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
 import { useNavigate } from "react-router-dom";
+import breakPoint from "../../utils/breakPoint";
 
 const StyledModal = Modal.styled`
   width: 80%;
@@ -46,14 +46,14 @@ const TextArea = styled.div`
     line-height: 1;
 `;
 
-const AlertModal = ({
+function AlertModal({
     content,
     alertIsOpen,
     setAlertIsOpen,
     courseID,
     isNavigateToOtherRouter,
     pathname,
-}) => {
+}) {
     const navigate = useNavigate();
     function toggleModal() {
         setAlertIsOpen(false);
@@ -66,18 +66,16 @@ const AlertModal = ({
     }
 
     return (
-        <>
-            <StyledModal
-                isOpen={alertIsOpen}
-                onBackgroundClick={toggleModal}
-                onEscapeKeydown={toggleModal}
-            >
-                <TextArea>{content}</TextArea>
-                <ModalButton onClick={toggleModal}>確定</ModalButton>
-            </StyledModal>
-        </>
+        <StyledModal
+            isOpen={alertIsOpen}
+            onBackgroundClick={() => toggleModal()}
+            onEscapeKeydown={() => toggleModal()}
+        >
+            <TextArea>{content}</TextArea>
+            <ModalButton onClick={() => toggleModal()}>確定</ModalButton>
+        </StyledModal>
     );
-};
+}
 
 AlertModal.propTypes = {
     content: PropTypes.string.isRequired,
@@ -86,6 +84,12 @@ AlertModal.propTypes = {
     courseID: PropTypes.string,
     pathname: PropTypes.string,
     isNavigateToOtherRouter: PropTypes.bool,
+};
+
+AlertModal.defaultProps = {
+    courseID: "",
+    pathname: "",
+    isNavigateToOtherRouter: false,
 };
 
 export default AlertModal;

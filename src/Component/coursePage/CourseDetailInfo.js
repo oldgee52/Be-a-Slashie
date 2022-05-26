@@ -8,9 +8,10 @@ import {
     BsPatchCheck,
     BsCardText,
 } from "react-icons/bs";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 import Skills from "../skills/Skills";
 import { customDateDisplay } from "../../utils/functions";
+
 const AboutCourse = styled.div`
     display: flex;
     flex-direction: column;
@@ -100,13 +101,13 @@ const NewBsCardText = styled(BsCardText)`
     margin-right: 5px;
 `;
 
-const CourseDetailInfo = ({
+function CourseDetailInfo({
     minOpeningNumber,
     registrationDeadline,
     openingDate,
     skillsInfo,
     courseIntroduction,
-}) => {
+}) {
     return (
         <AboutCourse>
             <AboutTitle>關於課程</AboutTitle>
@@ -138,13 +139,19 @@ const CourseDetailInfo = ({
             </AboutContent>
         </AboutCourse>
     );
-};
+}
 
 CourseDetailInfo.propTypes = {
     minOpeningNumber: PropTypes.number.isRequired,
     registrationDeadline: PropTypes.number.isRequired,
     openingDate: PropTypes.number.isRequired,
-    skillsInfo: PropTypes.array.isRequired,
+    skillsInfo: PropTypes.arrayOf(
+        PropTypes.shape({
+            image: PropTypes.string.isRequired,
+            skillID: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
     courseIntroduction: PropTypes.string.isRequired,
 };
 

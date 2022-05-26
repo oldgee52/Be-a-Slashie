@@ -9,7 +9,7 @@ export const customDateDisplay = date => {
 
 export const handleChangeForObject = (data, dataKey, dataValue, callback) => {
     if (Object.prototype.toString.call(data) !== "[object Object]") return;
-    let newData = { ...data };
+    const newData = { ...data };
     newData[dataKey] = dataValue;
     callback(newData);
 };
@@ -22,14 +22,19 @@ export const handleChangeChangeForArray = ({
     dataValue,
     callback,
 }) => {
-    let newData = [...data];
-    indexOfSecondData === undefined && dataValue === undefined
-        ? (newData[indexOfFirstData][dataKey] =
-              !newData[indexOfFirstData][dataKey])
-        : indexOfSecondData === undefined
-        ? (newData[indexOfFirstData][dataKey] = dataValue)
-        : (newData[indexOfFirstData][indexOfSecondData][dataKey] = dataValue);
-    callback(newData);
+    const newData = [...data];
+    if (indexOfSecondData === undefined && dataValue === undefined) {
+        newData[indexOfFirstData][dataKey] =
+            !newData[indexOfFirstData][dataKey];
+        return callback(newData);
+    }
+    if (indexOfSecondData === undefined) {
+        newData[indexOfFirstData][dataKey] = dataValue;
+        return callback(newData);
+    }
+    newData[indexOfFirstData][indexOfSecondData][dataKey] = dataValue;
+
+    return callback(newData);
 };
 
 export const handleChangeForDeepCopy = ({
@@ -42,8 +47,9 @@ export const handleChangeForDeepCopy = ({
     const stateCopy = JSON.parse(JSON.stringify(data));
     stateCopy.forEach(courses => {
         courses.students.forEach(student => {
-            if (targetName === `${courses.courseID}_${student.studentID}`)
-                student[dataKey] = dataValue;
+            const studentData = student;
+            if (targetName === `${courses.courseID}_${studentData.studentID}`)
+                studentData[dataKey] = dataValue;
         });
     });
     callback(stateCopy);

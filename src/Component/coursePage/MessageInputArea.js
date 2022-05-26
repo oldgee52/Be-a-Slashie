@@ -35,7 +35,7 @@ const SendButton = styled.button`
     cursor: pointer;
 `;
 
-const MessageInputArea = ({ courseID, userID, handleAlertModal }) => {
+function MessageInputArea({ courseID, userID, handleAlertModal }) {
     const [message, setMessage] = useState("");
 
     async function handSendMessage() {
@@ -44,15 +44,16 @@ const MessageInputArea = ({ courseID, userID, handleAlertModal }) => {
         await firebaseInit.updateDocForSendMessage(courseID, message, userID);
         setMessage("");
         handleAlertModal("留言已送出");
+        return null;
     }
 
     return (
         <MessageInputBox>
             <Input value={message} onChange={e => setMessage(e.target.value)} />
-            <SendButton onClick={handSendMessage}>送出</SendButton>
+            <SendButton onClick={() => handSendMessage()}>送出</SendButton>
         </MessageInputBox>
     );
-};
+}
 
 MessageInputArea.propTypes = {
     userID: PropTypes.string.isRequired,

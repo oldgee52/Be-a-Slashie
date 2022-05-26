@@ -27,7 +27,7 @@ const SkillDate = styled.div`
     padding: 5px 0;
 `;
 
-const Skills = ({ skills }) => {
+function Skills({ skills }) {
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (
@@ -42,10 +42,17 @@ const Skills = ({ skills }) => {
             </SkillsBox>
         ))
     );
-};
+}
 
 Skills.propTypes = {
-    skills: PropTypes.array.isRequired,
+    skills: PropTypes.arrayOf(
+        PropTypes.shape({
+            skillID: PropTypes.string.isRequired,
+            image: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+            getDate: PropTypes.objectOf(PropTypes.number),
+        }),
+    ).isRequired,
 };
 
 export default Skills;

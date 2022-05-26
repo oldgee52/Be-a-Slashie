@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
+import firebaseInit from "../utils/firebase";
 import TextInput from "../Component/common/TextInput";
 import MyButton from "../Component/common/MyButton";
 import AlertModal from "../Component/common/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Footer } from "../Component/Footer";
-import { Loading } from "../Component/loading/Loading";
-import { breakPoint } from "../utils/breakPoint";
+import useAlertModal from "../customHooks/useAlertModal";
+import Footer from "../Component/Footer";
+import Loading from "../Component/loading/Loading";
+import breakPoint from "../utils/breakPoint";
 import { handleChangeForObject } from "../utils/functions";
 
 const Box = styled.div`
@@ -70,7 +70,7 @@ const SingUpDiv = styled.div`
     align-self: flex-start;
 `;
 
-const Login = ({ userLogin }) => {
+function Login({ userLogin }) {
     const [info, setInfo] = useState({
         email: "",
         password: "",
@@ -196,7 +196,7 @@ const Login = ({ userLogin }) => {
                         )}
                         {isLogin && (
                             <MyButton
-                                clickFunction={signIn}
+                                clickFunction={() => signIn()}
                                 buttonWord="登入"
                                 isDisabled={!info.password || !info.email}
                                 width="100%"
@@ -204,7 +204,7 @@ const Login = ({ userLogin }) => {
                         )}
                         {!isLogin && (
                             <MyButton
-                                clickFunction={singUp}
+                                clickFunction={() => singUp()}
                                 buttonWord="註冊"
                                 isDisabled={Object.values(info).some(
                                     value => !value,
@@ -226,7 +226,7 @@ const Login = ({ userLogin }) => {
             <Footer />
         </>
     );
-};
+}
 
 Login.propTypes = {
     userLogin: PropTypes.string.isRequired,

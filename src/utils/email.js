@@ -9,7 +9,8 @@ const email = {
             method: "POST",
         });
         if (response.ok) {
-            return await response.json();
+            const responseData = await response.json();
+            return responseData;
         }
         throw new Error("有問題喔");
     },

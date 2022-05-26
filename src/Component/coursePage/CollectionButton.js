@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { BsBookmark } from "react-icons/bs";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const Collection = styled.button`
     margin-top: 20px;
@@ -32,17 +32,14 @@ const NewBsBookmark = styled(BsBookmark)`
     margin-right: 5px;
 `;
 
-const CollectionButton = ({ handleCollection, userCollection }) => {
+function CollectionButton({ handleCollection, userCollection }) {
     return (
-        <Collection
-            onClick={() => handleCollection()}
-            collected={userCollection}
-        >
+        <Collection onClick={handleCollection} collected={userCollection}>
             <NewBsBookmark />
             <span>{userCollection ? "已收藏" : "加入收藏"}</span>
         </Collection>
     );
-};
+}
 
 CollectionButton.propTypes = {
     handleCollection: PropTypes.func.isRequired,

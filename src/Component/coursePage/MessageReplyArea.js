@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { BsReply } from "react-icons/bs";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 import { customDateDisplay } from "../../utils/functions";
+
 const MessageInputArea = styled.div`
     display: flex;
     flex-direction: column;
@@ -125,7 +126,7 @@ const MessageReplyArea = ({
         askedQuestions &&
         askedQuestions
             .map((question, index) => (
-                <MessageInputArea key={index}>
+                <MessageInputArea key={question.askedDate.seconds}>
                     <CurrentMessageArea>
                         <CurrentMessageTitle>
                             {findUserInfo(question.askedUserID, "name")}
@@ -140,8 +141,8 @@ const MessageReplyArea = ({
                         </CurrentMessageContent>
                     </CurrentMessageArea>
                     {question.replies &&
-                        question.replies.map((reply, index_2) => (
-                            <ReplyMessageArea key={index_2}>
+                        question.replies.map(reply => (
+                            <ReplyMessageArea key={reply.repliedDate.seconds}>
                                 <CurrentMessageTitle>
                                     {findUserInfo(reply.repliedUserID, "name")}
                                 </CurrentMessageTitle>
@@ -172,7 +173,7 @@ const MessageReplyArea = ({
                         )}
                     </IsShowReply>
                     <ReplyMessageInputArea
-                        key={index}
+                        key={question.askedDate.seconds}
                         show={inputFields[index]?.isShowReplyInput}
                     >
                         <ReplyInput
@@ -194,9 +195,20 @@ const MessageReplyArea = ({
 };
 
 MessageReplyArea.propTypes = {
-    askedQuestions: PropTypes.array.isRequired,
+    askedQuestions: PropTypes.arrayOf(
+        PropTypes.shape({
+            askedContent: PropTypes.string,
+            askedDate: PropTypes.objectOf(PropTypes.number),
+            askedUserID: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
     findUserInfo: PropTypes.func.isRequired,
-    inputFields: PropTypes.array.isRequired,
+    inputFields: PropTypes.arrayOf(
+        PropTypes.shape({
+            reply: PropTypes.string,
+            isShowReplyInput: PropTypes.bool,
+        }),
+    ).isRequired,
     handleShowReplyInput: PropTypes.func.isRequired,
     handleReplyMessage: PropTypes.func.isRequired,
     handleSendReplyMessage: PropTypes.func.isRequired,

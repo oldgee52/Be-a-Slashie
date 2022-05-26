@@ -1,15 +1,15 @@
 import React, { useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
 import PropTypes from "prop-types";
-import { breakPoint } from "../utils/breakPoint";
 import { FiUpload } from "react-icons/fi";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
 import CheckSkills from "../Component/skills/CheckSkills";
 import MyButton from "../Component/common/MyButton";
 import AlertModal from "../Component/common/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { LoadingForPost } from "../Component/loading/LoadingForPost";
-import { useFirebaseUploadFile } from "../customHooks/useFirebaseUploadFile";
+import useAlertModal from "../customHooks/useAlertModal";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -260,7 +260,7 @@ function reducer(state, action) {
     }
 }
 
-const TeacherUpload = ({ userID }) => {
+function TeacherUpload({ userID }) {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
@@ -287,7 +287,7 @@ const TeacherUpload = ({ userID }) => {
             dispatch({
                 type: "removeGetSkills",
                 payload: {
-                    getSkills: state.getSkills.filter(e => e !== value),
+                    getSkills: state.getSkills.filter(event => event !== value),
                 },
             });
         }
@@ -332,10 +332,10 @@ const TeacherUpload = ({ userID }) => {
             setIsLoading(false);
             handleAlertModal("上架成功，來看看課程資訊吧！");
         } catch (error) {
-            console.log(error);
             setIsLoading(false);
-            handleAlertModal("發送錯誤，請再試一次");
+            handleAlertModal(`發送錯誤，請再試一次-錯誤內容；${error}`);
         }
+        return null;
     };
 
     return (
@@ -419,7 +419,7 @@ const TeacherUpload = ({ userID }) => {
                         />
                     </LabelForDate>
                     <LabelForDate>
-                        <Title paddingLeft={true}>開班日期</Title>
+                        <Title paddingLeft>開班日期</Title>
                         <InputDate
                             type="date"
                             value={state.openingDate}
@@ -485,8 +485,8 @@ const TeacherUpload = ({ userID }) => {
                     <Button>
                         <MyButton
                             clickFunction={uploadCourse}
-                            buttonWord={"上架課程"}
-                        ></MyButton>
+                            buttonWord="上架課程"
+                        />
                     </Button>
                 </FormArea>
             </Container>
@@ -499,7 +499,7 @@ const TeacherUpload = ({ userID }) => {
             {(isLoading || uploadIsLoading) && <LoadingForPost />}
         </>
     );
-};
+}
 TeacherUpload.propTypes = {
     userID: PropTypes.string.isRequired,
 };

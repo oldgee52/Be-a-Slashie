@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import { Footer } from "./Footer";
+import breakPoint from "../utils/breakPoint";
+import Footer from "./Footer";
 
 const Container = styled.div`
     margin: auto;
@@ -104,10 +104,10 @@ const SubTitle = styled.div`
         }
     }
 `;
-const Personal = () => {
+function Personal() {
     const [isActiveArea, setIsActiveArea] = useState();
     const location = useLocation();
-    const pathname = location.pathname;
+    const { pathname } = location;
 
     useEffect(() => {
         let isMounted = true;
@@ -118,7 +118,9 @@ const Personal = () => {
                 return setIsActiveArea("teacher");
             setIsActiveArea("profile");
         }
-        return () => (isMounted = false);
+        return () => {
+            isMounted = false;
+        };
     }, [pathname]);
 
     function handleRoleChange(role) {
@@ -166,7 +168,7 @@ const Personal = () => {
                         to="teacher-upload-course"
                         onClick={() => handleRoleChange("teacher")}
                     >
-                        <Title active={isActiveArea === "teacher"} last={true}>
+                        <Title active={isActiveArea === "teacher"} last>
                             我是老師
                         </Title>
                     </NavLink>
@@ -212,6 +214,6 @@ const Personal = () => {
             <Footer />
         </>
     );
-};
+}
 
 export default Personal;

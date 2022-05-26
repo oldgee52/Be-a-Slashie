@@ -29,9 +29,9 @@ const IconBox = styled.span`
     }
 `;
 
-const HoverInfo = ({ content, children }) => {
+function HoverInfo({ content, children }) {
     return <IconBox content={content}>{children}</IconBox>;
-};
+}
 
 HoverInfo.propTypes = {
     content: PropTypes.string.isRequired,

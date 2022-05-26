@@ -33,7 +33,7 @@ const NewBsCheck = styled(BsCheck)`
     color: white;
 `;
 
-const CheckSkills = ({ skillID, handleSkillChange, title }) => {
+function CheckSkills({ skillID, handleSkillChange, title }) {
     const [isChecked, setIsChecked] = useState(false);
     return (
         <SkillName
@@ -56,7 +56,7 @@ const CheckSkills = ({ skillID, handleSkillChange, title }) => {
             <SkillNameLabel>{title}</SkillNameLabel>
         </SkillName>
     );
-};
+}
 
 CheckSkills.propTypes = {
     skillID: PropTypes.string.isRequired,

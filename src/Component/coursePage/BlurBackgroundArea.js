@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const BlurImage = styled.div`
     display: flex;
@@ -42,19 +42,15 @@ const BlurImageWeb = styled(BlurImage)`
     }
 `;
 
-const BlurBackgroundArea = ({ img, isWeb, children }) => {
-    return (
-        <>
-            {isWeb ? (
-                <BlurImageWeb img={img}>{children}</BlurImageWeb>
-            ) : (
-                <BlurImage img={img} Web={isWeb}>
-                    {children}
-                </BlurImage>
-            )}
-        </>
+function BlurBackgroundArea({ img, isWeb, children }) {
+    return isWeb ? (
+        <BlurImageWeb img={img}>{children}</BlurImageWeb>
+    ) : (
+        <BlurImage img={img} Web={isWeb}>
+            {children}
+        </BlurImage>
     );
-};
+}
 
 BlurBackgroundArea.propTypes = {
     img: PropTypes.string.isRequired,

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { breakPoint } from "../../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const CourseTitle = styled.div`
     font-size: 20px;
@@ -40,7 +40,7 @@ const InfoTitle = styled.div`
     }
 `;
 
-const CourseHeadersInfo = ({ title, registrationNumber, view }) => {
+function CourseHeadersInfo({ title, registrationNumber, view }) {
     return (
         <>
             <CourseTitle>{title}</CourseTitle>
@@ -51,7 +51,7 @@ const CourseHeadersInfo = ({ title, registrationNumber, view }) => {
             </CourseInfo>
         </>
     );
-};
+}
 
 CourseHeadersInfo.propTypes = {
     title: PropTypes.string.isRequired,

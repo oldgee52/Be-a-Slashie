@@ -1,10 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import MyButton from "../common/MyButton";
-import NoDataTitle from "./NoDataTitle";
 import styled from "styled-components";
-import { breakPoint } from "../../utils/breakPoint";
 import PropTypes from "prop-types";
+import MyButton from "./MyButton";
+import NoDataTitle from "./NoDataTitle";
+import breakPoint from "../../utils/breakPoint";
 
 const Box = styled.div`
     margin: auto;
@@ -19,7 +19,7 @@ const Box = styled.div`
     }
 `;
 
-const NoDataBox = ({ title, buttonWord, marginTop, marginLeft, path }) => {
+function NoDataBox({ title, buttonWord, marginTop, marginLeft, path }) {
     const navigate = useNavigate();
     return (
         <Box marginTop={marginTop} marginLeft={marginLeft}>
@@ -30,7 +30,8 @@ const NoDataBox = ({ title, buttonWord, marginTop, marginLeft, path }) => {
             />
         </Box>
     );
-};
+}
+
 NoDataBox.propTypes = {
     title: PropTypes.string.isRequired,
     buttonWord: PropTypes.string.isRequired,

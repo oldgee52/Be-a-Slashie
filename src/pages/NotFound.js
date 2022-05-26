@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
+import { useNavigate } from "react-router-dom";
+import breakPoint from "../utils/breakPoint";
 import notFound from "../images/notFound.jpg";
 import MyButton from "../Component/common/MyButton";
-import { useNavigate } from "react-router-dom";
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -48,7 +49,7 @@ const ButtonBox = styled.div`
     }
 `;
 
-const NotFound = () => {
+function NotFound() {
     const navigate = useNavigate();
     return (
         <Container>
@@ -64,6 +65,6 @@ const NotFound = () => {
             </>
         </Container>
     );
-};
+}
 
 export default NotFound;

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import firebaseInit from "../utils/firebase";
 import PropTypes from "prop-types";
+import firebaseInit from "../utils/firebase";
 import email from "../utils/email";
-import { breakPoint } from "../utils/breakPoint";
-import { useAlertModal } from "../customHooks/useAlertModal";
+import breakPoint from "../utils/breakPoint";
+import useAlertModal from "../customHooks/useAlertModal";
 import { customDateDisplay } from "../utils/functions";
 import AlertModal from "../Component/common/AlertModal";
-import { Loading } from "../Component/loading/Loading";
-import { LoadingForPost } from "../Component/loading/LoadingForPost";
-import { Footer } from "../Component/Footer";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import Footer from "../Component/Footer";
 import MyButton from "../Component/common/MyButton";
 import TeacherInfoArea from "../Component/coursePage/TeacherInfoArea";
 import CollectionButton from "../Component/coursePage/CollectionButton";
@@ -18,7 +18,7 @@ import CourseDetailInfo from "../Component/coursePage/CourseDetailInfo";
 import CourseHeadersInfo from "../Component/coursePage/CourseHeadersInfo";
 import MessageArea from "../Component/coursePage/MessageArea";
 import BlurBackgroundArea from "../Component/coursePage/BlurBackgroundArea";
-import { useUserInfo } from "../customHooks/useUserInfo";
+import useUserInfo from "../customHooks/useUserInfo";
 
 const AlignCenter = css`
     display: flex;
@@ -77,7 +77,7 @@ const TeacherInfoWebBox = styled.div`
     }
 `;
 
-export const Course = ({ userID }) => {
+function Course({ userID }) {
     const [courseData, setCourseData] = useState();
     const [userCollection, setUserCollection] = useState(false);
     const [inputFields, setInputFields] = useState([]);
@@ -156,7 +156,6 @@ export const Course = ({ userID }) => {
             courseData.openingDate.seconds * 1000,
         );
         const courseTitle = courseData.title;
-        const courseID = courseData.courseID;
 
         const teacherEmailContent = {
             email: teacherEmail,
@@ -235,97 +234,82 @@ export const Course = ({ userID }) => {
     function renderCollectionButton() {
         return (
             <CollectionButton
-                handleCollection={handleCollection}
+                handleCollection={() => handleCollection()}
                 userCollection={userCollection}
             />
         );
     }
 
     function renderRegistrationButton(width) {
+        let buttonWord = "我要報名";
+        if (checkIsTeacher()) {
+            buttonWord = "您是老師喔";
+        }
+        if (checkStudentIsRegistered()) {
+            buttonWord = "你已經報名囉";
+        }
         return (
             <MyButton
-                clickFunction={handleRegistration}
+                clickFunction={e => handleRegistration(e)}
                 isDisabled={checkIsTeacher() || checkStudentIsRegistered()}
-                buttonWord={
-                    checkIsTeacher()
-                        ? "您是老師喔"
-                        : checkStudentIsRegistered()
-                        ? "你已經報名囉"
-                        : "我要報名"
-                }
+                buttonWord={buttonWord}
                 width={width}
             />
         );
     }
 
-    return (
+    return !courseData || !skillsInfo || !usersInfo ? (
+        <Loading />
+    ) : (
         <>
-            {!courseData || !skillsInfo || !usersInfo ? (
-                <Loading />
-            ) : (
-                <>
-                    <>
-                        <Container>
-                            <BlurBackgroundArea
-                                img={courseData.image}
-                                isWeb={false}
-                            >
-                                {renderCourseHeadersInfo()}
-                                {renderTeacherInfoArea()}
-                                {renderCollectionButton()}
-                            </BlurBackgroundArea>
-                            <BlurBackgroundArea img={courseData.image} isWeb>
-                                {renderCourseHeadersInfo()}
-                            </BlurBackgroundArea>
-                            <TeacherInfoWebBox>
-                                {renderTeacherInfoArea()}
-                                {renderCollectionButton()}
-                                <WebButtonBox>
-                                    {renderRegistrationButton("100%")}
-                                </WebButtonBox>
-                            </TeacherInfoWebBox>
-                            <CourseDetailInfo
-                                minOpeningNumber={Number(
-                                    courseData.minOpeningNumber,
-                                )}
-                                registrationDeadline={
-                                    courseData.registrationDeadline.seconds *
-                                    1000
-                                }
-                                openingDate={
-                                    courseData.openingDate.seconds * 1000
-                                }
-                                skillsInfo={skillsInfo}
-                                courseIntroduction={
-                                    courseData.courseIntroduction
-                                }
-                            />
-                            <MessageArea
-                                courseData={courseData}
-                                setInputFields={setInputFields}
-                                inputFields={inputFields}
-                                handleAlertModal={handleAlertModal}
-                                userID={userID}
-                                findUserInfo={findUserInfo}
-                            />
-                        </Container>
-                        <RegisterArea>
-                            {renderRegistrationButton("80%")}
-                        </RegisterArea>
-                        <Footer />
-                    </>
-                    {isLoading && <LoadingForPost />}
-                    <AlertModal
-                        content={alertMessage}
-                        alertIsOpen={alertIsOpen}
-                        setAlertIsOpen={setAlertIsOpen}
-                        isNavigateToOtherRouter={false}
+            <>
+                <Container>
+                    <BlurBackgroundArea img={courseData.image} isWeb={false}>
+                        {renderCourseHeadersInfo()}
+                        {renderTeacherInfoArea()}
+                        {renderCollectionButton()}
+                    </BlurBackgroundArea>
+                    <BlurBackgroundArea img={courseData.image} isWeb>
+                        {renderCourseHeadersInfo()}
+                    </BlurBackgroundArea>
+                    <TeacherInfoWebBox>
+                        {renderTeacherInfoArea()}
+                        {renderCollectionButton()}
+                        <WebButtonBox>
+                            {renderRegistrationButton("100%")}
+                        </WebButtonBox>
+                    </TeacherInfoWebBox>
+                    <CourseDetailInfo
+                        minOpeningNumber={Number(courseData.minOpeningNumber)}
+                        registrationDeadline={
+                            courseData.registrationDeadline.seconds * 1000
+                        }
+                        openingDate={courseData.openingDate.seconds * 1000}
+                        skillsInfo={skillsInfo}
+                        courseIntroduction={courseData.courseIntroduction}
                     />
-                </>
-            )}
+                    <MessageArea
+                        courseData={courseData}
+                        setInputFields={setInputFields}
+                        inputFields={inputFields}
+                        handleAlertModal={handleAlertModal}
+                        userID={userID}
+                        findUserInfo={findUserInfo}
+                    />
+                </Container>
+                <RegisterArea>{renderRegistrationButton("80%")}</RegisterArea>
+                <Footer />
+            </>
+            {isLoading && <LoadingForPost />}
+            <AlertModal
+                content={alertMessage}
+                alertIsOpen={alertIsOpen}
+                setAlertIsOpen={setAlertIsOpen}
+                isNavigateToOtherRouter={false}
+            />
         </>
     );
-};
+}
 
 Course.propTypes = {
     userID: PropTypes.string.isRequired,
