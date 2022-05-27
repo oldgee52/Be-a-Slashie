@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { MyButton } from "../Component/MyButton";
-import firebaseInit from "../utils/firebase";
-import styled from "styled-components";
-import { doc, updateDoc } from "firebase/firestore";
-import { breakPoint } from "../utils/breakPoint";
-import { FiMail, FiInfo } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { AlertModal } from "../Component/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
-import { MyRadioButton } from "../Component/MyRadioButton";
-import { HoverInfo } from "../Component/HoverInfo";
-import { NoDataBox } from "../Component/NoDataBox";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import { FiMail, FiInfo } from "react-icons/fi";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import AlertModal from "../Component/common/AlertModal";
+import Loading from "../Component/loading/Loading";
+import MyButton from "../Component/common/MyButton";
+import MyRadioButton from "../Component/common/MyRadioButton";
+import HoverInfo from "../Component/common/HoverInfo";
+import NoDataBox from "../Component/common/NoDataBox";
+import useAlertModal from "../customHooks/useAlertModal";
+import { handleChangeForDeepCopy } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -121,7 +122,7 @@ const IconBox = styled.span`
     }
 `;
 
-export const TeacherConfirmRegistration = ({ userID }) => {
+function TeacherConfirmRegistration({ userID }) {
     const [courses, setCourses] = useState();
     const [registrationStatus, setRegistrationStatus] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -131,23 +132,20 @@ export const TeacherConfirmRegistration = ({ userID }) => {
     useEffect(() => {
         if (userID)
             firebaseInit.getRegistrationStudent(userID).then(data => {
-                console.log(data);
                 setCourses(data);
                 setRegistrationStatus(data);
             });
     }, [userID]);
 
     const handleChange = e => {
-        const stateCopy = JSON.parse(JSON.stringify(registrationStatus));
-        stateCopy.forEach(card => {
-            card.students.forEach(student => {
-                if (e.target.name === `${card.courseID}_${student.studentID}`)
-                    student.registrationStatus = +e.target.value;
-            });
-        });
-        console.log(stateCopy);
-
-        setRegistrationStatus(stateCopy);
+        const dataChange = {
+            data: registrationStatus,
+            targetName: e.target.name,
+            dataKey: "registrationStatus",
+            dataValue: +e.target.value,
+            callback: setRegistrationStatus,
+        };
+        handleChangeForDeepCopy(dataChange);
     };
 
     const confirmRegistration = async e => {
@@ -166,27 +164,11 @@ export const TeacherConfirmRegistration = ({ userID }) => {
 
         try {
             await Promise.all([
-                updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                    status: 1,
-                }),
-                courseArray.forEach(element => {
-                    element.students.forEach(student => {
-                        const studentID = student.studentID;
-                        const registrationStatus = student.registrationStatus;
-                        updateDoc(
-                            doc(
-                                firebaseInit.db,
-                                "courses",
-                                courseID,
-                                "students",
-                                studentID,
-                            ),
-                            {
-                                registrationStatus,
-                            },
-                        );
-                    });
-                }),
+                firebaseInit.updateDocForTeacherOpeningCourse(courseID),
+                firebaseInit.updateDocForStudentsCourseRegistrationStatus(
+                    courseArray,
+                    courseID,
+                ),
             ]);
             handleAlertModal("開始上課囉!!!");
             const NewCourse = courses.filter(
@@ -194,9 +176,10 @@ export const TeacherConfirmRegistration = ({ userID }) => {
             );
             setCourses(NewCourse);
         } catch (error) {
-            handleAlertModal("開課失敗");
-            console.log(error);
+            handleAlertModal(`開課失敗，錯誤訊息：${error}`);
         }
+
+        return null;
     };
 
     return (
@@ -205,7 +188,7 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                 <Loading />
             ) : (
                 <Container>
-                    {courses?.length === 0 ? (
+                    {courses.length === 0 ? (
                         <NoDataBox
                             marginTop="35px"
                             marginLeft="140px"
@@ -214,15 +197,14 @@ export const TeacherConfirmRegistration = ({ userID }) => {
                             path="/personal/teacher-upload-course"
                         />
                     ) : (
-                        courses &&
                         courses.map(course => (
                             <CourseCard key={course.courseID}>
                                 <CourseTitle>{course.title}</CourseTitle>
                                 {course.students.length === 0 ? (
                                     <NoDataTitle title="還沒有人報名喔" />
                                 ) : (
-                                    course.students.map((student, index) => (
-                                        <StudentInfoBoc key={index}>
+                                    course.students.map(student => (
+                                        <StudentInfoBoc key={student.name}>
                                             <Name>
                                                 <span> {student.name} </span>
                                                 <a
@@ -287,4 +269,10 @@ export const TeacherConfirmRegistration = ({ userID }) => {
             />
         </>
     );
+}
+
+TeacherConfirmRegistration.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default TeacherConfirmRegistration;

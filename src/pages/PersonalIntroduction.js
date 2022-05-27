@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Skills } from "../Component/Skills";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
-import { CourseInfo } from "../Component/CourseInfo";
-import { Loading } from "../Component/Loading";
-import { Footer } from "../Component/Footer";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { HoverInfo } from "../Component/HoverInfo";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import Skills from "../Component/skills/Skills";
+import CourseInfo from "../Component/courses/CourseInfo";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
+import HoverInfo from "../Component/common/HoverInfo";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -18,7 +18,6 @@ const Container = styled.div`
     width: 100%;
 
     padding: 80px 10px 80px 10px;
-    /* min-height: calc(100vh - 100px); */
 
     @media ${breakPoint.desktop} {
         margin: auto;
@@ -33,7 +32,6 @@ const InfoArea = styled.div`
     flex-direction: column;
     justify-content: flex-end;
     width: 100%;
-    /* background: linear-gradient(rgb(2, 170, 176), rgb(0, 205, 172)); */
     background: linear-gradient(#ff8f08, #ff6700);
     border-radius: 5px;
     color: white;
@@ -121,11 +119,10 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const PersonalIntroduction = () => {
+function PersonalIntroduction() {
     const [userInfo, setUserInfo] = useState();
     const [userSkills, setUserSkills] = useState();
     const [userFinishCourses, setUserFinishCourses] = useState();
-    const customDateDisplay = useCustomDateDisplay();
     const uid = new URLSearchParams(window.location.search).get("uid");
     useEffect(() => {
         firebaseInit.getCollectionData("users", uid).then(data => {
@@ -163,64 +160,55 @@ export const PersonalIntroduction = () => {
         });
     }, [uid]);
 
-    console.log(userFinishCourses);
-
-    return (
+    return !userInfo || !userSkills || !userFinishCourses ? (
+        <Loading />
+    ) : (
         <>
-            {!userInfo || !userSkills || !userFinishCourses ? (
-                <Loading />
-            ) : (
-                <>
-                    <Container>
-                        <InfoArea>
-                            <UserPhoto
-                                src={userInfo.photo}
-                                alt={userInfo.name}
-                            />
-                            <UserName>
-                                {userInfo.name}{" "}
-                                <a href={`mailto: ${userInfo.email}`}>
-                                    <HoverInfo content="發送E-mail">
-                                        <FiMail viewBox="-1 -1 24 24" />
-                                    </HoverInfo>
-                                </a>
-                            </UserName>{" "}
-                            <UserIntroduction>
-                                {userInfo.selfIntroduction}
-                            </UserIntroduction>
-                        </InfoArea>
-                        <UserSkills>
-                            <SkillTitle>獲得技能</SkillTitle>
-                            <SkillBox>
-                                <Skills skills={userSkills} />
-                            </SkillBox>
-                        </UserSkills>
-                        <UserSkills>
-                            <SkillTitle>完成課程</SkillTitle>
-                            <CourseBox>
-                                {userFinishCourses.length === 0
-                                    ? "還沒有完成的課程QQ"
-                                    : userFinishCourses?.map(course => (
-                                          <CourseDiv key={course.courseID}>
-                                              <CourseInfo
-                                                  image={course.image}
-                                                  title={course.title}
-                                                  teacherName={
-                                                      course.teacherName
-                                                  }
-                                                  closedDate={customDateDisplay(
-                                                      course?.courseClosedDate
-                                                          .seconds * 1000,
-                                                  )}
-                                              />
-                                          </CourseDiv>
-                                      ))}
-                            </CourseBox>
-                        </UserSkills>
-                    </Container>
-                    <Footer />
-                </>
-            )}
+            <Container>
+                <InfoArea>
+                    <UserPhoto src={userInfo.photo} alt={userInfo.name} />
+                    <UserName>
+                        {userInfo.name}{" "}
+                        <a href={`mailto: ${userInfo.email}`}>
+                            <HoverInfo content="發送E-mail">
+                                <FiMail viewBox="-1 -1 24 24" />
+                            </HoverInfo>
+                        </a>
+                    </UserName>{" "}
+                    <UserIntroduction>
+                        {userInfo.selfIntroduction}
+                    </UserIntroduction>
+                </InfoArea>
+                <UserSkills>
+                    <SkillTitle>獲得技能</SkillTitle>
+                    <SkillBox>
+                        <Skills skills={userSkills} />
+                    </SkillBox>
+                </UserSkills>
+                <UserSkills>
+                    <SkillTitle>完成課程</SkillTitle>
+                    <CourseBox>
+                        {userFinishCourses.length === 0
+                            ? "還沒有完成的課程QQ"
+                            : userFinishCourses?.map(course => (
+                                  <CourseDiv key={course.courseID}>
+                                      <CourseInfo
+                                          image={course.image}
+                                          title={course.title}
+                                          teacherName={course.teacherName}
+                                          closedDate={customDateDisplay(
+                                              course.courseClosedDate.seconds *
+                                                  1000,
+                                          )}
+                                      />
+                                  </CourseDiv>
+                              ))}
+                    </CourseBox>
+                </UserSkills>
+            </Container>
+            <Footer />
         </>
     );
-};
+}
+
+export default PersonalIntroduction;

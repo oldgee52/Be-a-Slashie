@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useAlertModal = () => {
+const useAlertModal = () => {
     const [alertIsOpen, setAlertIsOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
 
@@ -10,3 +10,5 @@ export const useAlertModal = () => {
     }
     return [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal];
 };
+
+export default useAlertModal;

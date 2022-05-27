@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { CourseInfo } from "../Component/CourseInfo";
-import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
+import styled, { keyframes } from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { SearchInput } from "../Component/SearchInput";
-import { breakPoint } from "../utils/breakPoint";
-import { Loading } from "../Component/Loading";
-import { Footer } from "../Component/Footer";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import banner from "../images/banner.png";
 import { FaArrowRight } from "react-icons/fa";
-import { keyframes } from "styled-components";
+import CourseInfo from "../Component/courses/CourseInfo";
+import firebaseInit from "../utils/firebase";
+import SearchInput from "../Component/search/SearchInput";
+import breakPoint from "../utils/breakPoint";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
+import banner from "../images/banner.png";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -28,8 +27,6 @@ const Container = styled.div`
 const Banner = styled.div`
     width: 100%;
     height: 500px;
-
-    /* background-color: #ff6100; */
     background-image: url(${banner});
     background-repeat: no-repeat;
     background-size: cover;
@@ -134,7 +131,6 @@ const CourseArea = styled.div`
 
 const CourseDiv = styled.div`
     width: 100%;
-    /* margin-top: 20px; */
 
     @media ${breakPoint.desktop} {
         width: calc(33.3% - 30px);
@@ -150,17 +146,15 @@ const InputDiv = styled.div`
     }
 `;
 
-export const Home = () => {
+function Home() {
     const [latestCourse, setLatestCourse] = useState();
     const [popularCourse, setPopularCourse] = useState();
     const [searchField, setSearchField] = useState("");
     const navigate = useNavigate();
-    const customDateDisplay = useCustomDateDisplay();
     useEffect(() => {
         let isMounted = true;
 
         firebaseInit.getRegisteringCourse().then(data => {
-            console.log(data);
             const orderByCreatTimeTopThree = data
                 .sort((a, b) => b.creatTime.seconds - a.creatTime.seconds)
                 .slice(0, 3);
@@ -168,131 +162,112 @@ export const Home = () => {
             const orderByViewTopThree = data
                 .sort((a, b) => b.view - a.view)
                 .slice(0, 3);
-            console.log("時間排序", orderByCreatTimeTopThree);
-            console.log("觀看次數排序", orderByViewTopThree);
+
             if (isMounted) {
                 setLatestCourse(orderByCreatTimeTopThree);
                 setPopularCourse(orderByViewTopThree);
             }
 
-            return () => (isMounted = false);
+            return () => {
+                isMounted = false;
+            };
         });
     }, []);
 
-    return (
+    return !latestCourse || !popularCourse ? (
+        <Loading />
+    ) : (
         <>
-            {!latestCourse || !popularCourse ? (
-                <Loading />
-            ) : (
+            <Banner>
+                <InputArea>
+                    <BannerTitle>
+                        夢想，不是浮躁
+                        <br />
+                        而是沈澱和累積
+                    </BannerTitle>
+                    <InputDiv>
+                        <SearchInput
+                            searchField={searchField}
+                            setSearchField={setSearchField}
+                            changeValueCallback={e => {
+                                e.preventDefault();
+                                setSearchField(e.target.value);
+                            }}
+                            searchCallback={e => {
+                                e.preventDefault();
+                                if (!searchField.trim()) return;
+                                navigate(`/search?q=${searchField.trim()}`);
+                            }}
+                            placeholderText="今天想要學習什麼呢..."
+                        />
+                    </InputDiv>
+                </InputArea>
+            </Banner>
+            <Container>
                 <>
-                    <Banner>
-                        <InputArea>
-                            <BannerTitle>
-                                夢想，不是浮躁
-                                <br />
-                                而是沈澱和累積
-                            </BannerTitle>
-                            <InputDiv>
-                                <SearchInput
-                                    searchField={searchField}
-                                    setSearchField={setSearchField}
-                                    changeValueCallback={e => {
-                                        e.preventDefault();
-                                        setSearchField(e.target.value);
-                                    }}
-                                    searchCallback={e => {
-                                        e.preventDefault();
-                                        if (!searchField.trim()) return;
-                                        navigate(
-                                            `/search?q=${searchField.trim()}`,
-                                        );
-                                    }}
-                                    placeholderText="今天想要學習什麼呢..."
+                    <CourseArea>
+                        <Title>最新上架</Title>
+                        <SeeMore onClick={() => navigate(`/search?q=latest`)}>
+                            點我看更多{" "}
+                            <span>
+                                <FaArrowRight />
+                            </span>
+                        </SeeMore>
+
+                        {latestCourse.map(course => (
+                            <CourseDiv key={course.courseID}>
+                                <CourseInfo
+                                    teacherPhoto={course.teacherInfo.photo}
+                                    image={course.image}
+                                    courseID={course.courseID}
+                                    title={course.title}
+                                    teacherName={course.teacherInfo.name}
+                                    view={course.view}
+                                    label="最新"
+                                    creatDate={customDateDisplay(
+                                        course.creatTime.seconds * 1000,
+                                    )}
+                                    openingDate={customDateDisplay(
+                                        course.openingDate.seconds * 1000,
+                                    )}
                                 />
-                            </InputDiv>
-                        </InputArea>
-                    </Banner>
-                    <Container>
-                        <>
-                            <CourseArea>
-                                <Title>最新上架</Title>
-                                <SeeMore
-                                    onClick={() => navigate(`/search?q=latest`)}
-                                >
-                                    點我看更多{" "}
-                                    <span>
-                                        <FaArrowRight />
-                                    </span>
-                                </SeeMore>
+                            </CourseDiv>
+                        ))}
+                    </CourseArea>
+                    <CourseArea>
+                        <Title>熱門課程</Title>
+                        <SeeMore onClick={() => navigate(`/search?q=popular`)}>
+                            點我看更多{" "}
+                            <span>
+                                <FaArrowRight />
+                            </span>
+                        </SeeMore>
 
-                                {latestCourse.map(course => (
-                                    <CourseDiv key={course.courseID}>
-                                        <CourseInfo
-                                            teacherPhoto={
-                                                course.teacherInfo.photo
-                                            }
-                                            image={course.image}
-                                            courseID={course.courseID}
-                                            title={course.title}
-                                            teacherName={
-                                                course.teacherInfo.name
-                                            }
-                                            view={course.view}
-                                            label={"最新"}
-                                            creatDate={customDateDisplay(
-                                                course.creatTime.seconds * 1000,
-                                            )}
-                                            openingDate={customDateDisplay(
-                                                course.openingDate.seconds *
-                                                    1000,
-                                            )}
-                                        />
-                                    </CourseDiv>
-                                ))}
-                            </CourseArea>
-                            <CourseArea>
-                                <Title>熱門課程</Title>
-                                <SeeMore
-                                    onClick={() =>
-                                        navigate(`/search?q=popular`)
-                                    }
-                                >
-                                    點我看更多{" "}
-                                    <span>
-                                        <FaArrowRight />
-                                    </span>
-                                </SeeMore>
-
-                                {popularCourse.map(course => (
-                                    <CourseDiv key={course.courseID}>
-                                        <CourseInfo
-                                            teacherPhoto={
-                                                course.teacherInfo.photo
-                                            }
-                                            image={course.image}
-                                            courseID={course.courseID}
-                                            title={course.title}
-                                            teacherName={
-                                                course.teacherInfo.name
-                                            }
-                                            view={course.view}
-                                            label={"熱門"}
-                                            creatDate={customDateDisplay(
-                                                course.creatTime.seconds * 1000,
-                                            )}
-                                            openingDate={customDateDisplay(
-                                                course.openingDate.seconds *
-                                                    1000,
-                                            )}
-                                        />
-                                    </CourseDiv>
-                                ))}
-                            </CourseArea>
-                        </>
-                    </Container>
-                    <Footer />
+                        {popularCourse.map(course => (
+                            <CourseDiv key={course.courseID}>
+                                <CourseInfo
+                                    teacherPhoto={course.teacherInfo.photo}
+                                    image={course.image}
+                                    courseID={course.courseID}
+                                    title={course.title}
+                                    teacherName={course.teacherInfo.name}
+                                    view={course.view}
+                                    label="熱門"
+                                    creatDate={customDateDisplay(
+                                        course.creatTime.seconds * 1000,
+                                    )}
+                                    openingDate={customDateDisplay(
+                                        course.openingDate.seconds * 1000,
+                                    )}
+                                />
+                            </CourseDiv>
+                        ))}
+                    </CourseArea>
                 </>
-            )}
+            </Container>
+            <Footer />
         </>
     );
-};
+}
+
+export default Home;

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import { CourseInfo } from "../Component/CourseInfo";
+import PropTypes from "prop-types";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { Loading } from "../Component/Loading";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
+import breakPoint from "../utils/breakPoint";
+import firebaseInit from "../utils/firebase";
+import CourseInfo from "../Component/courses/CourseInfo";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import Loading from "../Component/loading/Loading";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -76,10 +77,9 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const StudentRegisteredCourse = ({ userID }) => {
+function StudentRegisteredCourse({ userID }) {
     const [registeredCourse, setRegisteredCourse] = useState();
     const [isShow, setIsShow] = useState([true, false, false]);
-    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         let isMounted = true;
@@ -88,17 +88,17 @@ export const StudentRegisteredCourse = ({ userID }) => {
             firebaseInit
                 .getStudentRegisteredCourseDetails(userID)
                 .then(data => {
-                    console.log(data);
                     if (isMounted) setRegisteredCourse(data);
                 });
 
-        return () => (isMounted = false);
+        return () => {
+            isMounted = false;
+        };
     }, [userID]);
 
     function handleIsShow(i) {
-        let data = [...isShow];
+        const data = [...isShow];
         data[i] = !data[i];
-        console.log(data);
         setIsShow(data);
     }
 
@@ -109,7 +109,6 @@ export const StudentRegisteredCourse = ({ userID }) => {
                 (a, b) =>
                     b.courseOpeningDate.seconds - a.courseOpeningDate.seconds,
             );
-        console.log(showCourses);
 
         return showCourses.length === 0 ? (
             <CourseDiv>
@@ -132,43 +131,45 @@ export const StudentRegisteredCourse = ({ userID }) => {
         );
     }
 
-    return (
-        <>
-            {!registeredCourse ? (
-                <Loading />
-            ) : (
-                <Container>
-                    <CourseTitle onClick={() => handleIsShow(0)}>
-                        {isShow[0] ? (
-                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                        ) : (
-                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                        )}{" "}
-                        審核中
-                    </CourseTitle>
-                    <CourseArea show={isShow[0]}>{renderCourses(0)}</CourseArea>
+    return !registeredCourse ? (
+        <Loading />
+    ) : (
+        <Container>
+            <CourseTitle onClick={() => handleIsShow(0)}>
+                {isShow[0] ? (
+                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                ) : (
+                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                )}{" "}
+                審核中
+            </CourseTitle>
+            <CourseArea show={isShow[0]}>{renderCourses(0)}</CourseArea>
 
-                    <CourseTitle onClick={() => handleIsShow(1)}>
-                        {isShow[1] ? (
-                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                        ) : (
-                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                        )}{" "}
-                        已同意
-                    </CourseTitle>
-                    <CourseArea show={isShow[1]}>{renderCourses(1)}</CourseArea>
+            <CourseTitle onClick={() => handleIsShow(1)}>
+                {isShow[1] ? (
+                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                ) : (
+                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                )}{" "}
+                已同意
+            </CourseTitle>
+            <CourseArea show={isShow[1]}>{renderCourses(1)}</CourseArea>
 
-                    <CourseTitle onClick={() => handleIsShow(2)}>
-                        {isShow[2] ? (
-                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                        ) : (
-                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                        )}{" "}
-                        未同意
-                    </CourseTitle>
-                    <CourseArea show={isShow[2]}>{renderCourses(2)}</CourseArea>
-                </Container>
-            )}
-        </>
+            <CourseTitle onClick={() => handleIsShow(2)}>
+                {isShow[2] ? (
+                    <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                ) : (
+                    <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                )}{" "}
+                未同意
+            </CourseTitle>
+            <CourseArea show={isShow[2]}>{renderCourses(2)}</CourseArea>
+        </Container>
     );
+}
+
+StudentRegisteredCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default StudentRegisteredCourse;

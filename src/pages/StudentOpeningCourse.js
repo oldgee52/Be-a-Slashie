@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import styled from "styled-components";
-import { updateDoc, doc, arrayUnion, Timestamp } from "firebase/firestore";
-import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { MyButton } from "../Component/MyButton";
+import PropTypes from "prop-types";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
-import { LoadingForPost } from "../Component/LoadingForPost";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { NoDataBox } from "../Component/NoDataBox";
+import breakPoint from "../utils/breakPoint";
+import firebaseInit from "../utils/firebase";
+import useAlertModal from "../customHooks/useAlertModal";
+import NoDataTitle from "../Component/common/NoDataTitle";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
+import NoDataBox from "../Component/common/NoDataBox";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import {
+    customDateDisplay,
+    getNotMatchTitleArray,
+    getTheSameTitleArray,
+    handleChangeChangeForArray,
+} from "../utils/functions";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -184,12 +189,11 @@ const SubTitle = styled(Title)`
     padding-bottom: 0;
 `;
 
-export const StudentOpeningCourse = ({ userID }) => {
+function StudentOpeningCourse({ userID }) {
     const [courseDetails, setCourseDetails] = useState();
     const [inputFields, SetInputFields] = useState([]);
-    const [isShow, setIsShow] = useState();
     const [isLoading, setIsLoading] = useState(false);
-    const customDateDisplay = useCustomDateDisplay();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
     useEffect(() => {
@@ -198,16 +202,12 @@ export const StudentOpeningCourse = ({ userID }) => {
             firebaseInit
                 .getStudentOpeningCourseDetails(userID, 1)
                 .then(data => {
-                    console.log(data);
-
                     if (isMounted) {
-                        setCourseDetails(data);
-                        setIsShow(
-                            Array(data.length || 0)
-                                .fill()
-                                .map(() => false),
-                        );
-
+                        const newCoursesArray = data.map(course => ({
+                            ...course,
+                            isShow: false,
+                        }));
+                        setCourseDetails(newCoursesArray);
                         SetInputFields(
                             data.map(item =>
                                 Array(item.allHomework?.length || 0)
@@ -223,26 +223,10 @@ export const StudentOpeningCourse = ({ userID }) => {
         };
     }, [userID]);
 
-    function getUploadedHomework(array1, array2) {
-        return array1?.filter(object1 => {
-            return array2.some(object2 => {
-                return object1.title === object2.title;
-            });
-        });
-    }
-
-    function getNotUploadedHomework(array1, array2) {
-        return array1.filter(object1 => {
-            return !array2.some(object2 => {
-                return object1.title === object2.title;
-            });
-        });
-    }
-
     const renderUploadedHomework = index => {
         const allHomework = courseDetails.map(detail => detail.allHomework);
         const myHomework = courseDetails.map(detail => detail.myHomework);
-        const uploadedHomework = getUploadedHomework(
+        const uploadedHomework = getTheSameTitleArray(
             myHomework[index],
             allHomework[index],
         );
@@ -277,10 +261,48 @@ export const StudentOpeningCourse = ({ userID }) => {
         );
     };
 
+    const handleUploadHomework = async (
+        e,
+        indexOfAllCourse,
+        indexOfAllHomework,
+    ) => {
+        const fileInfo =
+            inputFields?.[`${indexOfAllCourse}`]?.[`${indexOfAllHomework}`]
+                .file;
+        if (!fileInfo) return handleAlertModal("請選擇檔案");
+        const { courseID } = courseDetails[indexOfAllCourse];
+        setIsLoading(true);
+
+        try {
+            const fileURL = await uploadFile(fileInfo.value, fileInfo.files[0]);
+            const homeworkData =
+                await firebaseInit.updateDocForStudentsHomework(
+                    e.target.id,
+                    fileURL,
+                    courseID,
+                    userID,
+                );
+
+            const data = [...courseDetails];
+            data[indexOfAllCourse].myHomework = [
+                ...data[indexOfAllCourse].myHomework,
+                homeworkData,
+            ];
+
+            setCourseDetails(data);
+            setIsLoading(false);
+            return handleAlertModal("上傳成功");
+        } catch (error) {
+            setIsLoading(false);
+            handleAlertModal(`上傳失敗，錯誤內容：${error}`);
+        }
+        return null;
+    };
+
     const renderNotUploadedHomework = index => {
         const allHomework = courseDetails.map(detail => detail.allHomework);
         const myHomework = courseDetails.map(detail => detail.myHomework);
-        const notUploadedHomework = getNotUploadedHomework(
+        const notUploadedHomework = getNotMatchTitleArray(
             allHomework[index],
             myHomework[index],
         );
@@ -301,11 +323,19 @@ export const StudentOpeningCourse = ({ userID }) => {
                                 <FileInput
                                     type="file"
                                     id={`${homework.creatDate.seconds}`}
-                                    onChange={e =>
-                                        handleFileChange(e, index, i)
-                                    }
+                                    onChange={e => {
+                                        const changeData = {
+                                            data: inputFields,
+                                            indexOfFirstData: index,
+                                            indexOfSecondData: i,
+                                            dataKey: "file",
+                                            dataValue: e.target,
+                                            callback: SetInputFields,
+                                        };
+                                        handleChangeChangeForArray(changeData);
+                                    }}
                                 />{" "}
-                                {inputFields[index]?.[i]["file"] ? (
+                                {inputFields[index]?.[i].file.file ? (
                                     `已選擇檔案`
                                 ) : (
                                     <>
@@ -320,7 +350,7 @@ export const StudentOpeningCourse = ({ userID }) => {
                                     clickFunction={e =>
                                         handleUploadHomework(e, index, i)
                                     }
-                                    width="130px"
+                                    width="100%"
                                 />
                             </ButtonArea>
                         </NotUploadHomework>
@@ -330,196 +360,108 @@ export const StudentOpeningCourse = ({ userID }) => {
         );
     };
 
-    const handleFileChange = (e, indexOfAllCourse, indexOfAllHomework) => {
-        let newInputFields = [...inputFields];
-        newInputFields[indexOfAllCourse][indexOfAllHomework]["file"] = e.target;
-        console.log(newInputFields);
-        SetInputFields(newInputFields);
-    };
-
-    const handleUploadHomework = (e, indexOfAllCourse, indexOfAllHomework) => {
-        if (
-            !inputFields?.[`${indexOfAllCourse}`]?.[`${indexOfAllHomework}`][
-                "file"
-            ]
-        )
-            return handleAlertModal("請選擇檔案");
-        console.log(
-            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
-                .files[0],
-        );
-
-        console.log(courseDetails[indexOfAllCourse].courseID);
-
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            e.target.id +
-                inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`][
-                    "file"
-                ].value,
-        );
-
-        const uploadTask = uploadBytesResumable(
-            mountainImagesRef,
-            inputFields[`${indexOfAllCourse}`][`${indexOfAllHomework}`]["file"]
-                .files[0],
-        );
-
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                console.log(error);
-                handleAlertModal("上傳失敗");
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref)
-                    .then(async downloadURL => {
-                        const homeworkData = {
-                            title: e.target.id,
-                            fileURL: downloadURL,
-                            uploadDate: Timestamp.now(),
-                        };
-                        await updateDoc(
-                            doc(
-                                firebaseInit.db,
-                                "courses",
-                                courseDetails[indexOfAllCourse].courseID,
-                                "students",
-                                userID,
-                            ),
-                            {
-                                homework: arrayUnion(homeworkData),
-                            },
-                        );
-                        let data = [...courseDetails];
-                        data[indexOfAllCourse].myHomework = [
-                            ...data[indexOfAllCourse].myHomework,
-                            homeworkData,
-                        ];
-
-                        setCourseDetails(data);
-                        setIsLoading(false);
-                        return handleAlertModal("上傳成功");
-                    })
-                    .catch(error => {
-                        setIsLoading(false);
-                        console.log(error);
-                        handleAlertModal("上傳失敗");
-                    });
-            },
-        );
-    };
-
-    const handleIsShow = index => {
-        let data = [...isShow];
-        data[index] = !data[index];
-        console.log(data);
-        setIsShow(data);
-    };
-
     return (
         <>
             {!courseDetails ? (
                 <Loading />
-            ) : courseDetails.length === 0 ? (
-                <Container>
-                    <NoDataBox
-                        marginTop="35px"
-                        marginLeft="180px"
-                        title="還沒有進行中的課程喔，快去逛逛！"
-                        buttonWord="來去逛逛"
-                        path="/search?q=latest"
-                    />
-                </Container>
             ) : (
                 <Container>
-                    {courseDetails.map((detail, indexOfAllCourse) => (
-                        <CourseCard
-                            key={detail.courseID}
-                            show={isShow?.[indexOfAllCourse]}
-                        >
-                            <CourseTitle
-                                onClick={() => handleIsShow(indexOfAllCourse)}
+                    {courseDetails.length === 0 ? (
+                        <NoDataBox
+                            marginTop="35px"
+                            marginLeft="180px"
+                            title="還沒有進行中的課程喔，快去逛逛！"
+                            buttonWord="來去逛逛"
+                            path="/search?q=latest"
+                        />
+                    ) : (
+                        courseDetails.map((detail, indexOfAllCourse) => (
+                            <CourseCard
+                                key={detail.courseID}
+                                show={detail.isShow}
                             >
-                                {" "}
-                                <span>
-                                    {isShow?.[indexOfAllCourse] ? (
-                                        <MdKeyboardArrowDown viewBox="0 -4 24 24" />
-                                    ) : (
-                                        <MdKeyboardArrowRight viewBox="0 -4 24 24" />
-                                    )}{" "}
-                                </span>
-                                {detail.title} <Name>{detail.teacherName}</Name>
-                            </CourseTitle>
-                            <Title>課程作業</Title>
-                            {detail.allHomework.length === 0 ? (
-                                <NoDataTitle title="尚無作業" />
-                            ) : (
-                                <AllHomeworkArea>
-                                    <SubTitle>已完成</SubTitle>
-                                    {renderUploadedHomework(indexOfAllCourse)}
-                                    <SubTitle>未完成</SubTitle>
-                                    {renderNotUploadedHomework(
-                                        indexOfAllCourse,
-                                    )}
-                                </AllHomeworkArea>
-                            )}{" "}
-                            <Title>課程資料</Title>
-                            {detail.materials.length === 0 ? (
-                                <NoDataTitle title="無資料" />
-                            ) : (
-                                <AllHomeworkArea>
-                                    <StudentUploadHomework>
-                                        {detail.materials.map(material => (
-                                            <UploadHomework
-                                                key={material.creatDate.seconds}
-                                            >
-                                                <HomeworkTitle>
-                                                    {material.title}
-                                                </HomeworkTitle>
-
-                                                <HomeworkDate>
-                                                    {customDateDisplay(
+                                <CourseTitle
+                                    onClick={() => {
+                                        const changeData = {
+                                            data: courseDetails,
+                                            indexOfFirstData: indexOfAllCourse,
+                                            dataKey: "isShow",
+                                            callback: setCourseDetails,
+                                        };
+                                        handleChangeChangeForArray(changeData);
+                                    }}
+                                >
+                                    <span>
+                                        {detail.isShow ? (
+                                            <MdKeyboardArrowDown viewBox="0 -4 24 24" />
+                                        ) : (
+                                            <MdKeyboardArrowRight viewBox="0 -4 24 24" />
+                                        )}{" "}
+                                    </span>
+                                    {detail.title}{" "}
+                                    <Name>{detail.teacherName}</Name>
+                                </CourseTitle>
+                                <Title>課程作業</Title>
+                                {detail.allHomework.length === 0 ? (
+                                    <NoDataTitle title="尚無作業" />
+                                ) : (
+                                    <AllHomeworkArea>
+                                        <SubTitle>已完成</SubTitle>
+                                        {renderUploadedHomework(
+                                            indexOfAllCourse,
+                                        )}
+                                        <SubTitle>未完成</SubTitle>
+                                        {renderNotUploadedHomework(
+                                            indexOfAllCourse,
+                                        )}
+                                    </AllHomeworkArea>
+                                )}{" "}
+                                <Title>課程資料</Title>
+                                {detail.materials.length === 0 ? (
+                                    <NoDataTitle title="無資料" />
+                                ) : (
+                                    <AllHomeworkArea>
+                                        <StudentUploadHomework>
+                                            {detail.materials.map(material => (
+                                                <UploadHomework
+                                                    key={
                                                         material.creatDate
-                                                            .seconds * 1000,
-                                                    )}
-                                                </HomeworkDate>
+                                                            .seconds
+                                                    }
+                                                >
+                                                    <HomeworkTitle>
+                                                        {material.title}
+                                                    </HomeworkTitle>
 
-                                                <HomeworkDownload>
-                                                    <a
-                                                        href={material.fileURL}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                    >
-                                                        下載
-                                                    </a>
-                                                </HomeworkDownload>
-                                            </UploadHomework>
-                                        ))}
-                                    </StudentUploadHomework>
-                                </AllHomeworkArea>
-                            )}
-                        </CourseCard>
-                    ))}
+                                                    <HomeworkDate>
+                                                        {customDateDisplay(
+                                                            material.creatDate
+                                                                .seconds * 1000,
+                                                        )}
+                                                    </HomeworkDate>
+
+                                                    <HomeworkDownload>
+                                                        <a
+                                                            href={
+                                                                material.fileURL
+                                                            }
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                        >
+                                                            下載
+                                                        </a>
+                                                    </HomeworkDownload>
+                                                </UploadHomework>
+                                            ))}
+                                        </StudentUploadHomework>
+                                    </AllHomeworkArea>
+                                )}
+                            </CourseCard>
+                        ))
+                    )}
                 </Container>
             )}
-            {isLoading ? <LoadingForPost /> : ""}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
@@ -527,4 +469,10 @@ export const StudentOpeningCourse = ({ userID }) => {
             />
         </>
     );
+}
+
+StudentOpeningCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default StudentOpeningCourse;

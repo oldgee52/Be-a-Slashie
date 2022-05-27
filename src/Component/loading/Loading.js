@@ -2,24 +2,18 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 
 const Container = styled.div`
-    height: 1000px;
-    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: auto;
     position: fixed;
+    left: 50%;
+    top: -100px;
     z-index: 10;
-    background-color: rgba(0, 0, 0, 0.5);
-    top: 0;
-    left: 0;
 `;
 const Box = styled.div`
-    transform: translateX(-40px);
-    align-self: flex-start;
-    position: absolute;
-    top: 250px;
-    left: 50%;
+    transform: translateX(-35px);
 `;
 
 const spin = keyframes`
@@ -86,12 +80,7 @@ const SecondAreaDotB = styled(Dot)`
     animation-name: ${onOff};
 `;
 
-const Word = styled.div`
-    margin-top: -400px;
-    color: whitesmoke;
-`;
-
-export const LoadingForPost = () => {
+function Loading() {
     return (
         <Container>
             <Box>
@@ -104,7 +93,8 @@ export const LoadingForPost = () => {
                     <SecondAreaDotB />
                 </SecondArea>
             </Box>
-            <Word>資料處理中，請稍後</Word>
         </Container>
     );
-};
+}
+
+export default Loading;

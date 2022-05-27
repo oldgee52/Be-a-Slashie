@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import { FiEye } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
+import breakPoint from "../../utils/breakPoint";
 
 const CourseCard = styled.div`
     width: 100%;
@@ -68,7 +69,6 @@ const CourseTitle = styled.div`
 `;
 
 const CourseName = styled.h4`
-    /* width: 60vw; */
     font-size: 20px;
     font-weight: 700;
     line-height: 1.2;
@@ -154,7 +154,7 @@ const Label = styled.div`
     }
 `;
 
-export const CourseInfo = ({
+function CourseInfo({
     courseID,
     title,
     teacherName,
@@ -165,59 +165,72 @@ export const CourseInfo = ({
     teacherPhoto,
     closedDate,
     label,
-}) => {
+}) {
     const [isMouseEnter, setIsMouseEnter] = useState(false);
     const navigate = useNavigate();
     return (
-        <>
-            <CourseCard
-                onClick={() => {
-                    if (courseID) navigate(`/course?courseID=${courseID}`);
-                }}
-                isLink={courseID}
-                onMouseEnter={() => {
-                    setIsMouseEnter(true);
-                }}
-                onMouseLeave={() => {
-                    setIsMouseEnter(false);
-                }}
-            >
-                {teacherPhoto && (
-                    <TeacherPhoto
-                        src={teacherPhoto}
-                        alt={teacherName}
-                    ></TeacherPhoto>
+        <CourseCard
+            onClick={() => {
+                if (courseID) navigate(`/course?courseID=${courseID}`);
+            }}
+            isLink={courseID}
+            onMouseEnter={() => {
+                setIsMouseEnter(true);
+            }}
+            onMouseLeave={() => {
+                setIsMouseEnter(false);
+            }}
+        >
+            {teacherPhoto && (
+                <TeacherPhoto src={teacherPhoto} alt={teacherName} />
+            )}
+            <ImgBox>
+                {label && <Label>{label}</Label>}
+                <CourseImg alt={title} src={image} mouseEnter={isMouseEnter} />
+            </ImgBox>
+            <CourseTitle>
+                <CourseName>{title}</CourseName>
+                <TeacherName>{teacherName}</TeacherName>
+                {creatDate && <TeacherName>上架日期 {creatDate}</TeacherName>}
+                {openingDate && (
+                    <TeacherName>開課日期 {openingDate}</TeacherName>
                 )}
-                <ImgBox>
-                    {label && <Label>{label}</Label>}
-                    <CourseImg
-                        alt={title}
-                        src={image}
-                        mouseEnter={isMouseEnter}
-                    />
-                </ImgBox>
-                <CourseTitle>
-                    <CourseName>{title}</CourseName>
-                    <TeacherName>{teacherName}</TeacherName>
-                    {creatDate && (
-                        <TeacherName>上架日期 {creatDate}</TeacherName>
-                    )}
-                    {openingDate && (
-                        <TeacherName>開課日期 {openingDate}</TeacherName>
-                    )}
-                    {closedDate && (
-                        <TeacherName>完課日期 {closedDate}</TeacherName>
-                    )}
-                </CourseTitle>
-                {view === undefined ? (
-                    ""
-                ) : (
-                    <View>
-                        <FiEye viewBox="0 -3 24 24 " />
-                        <ViewSpan>{view}</ViewSpan>
-                    </View>
-                )}
-            </CourseCard>
-        </>
+                {closedDate && <TeacherName>完課日期 {closedDate}</TeacherName>}
+            </CourseTitle>
+            {view === undefined || view <= 0 ? (
+                ""
+            ) : (
+                <View>
+                    <FiEye viewBox="0 -3 24 24 " />
+                    <ViewSpan>{view}</ViewSpan>
+                </View>
+            )}
+        </CourseCard>
     );
+}
+
+CourseInfo.propTypes = {
+    courseID: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    teacherName: PropTypes.string,
+    creatDate: PropTypes.string,
+    openingDate: PropTypes.string,
+    view: PropTypes.number,
+    image: PropTypes.string.isRequired,
+    teacherPhoto: PropTypes.string,
+    closedDate: PropTypes.string,
+    label: PropTypes.string,
 };
+
+CourseInfo.defaultProps = {
+    courseID: "",
+    teacherName: "",
+    creatDate: "",
+    openingDate: "",
+    view: -1,
+    teacherPhoto: "",
+    closedDate: "",
+    label: "",
+};
+
+export default CourseInfo;

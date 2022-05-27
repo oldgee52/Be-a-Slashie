@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { doc, updateDoc } from "firebase/firestore";
-import firebaseInit from "../utils/firebase";
+import PropTypes from "prop-types";
 import { BsPencil } from "react-icons/bs";
-import { breakPoint } from "../utils/breakPoint";
+import firebaseInit from "../../utils/firebase";
+import breakPoint from "../../utils/breakPoint";
+import { handleChangeForObject } from "../../utils/functions";
 
 const Container = styled.div`
     width: 80%;
@@ -33,7 +34,6 @@ const Title = styled.div`
 
 const Input = styled.input`
     width: 50%;
-    /* height: 50px; */
     padding: 5px;
     font-family: "Noto Sans TC", "微軟正黑體", "Arial", sans-serif;
     font-size: 16px;
@@ -122,7 +122,7 @@ const ButtonConfirm = styled.button`
     }
 `;
 
-export const InputForModify = ({
+function InputForModify({
     inputFields,
     SetInputFields,
     userID,
@@ -133,34 +133,39 @@ export const InputForModify = ({
     title,
     targetName,
     inputText,
-}) => {
+    handleAlertModal,
+}) {
     const inputElement = useRef(null);
 
     useEffect(() => {
         if (!handleDisable) inputElement.current.focus();
     }, [inputElement, handleDisable]);
 
-    function handleInputChange(e) {
-        let data = { ...inputFields };
-        data[e.target.name] = e.target.value;
-        SetInputFields(data);
-    }
+    const handleInputChange = e =>
+        handleChangeForObject(
+            inputFields,
+            e.target.name,
+            e.target.value,
+            SetInputFields,
+        );
 
     async function handleModifyClick(state, modifyCallback, modifyContent) {
         if (state) {
             modifyCallback(false);
         }
         if (!state) {
-            const modifyData = {
-                [`${modifyContent}`]: inputFields[modifyContent],
-            };
-            console.log(modifyData);
-            await updateDoc(doc(firebaseInit.db, "users", userID), modifyData);
-            setUserInfo(prve => ({
-                ...prve,
-                [`${modifyContent}`]: inputFields[modifyContent],
-            }));
-            modifyCallback(true);
+            firebaseInit
+                .handleProfileInfoChange(modifyContent, inputFields, userID)
+                .then(() => {
+                    setUserInfo(prve => ({
+                        ...prve,
+                        [`${modifyContent}`]: inputFields[modifyContent],
+                    }));
+                    modifyCallback(true);
+                })
+                .catch(error =>
+                    handleAlertModal(`發生錯誤，錯誤內容：${error}`),
+                );
         }
     }
 
@@ -179,7 +184,7 @@ export const InputForModify = ({
                 <Input
                     value={inputFields[targetName]}
                     name={targetName}
-                    onChange={e => handleInputChange(e)}
+                    onChange={handleInputChange}
                     disabled={handleDisable}
                     ref={inputElement}
                 />
@@ -187,10 +192,10 @@ export const InputForModify = ({
                 <InputText
                     value={inputFields[targetName]}
                     name={targetName}
-                    onChange={e => handleInputChange(e)}
+                    onChange={handleInputChange}
                     disabled={handleDisable}
                     onFocus={e => {
-                        const value = e.target.value;
+                        const { value } = e.target;
                         e.target.value = "";
                         e.target.value = value;
                     }}
@@ -237,4 +242,24 @@ export const InputForModify = ({
             )}
         </Container>
     );
+}
+
+InputForModify.propTypes = {
+    inputFields: PropTypes.objectOf(PropTypes.string).isRequired,
+    SetInputFields: PropTypes.func.isRequired,
+    userID: PropTypes.string.isRequired,
+    userInfo: PropTypes.shape({
+        name: PropTypes.string,
+        photo: PropTypes.string,
+        selfIntroduction: PropTypes.string,
+    }).isRequired,
+    setUserInfo: PropTypes.func.isRequired,
+    handleDisable: PropTypes.bool.isRequired,
+    setHandleDisable: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    targetName: PropTypes.string.isRequired,
+    inputText: PropTypes.bool.isRequired,
+    handleAlertModal: PropTypes.func.isRequired,
 };
+
+export default InputForModify;

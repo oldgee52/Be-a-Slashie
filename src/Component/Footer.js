@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
 import { FiMail } from "react-icons/fi";
+import breakPoint from "../utils/breakPoint";
 
 const FooterContainer = styled.footer`
     width: 100%;
@@ -13,7 +13,6 @@ const FooterContainer = styled.footer`
     font-size: 12px;
     color: whitesmoke;
     flex-direction: column;
-    /* margin-top: 50px; */
     @media ${breakPoint.desktop} {
         flex-direction: row;
         justify-content: center;
@@ -44,7 +43,7 @@ const Contact = styled.a`
     }
 `;
 
-export const Footer = () => {
+function Footer() {
     return (
         <FooterContainer>
             <Title>Be a Slashie</Title>
@@ -54,4 +53,6 @@ export const Footer = () => {
             </Contact>
         </FooterContainer>
     );
-};
+}
+
+export default Footer;

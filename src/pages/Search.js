@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import PaginatedItems from "../Component/Paginate";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { SearchInput } from "../Component/SearchInput";
-import { breakPoint } from "../utils/breakPoint";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
-import { Footer } from "../Component/Footer";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import useAlertModal from "../customHooks/useAlertModal";
+import PaginatedItems from "../Component/search/Paginate";
+import SearchInput from "../Component/search/SearchInput";
+import AlertModal from "../Component/common/AlertModal";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
 
 const Container = styled.div`
     display: flex;
@@ -38,7 +38,7 @@ const InputDiv = styled.div`
     }
 `;
 
-export const Search = () => {
+function Search() {
     const q = new URLSearchParams(window.location.search).get("q");
     const [searchField, setSearchField] = useState(
         q === "latest" || q === "popular" || !q ? "" : q,
@@ -57,15 +57,12 @@ export const Search = () => {
         firebaseInit
             .getRegisteringCourse()
             .then(data => {
-                console.log(data);
-                let copyForOrderByCreatTimeData = [...data];
+                const copyForOrderByCreatTimeData = [...data];
                 const orderByCreatTime = copyForOrderByCreatTimeData.sort(
                     (a, b) => b.creatTime.seconds - a.creatTime.seconds,
                 );
-                console.log("排序時間", orderByCreatTime);
 
                 const orderByView = data.sort((a, b) => b.view - a.view);
-                console.log("排序次數", orderByView);
 
                 if (isMounted) {
                     window.scrollTo({ top: 0 });
@@ -75,18 +72,18 @@ export const Search = () => {
                     if (q === "popular") return setSearchCourses(orderByView);
                     if (q) {
                         const filteredCourses = orderByCreatTime.filter(
-                            data => {
+                            course => {
                                 return (
-                                    data.title
+                                    course.title
                                         .toLowerCase()
                                         .includes(q.toLowerCase().trim()) ||
-                                    data.courseIntroduction
+                                    course.courseIntroduction
                                         .toLowerCase()
                                         .includes(q.toLowerCase().trim())
                                 );
                             },
                         );
-                        console.log(filteredCourses);
+
                         if (filteredCourses.length === 0) {
                             handleAlertModal("暫無此類課程，提供您熱門課程！");
                             return navigate("/search?q=popular");
@@ -94,10 +91,13 @@ export const Search = () => {
                         setSearchCourses(filteredCourses);
                     }
                 }
+                return null;
             })
             .then(() => setIsLoading(false));
 
-        return () => (isMounted = false);
+        return () => {
+            isMounted = false;
+        };
     }, [q]);
 
     const handleChange = e => {
@@ -141,4 +141,6 @@ export const Search = () => {
             <Footer />
         </>
     );
-};
+}
+
+export default Search;

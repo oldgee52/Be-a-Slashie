@@ -1,28 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import {
-    updateDoc,
-    doc,
-    addDoc,
-    collection,
-    arrayUnion,
-    Timestamp,
-} from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { breakPoint } from "../utils/breakPoint";
-import { MyButton } from "../Component/MyButton";
-import { TextInput } from "../Component/TextInput";
 import { FiUpload } from "react-icons/fi";
 import { MdKeyboardArrowRight, MdKeyboardArrowDown } from "react-icons/md";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { AlertModal } from "../Component/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
-import { LoadingForPost } from "../Component/LoadingForPost";
-import { MyRadioButton } from "../Component/MyRadioButton";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { NoDataBox } from "../Component/NoDataBox";
+import PropTypes from "prop-types";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import MyButton from "../Component/common/MyButton";
+import TextInput from "../Component/common/TextInput";
+import AlertModal from "../Component/common/AlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import MyRadioButton from "../Component/common/MyRadioButton";
+import NoDataBox from "../Component/common/NoDataBox";
+import {
+    customDateDisplay,
+    handleChangeChangeForArray,
+    handleChangeForDeepCopy,
+} from "../utils/functions";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -121,19 +117,6 @@ const InputArea = styled.div`
     }
 `;
 
-const InputLabel = styled.label`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-
-    cursor: pointer;
-`;
-
-const Agreement = styled.div`
-    margin-left: 5px;
-`;
-
 const StudentUploadHomework = styled.div`
     display: flex;
     margin: 10px 0;
@@ -172,18 +155,10 @@ const HomeworkDate = styled.div`
     }
 `;
 const HomeworkDownload = styled.div`
-    /* font-size: 12px; */
     width: 30%;
     text-align: right;
     color: #ff6100;
-    /* height: 15px;
-    padding: 2px;
 
-    text-align: center;
-    background-color: rgb(0 190 164);
-    color: whitesmoke;
-    border-radius: 10px;
-    cursor: pointer; */
     @media ${breakPoint.desktop} {
         width: 10%;
     }
@@ -244,11 +219,11 @@ const LastButtonArea = styled(ButtonArea)`
     border-bottom: none;
 `;
 
-export const TeacherOpeningCourse = ({ userID }) => {
+function TeacherOpeningCourse({ userID }) {
     const [courses, setCourses] = useState();
     const [isLoading, setIsLoading] = useState(false);
     const imageInputRef = useRef();
-    const customDateDisplay = useCustomDateDisplay();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
 
@@ -264,7 +239,6 @@ export const TeacherOpeningCourse = ({ userID }) => {
                 }));
 
                 setCourses(newCoursesArray);
-                console.log(newCoursesArray);
             });
     }, [userID]);
 
@@ -277,29 +251,21 @@ export const TeacherOpeningCourse = ({ userID }) => {
 
         if (!homeworkTitle) return handleAlertModal("請輸入作業名稱");
         try {
-            await updateDoc(
-                doc(firebaseInit.db, "courses", courseID, "teacher", "info"),
-                {
-                    homework: arrayUnion({
-                        title: homeworkTitle,
-                        creatDate: Timestamp.now(),
-                    }),
-                },
-            );
+            const homeworkInfo =
+                await firebaseInit.updateDocForTeacherAddHomework(
+                    courseID,
+                    homeworkTitle,
+                );
 
-            let data = [...courses];
-            data[index].homework = [
-                ...data[index].homework,
-                { title: homeworkTitle, creatDate: Timestamp.now() },
-            ];
+            const data = [...courses];
+            data[index].homework = [...data[index].homework, homeworkInfo];
             data[index].homeworkTitle = "";
-
             setCourses(data);
             return handleAlertModal("設定作業成功囉!!!");
         } catch (error) {
-            handleAlertModal("設定作業失敗");
-            console.log(error);
+            handleAlertModal(`設定作業失敗，錯誤訊息：${error}`);
         }
+        return null;
     };
     const handleAddMaterials = async (e, index) => {
         const courseID = e.target.id;
@@ -308,87 +274,36 @@ export const TeacherOpeningCourse = ({ userID }) => {
         );
 
         const materialsTitle = thisCourse[0].materialsTitle.trim();
-
         const file = thisCourse[0].materialsFile.files?.[0];
-        console.log(file);
+        const fileName = `${materialsTitle}_${thisCourse[0].materialsFile.value}`;
+
         if (!materialsTitle || !file)
             return handleAlertModal("請上傳檔案並輸入教材名稱");
 
-        console.log(courseID);
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            thisCourse[0].materialsFile.value,
-        );
-        const uploadTask = uploadBytesResumable(mountainImagesRef, file);
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                console.log(error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(
-                    async downloadURL => {
-                        const materialData = {
-                            title: materialsTitle,
-                            creatDate: Timestamp.now(),
-                            fileURL: downloadURL,
-                        };
-                        try {
-                            await updateDoc(
-                                doc(
-                                    firebaseInit.db,
-                                    "courses",
-                                    courseID,
-                                    "teacher",
-                                    "info",
-                                ),
-                                {
-                                    materials: arrayUnion(materialData),
-                                },
-                            );
+        try {
+            const fileURL = await uploadFile(fileName, file);
+            const materialData = await firebaseInit.updateDocForCourseMaterials(
+                materialsTitle,
+                fileURL,
+                courseID,
+            );
+            const data = [...courses];
+            data[index].materials = [...data[index].materials, materialData];
+            data[index].materialsTitle = "";
+            data[index].materialsFile = "";
+            setCourses(data);
+            setIsLoading(false);
+            return handleAlertModal("上傳教材成功囉");
+        } catch (error) {
+            setIsLoading(false);
+            handleAlertModal(`上傳教材失敗，錯誤訊息：${error}`);
+        }
 
-                            let data = [...courses];
-                            data[index].materials = [
-                                ...data[index].materials,
-                                materialData,
-                            ];
-                            data[index].materialsTitle = "";
-                            data[index].materialsFile = "";
-
-                            setCourses(data);
-                            setIsLoading(false);
-                            return handleAlertModal("上傳教材成功囉");
-                        } catch (error) {
-                            setIsLoading(false);
-                            handleAlertModal("上傳教材失敗");
-                            console.log(error);
-                        }
-                    },
-                );
-            },
-        );
+        return null;
     };
 
     const handleFinishCourse = async e => {
         const courseID = e.target.id;
-        console.log(courseID);
-
         const courseArray = courses.filter(item => item.courseID === courseID);
         const checkGetSkillsStatus = courseArray[0].students
             .map(student => student.getSkillsStatus)
@@ -401,31 +316,8 @@ export const TeacherOpeningCourse = ({ userID }) => {
         try {
             setIsLoading(true);
             await Promise.all([
-                updateDoc(doc(firebaseInit.db, "courses", courseID), {
-                    status: 2,
-                    closedDate: new Date(),
-                }),
-
-                courseArray[0].getSkills.forEach(skill => {
-                    courseArray[0].students.forEach(student => {
-                        const studentID = student.studentID;
-                        const getSkillsStatus = student.getSkillsStatus;
-                        if (getSkillsStatus === 1)
-                            addDoc(
-                                collection(
-                                    firebaseInit.db,
-                                    "users",
-                                    studentID,
-                                    "getSkills",
-                                ),
-                                {
-                                    getDate: new Date(),
-                                    skillID: skill,
-                                    userID: student.studentID,
-                                },
-                            );
-                    });
-                }),
+                firebaseInit.updateDocForTeacherFinishCourse(courseID),
+                firebaseInit.addDocForHandleStudentsGetSkills(courseArray[0]),
             ]).then(() => {
                 const NewCourses = courses.filter(
                     item => item.courseID !== courseID,
@@ -437,46 +329,25 @@ export const TeacherOpeningCourse = ({ userID }) => {
             return handleAlertModal("結束上課囉!!!");
         } catch (error) {
             setIsLoading(false);
-            handleAlertModal("結束上課失敗");
-            console.log(error);
+            handleAlertModal(`結束上課失敗，錯誤訊息：${error}`);
         }
-    };
-
-    const handleTitleChange = (index, event) => {
-        let data = [...courses];
-        data[index][event.target.name] = event.target.value;
-
-        setCourses(data);
-    };
-
-    const handleFileChange = (index, event) => {
-        let data = [...courses];
-        data[index][event.target.name] = event.target;
-        console.log(data);
-
-        setCourses(data);
+        return null;
     };
 
     const handleSkillChange = e => {
-        const stateCopy = JSON.parse(JSON.stringify(courses));
-        stateCopy.forEach(courses => {
-            courses.students.forEach(student => {
-                if (
-                    e.target.name === `${courses.courseID}_${student.studentID}`
-                ) {
-                    student.getSkillsStatus = +e.target.value;
-                }
-            });
-        });
-        console.log(stateCopy);
-
-        setCourses(stateCopy);
+        const dataChange = {
+            data: courses,
+            targetName: e.target.name,
+            dataKey: "getSkillsStatus",
+            dataValue: +e.target.value,
+            callback: setCourses,
+        };
+        handleChangeForDeepCopy(dataChange);
     };
 
-    const handleIsShow = index => {
-        let data = [...courses];
-        data[index]["isShow"] = !data[index]["isShow"];
-        setCourses(data);
+    const changeData = {
+        data: courses,
+        callback: setCourses,
     };
 
     return (
@@ -495,9 +366,18 @@ export const TeacherOpeningCourse = ({ userID }) => {
                         />
                     ) : (
                         courses?.map((course, index) => (
-                            <CourseCard key={index} show={course.isShow}>
+                            <CourseCard
+                                key={course.courseID}
+                                show={course.isShow}
+                            >
                                 <CourseTitle
-                                    onClick={() => handleIsShow(index)}
+                                    onClick={() =>
+                                        handleChangeChangeForArray({
+                                            ...changeData,
+                                            indexOfFirstData: index,
+                                            dataKey: "isShow",
+                                        })
+                                    }
                                 >
                                     {course.isShow ? (
                                         <MdKeyboardArrowDown viewBox="0 -4 24 24" />
@@ -506,8 +386,10 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                     )}{" "}
                                     {course.title}
                                 </CourseTitle>
-                                {course.students.map((student, index) => (
-                                    <StudentInfoBoc key={index}>
+                                {course.students.map(student => (
+                                    <StudentInfoBoc
+                                        key={course.courseID + student.name}
+                                    >
                                         <Name>{student.name}</Name>
                                         <StudentUploadHomework>
                                             <Title>上傳作業</Title>
@@ -623,7 +505,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                             name="materialsFile"
                                             id={`${course.courseID}`}
                                             onChange={e =>
-                                                handleFileChange(index, e)
+                                                handleChangeChangeForArray({
+                                                    ...changeData,
+                                                    indexOfFirstData: index,
+                                                    dataKey: e.target.name,
+                                                    dataValue: e.target,
+                                                })
                                             }
                                         />
                                         {course.materialsFile ? (
@@ -639,7 +526,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.materialsTitle}
                                         name="materialsTitle"
                                         handleChange={e =>
-                                            handleTitleChange(index, e)
+                                            handleChangeChangeForArray({
+                                                ...changeData,
+                                                indexOfFirstData: index,
+                                                dataKey: e.target.name,
+                                                dataValue: e.target.value,
+                                            })
                                         }
                                     />
                                     <ButtonArea>
@@ -689,7 +581,12 @@ export const TeacherOpeningCourse = ({ userID }) => {
                                         value={course.homeworkTitle}
                                         name="homeworkTitle"
                                         handleChange={e =>
-                                            handleTitleChange(index, e)
+                                            handleChangeChangeForArray({
+                                                ...changeData,
+                                                indexOfFirstData: index,
+                                                dataKey: e.target.name,
+                                                dataValue: e.target.value,
+                                            })
                                         }
                                     />
                                     <ButtonArea>
@@ -714,7 +611,7 @@ export const TeacherOpeningCourse = ({ userID }) => {
                     )}
                 </Container>
             )}
-            {isLoading ? <LoadingForPost /> : ""}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
             <AlertModal
                 content={alertMessage}
                 alertIsOpen={alertIsOpen}
@@ -722,4 +619,9 @@ export const TeacherOpeningCourse = ({ userID }) => {
             />
         </>
     );
+}
+TeacherOpeningCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default TeacherOpeningCourse;

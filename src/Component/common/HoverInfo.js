@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
+
 const IconBox = styled.span`
     cursor: pointer;
     margin-right: 5px;
@@ -27,6 +29,13 @@ const IconBox = styled.span`
     }
 `;
 
-export const HoverInfo = ({ content, children }) => {
+function HoverInfo({ content, children }) {
     return <IconBox content={content}>{children}</IconBox>;
+}
+
+HoverInfo.propTypes = {
+    content: PropTypes.string.isRequired,
+    children: PropTypes.element.isRequired,
 };
+
+export default HoverInfo;

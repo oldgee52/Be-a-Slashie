@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import PropTypes from "prop-types";
 import { NavLink, useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import firebaseInit from "../utils/firebase";
-import { breakPoint } from "../utils/breakPoint";
-import logo from "../images/logo.png";
-import hamburger_menu from "../images/hamburger_menu.png";
-import cross from "../images/cross.png";
-import profile from "../images/profile.png";
 import { BiLogOut, BiUser } from "react-icons/bi";
-import { AlertModal } from "./AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { keyframes } from "styled-components";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import logo from "../images/logo.png";
+import hamburgerMenu from "../images/hamburger_menu.png";
+import cross from "../images/cross.png";
+import AlertModal from "./common/AlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
 
 const HeaderContainer = styled.nav`
     width: 100%;
@@ -61,9 +59,6 @@ const NavShowBackground = styled.div`
     top: 0;
     z-index: 4;
     right: ${props => (props.show ? "0" : "-1000px")};
-    /* z-index: ${props => (props.show ? "4" : "-10")}; */
-    /* display: ${props => (props.show ? "block" : "none")}; */
-    /* opacity: ${props => (props.show ? "1" : "0")}; */
     transition-duration: 0.5s;
     @media ${breakPoint.desktop} {
         display: none;
@@ -207,7 +202,8 @@ function Header({ userID }) {
     }
 
     function handleSignOut() {
-        signOut(firebaseInit.auth)
+        firebaseInit
+            .handleSingOut()
             .then(() => {
                 handleAlertModal("已登出成功");
                 navigate("/");
@@ -224,13 +220,16 @@ function Header({ userID }) {
     ];
     return (
         <>
-            <NavShowBackground show={isShow} onClick={handleMobileNavShow} />
+            <NavShowBackground
+                show={isShow}
+                onClick={() => handleMobileNavShow()}
+            />
             <HeaderContainer>
                 <NavLink to="/">
                     <LogoImg
                         src={logo}
                         alt="logo"
-                        onClick={handleLinkToOtherRouterNavShow}
+                        onClick={() => handleLinkToOtherRouterNavShow()}
                     />
                 </NavLink>
 
@@ -240,7 +239,9 @@ function Header({ userID }) {
                             {({ isActive }) => (
                                 <HeaderContent
                                     active={isActive}
-                                    onClick={handleLinkToOtherRouterNavShow}
+                                    onClick={() =>
+                                        handleLinkToOtherRouterNavShow()
+                                    }
                                 >
                                     {router.title}
                                 </HeaderContent>
@@ -264,7 +265,7 @@ function Header({ userID }) {
                     )}
                     <NavLink to="personal/profile">
                         <RightAreaBox
-                            onClick={handleLinkToOtherRouterNavShow}
+                            onClick={() => handleLinkToOtherRouterNavShow()}
                             maxWidth={userID ? "105px" : "70px"}
                             duration={userID ? "0.4s" : "0.2s"}
                         >
@@ -276,8 +277,8 @@ function Header({ userID }) {
                     </NavLink>
 
                     <MenuImg
-                        src={isShow ? cross : hamburger_menu}
-                        onClick={handleMobileNavShow}
+                        src={isShow ? cross : hamburgerMenu}
+                        onClick={() => handleMobileNavShow()}
                         alt="menu"
                     />
                 </RightArea>
@@ -290,5 +291,9 @@ function Header({ userID }) {
         </>
     );
 }
+
+Header.propTypes = {
+    userID: PropTypes.string.isRequired,
+};
 
 export default Header;

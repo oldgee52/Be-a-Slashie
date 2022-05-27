@@ -1,9 +1,9 @@
 import React from "react";
 import Modal from "styled-react-modal";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+import breakPoint from "../../utils/breakPoint";
 
 const StyledModal = Modal.styled`
   width: 80%;
@@ -44,22 +44,19 @@ const TextArea = styled.div`
     padding: 0 20px;
     white-space: pre-line;
     line-height: 1;
-    /* padding-left: 50px;
-    padding-top: 50px; */
 `;
 
-export const AlertModal = ({
+function AlertModal({
     content,
     alertIsOpen,
     setAlertIsOpen,
     courseID,
     isNavigateToOtherRouter,
     pathname,
-}) => {
+}) {
     const navigate = useNavigate();
     function toggleModal() {
         setAlertIsOpen(false);
-        console.log(isNavigateToOtherRouter);
         if (courseID) {
             navigate(`/course?courseID=${courseID}`);
         }
@@ -69,20 +66,18 @@ export const AlertModal = ({
     }
 
     return (
-        <>
-            <StyledModal
-                isOpen={alertIsOpen}
-                onBackgroundClick={toggleModal}
-                onEscapeKeydown={toggleModal}
-            >
-                <TextArea>{content}</TextArea>
-                <ModalButton onClick={toggleModal}>確定</ModalButton>
-            </StyledModal>
-        </>
+        <StyledModal
+            isOpen={alertIsOpen}
+            onBackgroundClick={() => toggleModal()}
+            onEscapeKeydown={() => toggleModal()}
+        >
+            <TextArea>{content}</TextArea>
+            <ModalButton onClick={() => toggleModal()}>確定</ModalButton>
+        </StyledModal>
     );
-};
+}
 
-AlertModal.prototype = {
+AlertModal.propTypes = {
     content: PropTypes.string.isRequired,
     alertIsOpen: PropTypes.bool.isRequired,
     setAlertIsOpen: PropTypes.func.isRequired,
@@ -90,3 +85,11 @@ AlertModal.prototype = {
     pathname: PropTypes.string,
     isNavigateToOtherRouter: PropTypes.bool,
 };
+
+AlertModal.defaultProps = {
+    courseID: "",
+    pathname: "",
+    isNavigateToOtherRouter: false,
+};
+
+export default AlertModal;

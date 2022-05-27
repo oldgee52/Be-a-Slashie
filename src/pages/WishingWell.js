@@ -1,23 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { TextInput } from "../Component/TextInput";
 import styled from "styled-components";
-import {
-    arrayRemove,
-    arrayUnion,
-    collection,
-    doc,
-    setDoc,
-    Timestamp,
-    updateDoc,
-} from "firebase/firestore";
-import firebaseInit from "../utils/firebase";
-import { Waypoint } from "react-waypoint";
-import { breakPoint } from "../utils/breakPoint";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { AlertModal } from "../Component/AlertModal";
-import { Loading } from "../Component/Loading";
-import { Footer } from "../Component/Footer";
+import PropTypes from "prop-types";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
+import { Waypoint } from "react-waypoint";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import TextInput from "../Component/common/TextInput";
+import AlertModal from "../Component/common/AlertModal";
+import Loading from "../Component/loading/Loading";
+import Footer from "../Component/Footer";
+import useUserInfo from "../customHooks/useUserInfo";
+import useAlertModal from "../customHooks/useAlertModal";
 
 const Container = styled.div`
     display: flex;
@@ -202,28 +195,19 @@ const WishDirectionSpan = styled.span`
     color: #ff6100;
 `;
 
-export const WishingWell = ({ userID }) => {
+function WishingWell({ userID }) {
     const [wishingContent, setWishingContent] = useState("");
     const [wishes, setWishes] = useState([]);
-    const [usersInfo, setUsersInfo] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [findUserInfo, usersInfo] = useUserInfo();
     const lasWishSnapshotRef = useRef();
 
     useEffect(() => {
         firebaseInit.getFirstBatchWishes().then(data => {
             lasWishSnapshotRef.current = data.lastKey;
-            console.log(data);
             setWishes(data.wishes);
         });
-    }, []);
-
-    useEffect(() => {
-        firebaseInit
-            .getCollection(collection(firebaseInit.db, "users"))
-            .then(data => {
-                setUsersInfo(data);
-            });
     }, []);
 
     async function loadingNextWishes(key) {
@@ -231,15 +215,8 @@ export const WishingWell = ({ userID }) => {
             firebaseInit.getNextBatchWishes(key).then(data => {
                 lasWishSnapshotRef.current = data.lastKey;
                 setWishes([...wishes, ...data.wishes]);
-                console.log(data);
             });
         }
-    }
-
-    function findUserInfo(userID, info) {
-        const result = usersInfo.filter(array => array.uid === userID);
-
-        return result[0][info];
     }
 
     function handleChange(e) {
@@ -249,61 +226,55 @@ export const WishingWell = ({ userID }) => {
     async function makeWish() {
         if (!wishingContent.trim()) return handleAlertModal("請輸入內容");
         try {
-            const coursesRef = collection(firebaseInit.db, "wishingWells");
-            const docRef = doc(coursesRef);
-
-            const data = {
-                content: wishingContent,
-                creatDate: Timestamp.now(),
-                userID: userID,
-                id: docRef.id,
-            };
-            await setDoc(docRef, data);
-
+            const wishData = await firebaseInit.setDocForMakeWish(
+                wishingContent,
+                userID,
+            );
             setWishingContent("");
-            setWishes([data, ...wishes]);
+            setWishes([wishData, ...wishes]);
             handleAlertModal("許願成功");
         } catch (error) {
-            handleAlertModal("許願失敗，請再試一次");
-            console.log("錯誤", error);
+            handleAlertModal(`許願失敗，請再試一次-錯誤內容:${error}`);
         }
+        return null;
     }
-    async function handleAddLike(wishId, index, condition) {
-        if (condition) {
-            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
-                like: arrayRemove(userID),
-            });
-            let data = [...wishes];
-            const newLikeList = data[index]["like"].filter(
-                user => user !== userID,
-            );
-            data[index]["like"] = newLikeList;
-            console.log(data[index]);
-            return setWishes(data);
-        }
-        if (!condition) {
-            await updateDoc(doc(firebaseInit.db, "wishingWells", wishId), {
-                like: arrayUnion(userID),
-            });
 
-            let data = [...wishes];
-            if (data[index]["like"]) {
-                data[index]["like"] = [...data[index]["like"], userID];
-                console.log(data[index]["like"]);
-            }
-            if (!data[index]["like"]) {
-                console.log(123456);
-                data[index]["like"] = [userID];
-                console.log(data[index]);
-            }
-            setWishes(data);
-        }
+    async function handleAddLike(wishId, index, condition) {
+        firebaseInit
+            .updateDocForHandleWishLike(wishId, userID, condition)
+            .then(() => {
+                const data = [...wishes];
+                if (condition) {
+                    const newLikeList = data[index].like.filter(
+                        user => user !== userID,
+                    );
+                    data[index].like = newLikeList;
+                    return setWishes(data);
+                }
+                if (!condition) {
+                    if (data[index].like) {
+                        data[index].like = [...data[index].like, userID];
+                    }
+                    if (!data[index].like) {
+                        data[index].like = [userID];
+                    }
+                    setWishes(data);
+                }
+                return null;
+            })
+            .catch(error => {
+                handleAlertModal(`發生錯誤-錯誤內容:${error}`);
+            });
     }
+
+    function isUserLikeThisWish(likes) {
+        return likes?.some(uid => uid === userID);
+    }
+
     function renderWishes() {
         return (
             <WishContainer>
                 {wishes &&
-                    usersInfo &&
                     wishes.map((wish, index) => {
                         return (
                             <CourseCard key={wish.id}>
@@ -323,15 +294,11 @@ export const WishingWell = ({ userID }) => {
                                             handleAddLike(
                                                 wish.id,
                                                 index,
-                                                wish.like?.some(
-                                                    uid => uid === userID,
-                                                ),
+                                                isUserLikeThisWish(wish.like),
                                             );
                                         }}
                                     >
-                                        {wish.like?.some(
-                                            uid => uid === userID,
-                                        ) ? (
+                                        {isUserLikeThisWish(wish.like) ? (
                                             <NewBsHeartFill />
                                         ) : (
                                             <NewBsHeart />
@@ -351,7 +318,7 @@ export const WishingWell = ({ userID }) => {
 
     return (
         <>
-            {!usersInfo || !wishes ? (
+            {!wishes || !usersInfo ? (
                 <Loading />
             ) : (
                 <>
@@ -359,11 +326,11 @@ export const WishingWell = ({ userID }) => {
                         <InputArea>
                             <TextInput
                                 value={wishingContent}
-                                handleChange={handleChange}
+                                handleChange={e => handleChange(e)}
                                 name="content"
-                                placeholder={"請輸入你/妳的願望..."}
+                                placeholder="請輸入你/妳的願望..."
                             />
-                            <Button onClick={makeWish}>我要許願</Button>
+                            <Button onClick={() => makeWish()}>我要許願</Button>
                         </InputArea>
                         <DirectionBox>
                             <Title>
@@ -382,7 +349,6 @@ export const WishingWell = ({ userID }) => {
                             </WishDirection>
                         </DirectionBox>
                         {renderWishes()}
-                        {/* {lasWishSnapshotRef.current ? "下滑看更多" : "最後囉"} */}
                         <Waypoint
                             onEnter={() =>
                                 loadingNextWishes(lasWishSnapshotRef.current)
@@ -400,4 +366,10 @@ export const WishingWell = ({ userID }) => {
             />
         </>
     );
+}
+
+WishingWell.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default WishingWell;

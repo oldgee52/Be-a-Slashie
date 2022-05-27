@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
+import PropTypes from "prop-types";
+import breakPoint from "../../utils/breakPoint";
 
 const Button = styled.button`
-    width: 100%;
+    width: ${props => props.width || "100%"};
     height: 40px;
     text-align: center;
     line-height: 40px;
@@ -26,13 +27,7 @@ const Button = styled.button`
     }
 `;
 
-export const MyButton = ({
-    buttonWord,
-    buttonId,
-    clickFunction,
-    width,
-    isDisabled,
-}) => {
+function MyButton({ buttonWord, buttonId, clickFunction, width, isDisabled }) {
     return (
         <Button
             onClick={clickFunction}
@@ -43,4 +38,20 @@ export const MyButton = ({
             {buttonWord}
         </Button>
     );
+}
+
+MyButton.propTypes = {
+    buttonWord: PropTypes.string.isRequired,
+    buttonId: PropTypes.string,
+    clickFunction: PropTypes.func.isRequired,
+    width: PropTypes.string,
+    isDisabled: PropTypes.bool,
 };
+
+MyButton.defaultProps = {
+    buttonId: "",
+    width: null,
+    isDisabled: false,
+};
+
+export default MyButton;

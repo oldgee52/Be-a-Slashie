@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { breakPoint } from "../utils/breakPoint";
+import PropTypes from "prop-types";
+import { customDateDisplay } from "../../utils/functions";
 
 const SkillsBox = styled.div`
     display: flex;
@@ -27,8 +27,7 @@ const SkillDate = styled.div`
     padding: 5px 0;
 `;
 
-export const Skills = ({ skills }) => {
-    const customDateDisplay = useCustomDateDisplay();
+function Skills({ skills }) {
     return skills && skills.length === 0 ? (
         <div>還沒有獲得技能QQ</div>
     ) : (
@@ -43,4 +42,17 @@ export const Skills = ({ skills }) => {
             </SkillsBox>
         ))
     );
+}
+
+Skills.propTypes = {
+    skills: PropTypes.arrayOf(
+        PropTypes.shape({
+            skillID: PropTypes.string.isRequired,
+            image: PropTypes.string.isRequired,
+            title: PropTypes.string.isRequired,
+            getDate: PropTypes.objectOf(PropTypes.number),
+        }),
+    ).isRequired,
 };
+
+export default Skills;

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { breakPoint } from "../utils/breakPoint";
-import check from "../images/check.png";
-import { MyButton } from "../Component/MyButton";
 import { useParams, useNavigate } from "react-router-dom";
+import breakPoint from "../utils/breakPoint";
+import check from "../images/check.png";
+import MyButton from "../Component/common/MyButton";
 import firebaseInit from "../utils/firebase";
+
 const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -45,14 +46,13 @@ const ButtonBox = styled.div`
     }
 `;
 
-export const FinishedRegisteredCourse = () => {
+function FinishedRegisteredCourse() {
     const { courseID } = useParams();
     const [course, setCourse] = useState();
     const navigate = useNavigate();
 
     useEffect(() => {
         firebaseInit.getCourseDetail(courseID).then(data => {
-            console.log(data);
             setCourse(data);
         });
     }, [courseID]);
@@ -77,4 +77,6 @@ export const FinishedRegisteredCourse = () => {
             )}
         </Container>
     );
-};
+}
+
+export default FinishedRegisteredCourse;

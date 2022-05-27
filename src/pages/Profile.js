@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { updateDoc, doc } from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { InputForModify } from "../Component/InputForModify";
+import PropTypes from "prop-types";
 import { FiUpload } from "react-icons/fi";
-import { breakPoint } from "../utils/breakPoint";
-import { AlertModal } from "../Component/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Loading } from "../Component/Loading";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import AlertModal from "../Component/common/AlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
+import InputForModify from "../Component/common/InputForModify";
+import Loading from "../Component/loading/Loading";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     margin-top: 50px;
@@ -56,73 +57,41 @@ const UploadIcon = styled(FiUpload)`
     border-radius: 100%;
 `;
 
-export const Profile = ({ userID }) => {
+function Profile({ userID }) {
     const [userInfo, setUserInfo] = useState();
     const [modifyUserName, setModifyUserName] = useState(true);
     const [modifyUserIntroduction, setModifyUserIntroduction] = useState(true);
     const [inputFields, SetInputFields] = useState();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
     useEffect(() => {
-        if (userID)
+        let isMounted = true;
+        if (userID && isMounted)
             firebaseInit.getCollectionData("users", userID).then(data => {
-                setUserInfo(data);
-                SetInputFields({
-                    name: data.name,
-                    selfIntroduction: data.selfIntroduction,
-                });
+                if (isMounted) {
+                    setUserInfo(data);
+                    SetInputFields({
+                        name: data.name,
+                        selfIntroduction: data.selfIntroduction,
+                    });
+                }
             });
+        return () => {
+            isMounted = false;
+        };
     }, [userID]);
 
-    const uploadImage = e => {
-        if (!e.target.value) return handleAlertModal("請先選擇檔案");
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            `photo-${e.target.value}`,
-        );
-        const uploadTask = uploadBytesResumable(
-            mountainImagesRef,
-            e.target.files[0],
-        );
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                console.log(error);
-                handleAlertModal("上傳失敗");
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(
-                    async downloadURL => {
-                        await updateDoc(doc(firebaseInit.db, "users", userID), {
-                            photo: downloadURL,
-                        });
+    const handleUploadImage = async (fileName, file) => {
+        if (!fileName || !file) return;
 
-                        setUserInfo(prve => ({
-                            ...prve,
-                            photo: downloadURL,
-                        }));
-
-                        e.target.value = "";
-                        handleAlertModal("上傳成功");
-                    },
-                );
-            },
-        );
+        const fileURL = await uploadFile(fileName, file);
+        await firebaseInit.updateDocForProfilePhoto(userID, fileURL);
+        setUserInfo(prve => ({
+            ...prve,
+            photo: fileURL,
+        }));
+        handleAlertModal("上傳成功");
     };
 
     return (
@@ -138,7 +107,10 @@ export const Profile = ({ userID }) => {
                             accept="image/*"
                             id="photo"
                             onChange={e => {
-                                uploadImage(e);
+                                handleUploadImage(
+                                    e.target.value,
+                                    e.target.files[0],
+                                );
                             }}
                         />
                         <UploadIcon viewBox="-5 -1 30 30" />
@@ -154,6 +126,7 @@ export const Profile = ({ userID }) => {
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserName}
                                 setHandleDisable={setModifyUserName}
+                                handleAlertModal={handleAlertModal}
                                 title="姓名"
                                 targetName="name"
                                 inputText
@@ -166,6 +139,7 @@ export const Profile = ({ userID }) => {
                                 setUserInfo={setUserInfo}
                                 handleDisable={modifyUserIntroduction}
                                 setHandleDisable={setModifyUserIntroduction}
+                                handleAlertModal={handleAlertModal}
                                 title="自我介紹"
                                 targetName="selfIntroduction"
                                 inputText={false}
@@ -179,6 +153,13 @@ export const Profile = ({ userID }) => {
                 alertIsOpen={alertIsOpen}
                 setAlertIsOpen={setAlertIsOpen}
             />
+            {uploadIsLoading ? <LoadingForPost /> : null}
         </>
     );
+}
+
+Profile.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default Profile;

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { CourseInfo } from "../Component/CourseInfo";
-import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
+import PropTypes from "prop-types";
+import breakPoint from "../utils/breakPoint";
 import firebaseInit from "../utils/firebase";
-import { Loading } from "../Component/Loading";
-import { useCustomDateDisplay } from "../customHooks/useCustomDateDisplay";
-import { NoDataBox } from "../Component/NoDataBox";
+import CourseInfo from "../Component/courses/CourseInfo";
+import Loading from "../Component/loading/Loading";
+import NoDataBox from "../Component/common/NoDataBox";
+import { customDateDisplay } from "../utils/functions";
 
 const Container = styled.div`
     display: flex;
@@ -51,21 +51,19 @@ const CourseDiv = styled.div`
     }
 `;
 
-export const TeacherFinishedCourse = ({ userID }) => {
+function TeacherFinishedCourse({ userID }) {
     const [finishedCourses, setFinishedCourses] = useState();
-    const customDateDisplay = useCustomDateDisplay();
 
     useEffect(() => {
         let isMounted = true;
 
         if (userID) {
             firebaseInit.getTeachersStatusCourses(userID, 2).then(data => {
-                const finishedCourses = data.sort(
+                const finishedCoursesRankByDate = data.sort(
                     (a, b) => b.closedDate.seconds - a.closedDate.seconds,
                 );
-                console.log(finishedCourses);
 
-                if (isMounted) setFinishedCourses(finishedCourses);
+                if (isMounted) setFinishedCourses(finishedCoursesRankByDate);
             });
         }
 
@@ -73,55 +71,43 @@ export const TeacherFinishedCourse = ({ userID }) => {
             isMounted = false;
         };
     }, [userID]);
-    return (
-        <>
-            {!finishedCourses ? (
-                <Loading />
-            ) : (
-                <Container>
-                    <CourseArea>
-                        {finishedCourses.length === 0 ? (
-                            <NoDataBox
-                                marginTop="35px"
-                                marginLeft="100px"
-                                title="尚未有課程喔，可以去看看開課方式！"
-                                buttonWord="來去看看"
-                                path="/personal/teacher-upload-course"
-                            />
-                        ) : (
-                            finishedCourses.map((course, index) => (
-                                <CourseDiv key={course.courseID}>
-                                    <CourseInfo
-                                        image={course.image}
-                                        title={course.title}
-                                        openingDate={customDateDisplay(
-                                            course.openingDate.seconds * 1000,
-                                        )}
-                                        closedDate={customDateDisplay(
-                                            course?.closedDate.seconds * 1000,
-                                        )}
-                                    />
 
-                                    {/*
-                            <DivContent>
-                                學生:
-                                {course.students.map(student => (
-                                    <Div14 key={student.studentID}>
-                                        <DivContent1>
-                                            姓名: {student.name}
-                                        </DivContent1>
-                                        <DivContent1>
-                                            email: {student.email}
-                                        </DivContent1>
-                                    </Div14>
-                                ))}{" "}
-                            </DivContent> */}
-                                </CourseDiv>
-                            ))
-                        )}
-                    </CourseArea>
-                </Container>
-            )}
-        </>
+    return !finishedCourses ? (
+        <Loading />
+    ) : (
+        <Container>
+            <CourseArea>
+                {finishedCourses.length === 0 ? (
+                    <NoDataBox
+                        marginTop="35px"
+                        marginLeft="100px"
+                        title="尚未有課程喔，可以去看看開課方式！"
+                        buttonWord="來去看看"
+                        path="/personal/teacher-upload-course"
+                    />
+                ) : (
+                    finishedCourses.map(course => (
+                        <CourseDiv key={course.courseID}>
+                            <CourseInfo
+                                image={course.image}
+                                title={course.title}
+                                openingDate={customDateDisplay(
+                                    course.openingDate.seconds * 1000,
+                                )}
+                                closedDate={customDateDisplay(
+                                    course.closedDate.seconds * 1000,
+                                )}
+                            />
+                        </CourseDiv>
+                    ))
+                )}
+            </CourseArea>
+        </Container>
     );
+}
+
+TeacherFinishedCourse.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default TeacherFinishedCourse;

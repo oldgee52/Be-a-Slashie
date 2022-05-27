@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from "react";
-import firebaseInit from "../utils/firebase";
 import styled from "styled-components";
-import { TextInput } from "../Component/TextInput";
-import { doc, setDoc } from "firebase/firestore";
+import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-} from "firebase/auth";
-import { MyButton } from "../Component/MyButton";
-import { AlertModal } from "../Component/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { Footer } from "../Component/Footer";
-import { breakPoint } from "../utils/breakPoint";
-import { NoDataTitle } from "../Component/NoDataTitle";
-import { Loading } from "../Component/Loading";
+import firebaseInit from "../utils/firebase";
+import TextInput from "../Component/common/TextInput";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
+import Footer from "../Component/Footer";
+import Loading from "../Component/loading/Loading";
+import breakPoint from "../utils/breakPoint";
+import { handleChangeForObject } from "../utils/functions";
 
 const Box = styled.div`
     min-height: calc(100vh - 150px);
@@ -74,27 +70,15 @@ const SingUpDiv = styled.div`
     align-self: flex-start;
 `;
 
-const ErrorMessage = styled.div`
-    width: 100%;
-    font-size: 12px;
-    text-align: left;
-    color: #ff6100;
-    align-self: flex-start;
-    padding-left: 5px;
-    height: 15px;
-`;
-
-export const Login = ({ userLogin }) => {
+function Login({ userLogin }) {
     const [info, setInfo] = useState({
-        email: "",
-        password: "",
+        email: "test2@123.com",
+        password: "123123",
         name: "",
     });
     const [isLogin, setIsLogin] = useState(true);
     const [isNavigate, setIsNavigate] = useState(false);
     const [isAutoNavigate, setIsAutoNavigate] = useState(true);
-    const [emailErrorMessage, setEmailErrorMessage] = useState(" ");
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState(" ");
     const navigate = useNavigate();
     const location = useLocation();
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
@@ -107,86 +91,53 @@ export const Login = ({ userLogin }) => {
             navigate(from, { replace: true });
     }, [isAutoNavigate, userLogin]);
 
+    function handleErrorMessage(errorCode) {
+        const errorStatus = {
+            "auth/invalid-email": "輸入信箱格式有誤",
+            "auth/weak-password": "密碼規格不符(至少6字元)",
+            "auth/wrong-password": `輸入密碼有誤`,
+            "auth/email-already-in-use": "已經註冊過囉，直接登入就好",
+            "auth/too-many-requests": "試太多次囉，請等五分鐘後作業",
+            "auth/user-not-found": `我不認得您，請先註冊`,
+        };
+        return (
+            errorStatus[errorCode] ||
+            `${errorCode}-請將此畫面截圖並mail給我們，謝謝！`
+        );
+    }
+
     function singUp() {
         setIsAutoNavigate(false);
-        createUserWithEmailAndPassword(
-            firebaseInit.auth,
-            info.email,
-            info.password,
-        )
-            .then(async userCredential => {
-                const user = userCredential.user;
-
-                await setDoc(doc(firebaseInit.db, "users", user.uid), {
-                    email: user.email,
-                    uid: user.uid,
-                    name: info.name,
-                    photo: "https://firebasestorage.googleapis.com/v0/b/be-a-slashie.appspot.com/o/photo-C%3A%5Cfakepath%5Cprofile.png?alt=media&token=7bfb27e7-5b32-454c-8182-446383794d95",
-                    selfIntroduction: "成為斜槓人生的路上，有你我相伴。",
-                });
-            })
+        const { email, password, name } = info;
+        firebaseInit
+            .handleEmailSingUp(email, password, name)
             .then(() => {
                 setIsNavigate(true);
                 handleAlertModal("註冊成功，可以去個人修改大頭照跟自我介紹喔");
             })
             .catch(error => {
                 const errorCode = error.code;
-                console.log(errorCode);
-                switch (errorCode) {
-                    case "auth/invalid-email":
-                        handleAlertModal(`輸入信箱格式有誤`);
-                        break;
-                    case "auth/weak-password":
-                        handleAlertModal(`密碼規格不符(至少6字元)`);
-                        break;
-                    case "auth/email-already-in-use":
-                        handleAlertModal(`已經註冊過囉，直接登入就好`);
-                        setIsLogin(true);
-                        break;
-                    case "auth/too-many-requests":
-                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
-                        break;
-                    default:
-                        handleAlertModal(errorCode);
-                }
+                handleAlertModal(handleErrorMessage(errorCode));
+                if (errorCode === "auth/email-already-in-use") setIsLogin(true);
             });
     }
 
     function signIn() {
         setIsAutoNavigate(false);
-        signInWithEmailAndPassword(firebaseInit.auth, info.email, info.password)
+        firebaseInit
+            .handleSingInWithEmail(info.email, info.password)
             .then(() => {
                 setIsNavigate(true);
                 handleAlertModal("登入成功");
             })
             .catch(error => {
                 const errorCode = error.code;
-
-                switch (errorCode) {
-                    case "auth/invalid-email":
-                        handleAlertModal(`輸入信箱格式有誤`);
-                        break;
-                    case "auth/wrong-password":
-                        handleAlertModal(`輸入密碼有誤`);
-                        break;
-                    case "auth/user-not-found":
-                        handleAlertModal(`我不認得您，請先註冊`);
-                        setIsLogin(false);
-                        break;
-                    case "auth/too-many-requests":
-                        handleAlertModal(`試太多次囉，請等五分鐘後作業`);
-                        break;
-                    default:
-                        handleAlertModal(errorCode);
-                }
+                handleAlertModal(handleErrorMessage(errorCode));
+                if (errorCode === "auth/user-not-found") setIsLogin(false);
             });
     }
-
-    function handleChange(e) {
-        let data = { ...info };
-        data[e.target.name] = e.target.value;
-        setInfo(data);
-    }
+    const handleInputChange = e =>
+        handleChangeForObject(info, e.target.name, e.target.value, setInfo);
 
     return (
         <>
@@ -199,12 +150,10 @@ export const Login = ({ userLogin }) => {
                             onClick={() => {
                                 setIsLogin(true);
                                 setInfo({
-                                    email: "",
-                                    password: "",
+                                    email: "test2@123.com",
+                                    password: "123123",
                                     name: "",
                                 });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
                             }}
                             login={isLogin}
                         >
@@ -218,8 +167,6 @@ export const Login = ({ userLogin }) => {
                                     password: "",
                                     name: "",
                                 });
-                                // setEmailErrorMessage("");
-                                // setPasswordErrorMessage("");
                             }}
                             login={isLogin}
                         >
@@ -228,30 +175,28 @@ export const Login = ({ userLogin }) => {
 
                         <TextInput
                             value={info.email}
-                            handleChange={handleChange}
+                            handleChange={handleInputChange}
                             name="email"
                             placeholder="請輸入信箱"
                         />
-                        {/* <ErrorMessage>{emailErrorMessage}</ErrorMessage> */}
                         <TextInput
                             value={info.password}
-                            handleChange={handleChange}
+                            handleChange={handleInputChange}
                             name="password"
                             type="password"
                             placeholder="請輸入密碼"
                         />
-                        {/* <ErrorMessage>{passwordErrorMessage}</ErrorMessage> */}
                         {!isLogin && (
                             <TextInput
                                 value={info.name}
-                                handleChange={handleChange}
+                                handleChange={handleInputChange}
                                 name="name"
                                 placeholder="請輸入姓名"
                             />
                         )}
                         {isLogin && (
                             <MyButton
-                                clickFunction={signIn}
+                                clickFunction={() => signIn()}
                                 buttonWord="登入"
                                 isDisabled={!info.password || !info.email}
                                 width="100%"
@@ -259,7 +204,7 @@ export const Login = ({ userLogin }) => {
                         )}
                         {!isLogin && (
                             <MyButton
-                                clickFunction={singUp}
+                                clickFunction={() => singUp()}
                                 buttonWord="註冊"
                                 isDisabled={Object.values(info).some(
                                     value => !value,
@@ -281,4 +226,10 @@ export const Login = ({ userLogin }) => {
             <Footer />
         </>
     );
+}
+
+Login.propTypes = {
+    userLogin: PropTypes.string.isRequired,
 };
+
+export default Login;

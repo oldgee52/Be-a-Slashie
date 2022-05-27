@@ -1,22 +1,15 @@
 import React, { useReducer, useEffect, useState } from "react";
 import styled from "styled-components";
-import firebaseInit from "../utils/firebase";
-import {
-    collection,
-    getDocs,
-    doc,
-    setDoc,
-    updateDoc,
-    arrayUnion,
-} from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { breakPoint } from "../utils/breakPoint";
+import PropTypes from "prop-types";
 import { FiUpload } from "react-icons/fi";
-import { CheckSkills } from "../Component/CheckSkills";
-import { MyButton } from "../Component/MyButton";
-import { AlertModal } from "../Component/AlertModal";
-import { useAlertModal } from "../customHooks/useAlertModal";
-import { LoadingForPost } from "../Component/LoadingForPost";
+import firebaseInit from "../utils/firebase";
+import breakPoint from "../utils/breakPoint";
+import CheckSkills from "../Component/skills/CheckSkills";
+import MyButton from "../Component/common/MyButton";
+import AlertModal from "../Component/common/AlertModal";
+import useAlertModal from "../customHooks/useAlertModal";
+import LoadingForPost from "../Component/loading/LoadingForPost";
+import useFirebaseUploadFile from "../customHooks/useFirebaseUploadFile";
 
 const Container = styled.div`
     display: flex;
@@ -186,7 +179,6 @@ const SkillsBox = styled.div`
     }
 `;
 const DirectionBox = styled.div`
-    /* padding: 5px; */
     font-size: 12px;
     line-height: 1.5;
     margin-bottom: 5px;
@@ -248,6 +240,11 @@ function reducer(state, action) {
                 ...state,
                 registrationDeadline: action.payload.registrationDeadline,
             };
+        case "setImage":
+            return {
+                ...state,
+                image: action.payload.image,
+            };
         case "setGetSkills":
             return {
                 ...state,
@@ -258,17 +255,12 @@ function reducer(state, action) {
                 ...state,
                 getSkills: action.payload.getSkills,
             };
-        case "setImageURL":
-            return {
-                ...state,
-                image: action.payload.image,
-            };
         default:
             return state;
     }
 }
 
-export const TeacherUpload = ({ userID }) => {
+function TeacherUpload({ userID }) {
     const [state, dispatch] = useReducer(reducer, initState);
     const [allSkills, setAllSkills] = useState();
     const [image, setImage] = useState();
@@ -276,15 +268,10 @@ export const TeacherUpload = ({ userID }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [alertIsOpen, alertMessage, setAlertIsOpen, handleAlertModal] =
         useAlertModal();
+    const [uploadIsLoading, uploadFile] = useFirebaseUploadFile();
 
     useEffect(() => {
-        (async function (db) {
-            const skillsCol = collection(db, "skills");
-            const skillsSnapshot = await getDocs(skillsCol);
-            const skillList = skillsSnapshot.docs.map(doc => doc.data());
-            console.log(skillList);
-            setAllSkills(skillList);
-        })(firebaseInit.db);
+        firebaseInit.getSkillsInfo().then(data => setAllSkills(data));
     }, []);
 
     const handleSkillChange = e => {
@@ -300,58 +287,21 @@ export const TeacherUpload = ({ userID }) => {
             dispatch({
                 type: "removeGetSkills",
                 payload: {
-                    getSkills: state.getSkills.filter(e => e !== value),
+                    getSkills: state.getSkills.filter(event => event !== value),
                 },
             });
         }
     };
 
-    const uploadImage = e => {
-        e.preventDefault();
-        if (!e.target.value) return;
-        console.log(e.target.value);
-        const mountainImagesRef = ref(
-            firebaseInit.storage,
-            `image-${e.target.value}`,
-        );
-        const uploadTask = uploadBytesResumable(
-            mountainImagesRef,
-            e.target.files[0],
-        );
-        uploadTask.on(
-            "state_changed",
-            snapshot => {
-                const progress =
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log("Upload is " + progress + "% done");
-                switch (snapshot.state) {
-                    case "paused":
-                        console.log("Upload is paused");
-                        break;
-                    case "running":
-                        console.log("Upload is running");
-                        setIsLoading(true);
-                        break;
-                    default:
-                        console.log("default");
-                }
-            },
-            error => {
-                setIsLoading(false);
-                console.log(error);
-                handleAlertModal("發生錯誤，請再試一次");
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                    dispatch({
-                        type: "setImageURL",
-                        payload: { image: downloadURL },
-                    });
-                    setIsLoading(false);
-                    setImage(downloadURL);
-                });
-            },
-        );
+    const uploadImage = async (fileName, file) => {
+        if (!fileName || !file) return;
+        const fileURL = await uploadFile(fileName, file);
+        dispatch({
+            type: "setImage",
+            payload: { image: fileURL },
+        });
+        setImage(fileURL);
+        handleAlertModal("上傳成功");
     };
 
     const uploadCourse = async e => {
@@ -363,63 +313,30 @@ export const TeacherUpload = ({ userID }) => {
         if (new Date(state.openingDate) < new Date(state.registrationDeadline))
             return handleAlertModal("開課日不得早於報名截止日");
 
-        if (
-            Object.values(state).some(value => !value) ||
-            state.getSkills.length === 0
-        )
-            return handleAlertModal("請輸入完整資料");
-
         setIsLoading(true);
 
-        const coursesRef = collection(firebaseInit.db, "courses");
-        const docRef = doc(coursesRef);
-        const coursesInfo = {
-            ...state,
-            openingDate: new Date(
-                `${state.openingDate.replace(/-/g, "/")} 23:59:59`,
-            ),
-            registrationDeadline: new Date(
-                `${state.registrationDeadline.replace(/-/g, "/")} 23:59:59`,
-            ),
-            creatTime: new Date(),
-            courseID: docRef.id,
-            view: 0,
-            teacherUserID: userID,
-            status: 0,
-            askedQuestions: [],
-            registrationNumber: 0,
-        };
         try {
-            await Promise.all([
-                setDoc(docRef, coursesInfo),
-                setDoc(
-                    doc(
-                        firebaseInit.db,
-                        "courses",
-                        docRef.id,
-                        "teacher",
-                        "info",
-                    ),
-                    {
-                        teacherUserID: userID,
-                        courseID: docRef.id,
-                    },
-                ),
-                updateDoc(doc(firebaseInit.db, "users", userID), {
-                    teachersCourses: arrayUnion(docRef.id),
-                }),
-            ]).then(() => {
-                setIsLoading(false);
-                handleAlertModal("上架成功，來看看課程資訊吧！");
-            });
-        } catch (error) {
-            console.log(error);
+            const newCourseID = await firebaseInit.setDocForNewCourse(
+                state,
+                userID,
+            );
+            await firebaseInit.setDocForCourseAddTeacherInfo(
+                newCourseID,
+                userID,
+            );
+            await firebaseInit.updateDocForUserTeachersCourses(
+                newCourseID,
+                userID,
+            );
+            setCourseID(newCourseID);
             setIsLoading(false);
-            return handleAlertModal("發送錯誤，請再試一次");
+            handleAlertModal("上架成功，來看看課程資訊吧！");
+        } catch (error) {
+            setIsLoading(false);
+            handleAlertModal(`發送錯誤，請再試一次-錯誤內容；${error}`);
         }
-        setCourseID(docRef.id);
+        return null;
     };
-    console.log(state.getSkills);
 
     return (
         <>
@@ -502,13 +419,12 @@ export const TeacherUpload = ({ userID }) => {
                         />
                     </LabelForDate>
                     <LabelForDate>
-                        <Title paddingLeft={true}>開班日期</Title>
+                        <Title paddingLeft>開班日期</Title>
                         <InputDate
                             type="date"
                             value={state.openingDate}
                             min={new Date().toLocaleDateString("en-ca")}
                             onChange={e => {
-                                console.log(e.target.value.replace(/-/g, "/"));
                                 dispatch({
                                     type: "setOpeningDate",
                                     payload: { openingDate: e.target.value },
@@ -557,7 +473,9 @@ export const TeacherUpload = ({ userID }) => {
                         <FileInput
                             type="file"
                             accept="image/*"
-                            onChange={e => uploadImage(e)}
+                            onChange={e =>
+                                uploadImage(e.target.value, e.target.files[0])
+                            }
                         />
 
                         <PreviewImg img={image}>
@@ -567,8 +485,8 @@ export const TeacherUpload = ({ userID }) => {
                     <Button>
                         <MyButton
                             clickFunction={uploadCourse}
-                            buttonWord={"上架課程"}
-                        ></MyButton>
+                            buttonWord="上架課程"
+                        />
                     </Button>
                 </FormArea>
             </Container>
@@ -578,7 +496,12 @@ export const TeacherUpload = ({ userID }) => {
                 setAlertIsOpen={setAlertIsOpen}
                 courseID={courseID}
             />
-            {isLoading ? <LoadingForPost /> : ""}
+            {(isLoading || uploadIsLoading) && <LoadingForPost />}
         </>
     );
+}
+TeacherUpload.propTypes = {
+    userID: PropTypes.string.isRequired,
 };
+
+export default TeacherUpload;

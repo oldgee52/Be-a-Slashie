@@ -1,49 +1,45 @@
 import React, { useEffect, useState } from "react";
-import { Home } from "./pages/Home";
-import { Search } from "./pages/Search";
-import { TeacherUpload } from "./pages/TeacherUpload";
-import { Course } from "./pages/Course";
-import { TeacherConfirmRegistration } from "./pages/TeacherConfirmRegistration";
-import { TeacherOpeningCourse } from "./pages/TeacherOpeningCourse";
-import { StudentOpeningCourse } from "./pages/StudentOpeningCourse";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ModalProvider } from "styled-react-modal";
+import Home from "./pages/Home";
+import Search from "./pages/Search";
+import TeacherUpload from "./pages/TeacherUpload";
+import Course from "./pages/Course";
+import TeacherConfirmRegistration from "./pages/TeacherConfirmRegistration";
+import TeacherOpeningCourse from "./pages/TeacherOpeningCourse";
+import StudentOpeningCourse from "./pages/StudentOpeningCourse";
 import Header from "./Component/Header";
-import { Profile } from "./pages/Profile";
-import { StudentRegisteredCourse } from "./pages/StudentRegisteredCourse";
-import { StudentFinishedCourse } from "./pages/StudentFinishedCourse";
-import { TeacherFinishedCourse } from "./pages/TeacherFinishedCourse";
-import { StudentCollectionCourse } from "./pages/StudentCollectionCourse";
-import { StudentGotSkill } from "./pages/StudentGotSkill";
-import { TalentedPersonSearch } from "./pages/TalentedPersonSearch";
-import { PersonalIntroduction } from "./pages/PersonalIntroduction";
-import { WishingWell } from "./pages/WishingWell";
+import Profile from "./pages/Profile";
+import StudentRegisteredCourse from "./pages/StudentRegisteredCourse";
+import StudentFinishedCourse from "./pages/StudentFinishedCourse";
+import TeacherFinishedCourse from "./pages/TeacherFinishedCourse";
+import StudentCollectionCourse from "./pages/StudentCollectionCourse";
+import StudentGotSkill from "./pages/StudentGotSkill";
+import TalentedPersonSearch from "./pages/TalentedPersonSearch";
+import PersonalIntroduction from "./pages/PersonalIntroduction";
+import WishingWell from "./pages/WishingWell";
 import firebaseInit from "./utils/firebase";
 import GlobalStyle from "./globalStyles";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { Login } from "./pages/Login";
-import { Personal } from "./Component/Personal";
+import Login from "./pages/Login";
+import Personal from "./Component/Personal";
 import RequireAuth from "./Component/RequireAuth";
-import { ModalProvider } from "styled-react-modal";
-import { FinishedRegisteredCourse } from "./pages/FinishedRegisteredCourse";
-import { NotFound } from "./pages/NotFound";
+import FinishedRegisteredCourse from "./pages/FinishedRegisteredCourse";
+import NotFound from "./pages/NotFound";
 
 function App() {
     const [userID, setUserID] = useState("");
     const [userLogin, setUserLogin] = useState("check");
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(firebaseInit.auth, user => {
+        firebaseInit.listenToAuthStatus(user => {
             if (user) {
                 setUserLogin("in");
                 setUserID(user.uid);
-                console.log(user.uid);
-            } else {
-                setUserLogin("out");
-                setUserID("");
+                return;
             }
+            setUserID("");
+            setUserLogin("out");
         });
-
-        return unsubscribe;
     }, [userID]);
     return (
         <>
@@ -156,8 +152,6 @@ function App() {
                             path="finished-registered-course/:courseID"
                             element={<FinishedRegisteredCourse />}
                         />
-
-                        {/* <Route path="course" element={<Course />} /> */}
                         <Route path="search" element={<Search />} />
                         <Route path="/" element={<Home />} />
                         <Route path="*" element={<NotFound />} />
