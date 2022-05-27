@@ -72,8 +72,8 @@ const SingUpDiv = styled.div`
 
 function Login({ userLogin }) {
     const [info, setInfo] = useState({
-        email: "",
-        password: "",
+        email: "test2@123.com",
+        password: "123123",
         name: "",
     });
     const [isLogin, setIsLogin] = useState(true);
@@ -150,8 +150,8 @@ function Login({ userLogin }) {
                             onClick={() => {
                                 setIsLogin(true);
                                 setInfo({
-                                    email: "",
-                                    password: "",
+                                    email: "test2@123.com",
+                                    password: "123123",
                                     name: "",
                                 });
                             }}
